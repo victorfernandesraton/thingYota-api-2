@@ -7,8 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=development node app"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "victorfeernandesraton",
+  "license": "Apache 2.0 license",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/victorfernandesraton/thingYota-api2"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
