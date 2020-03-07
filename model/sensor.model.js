@@ -19,5 +19,10 @@ module.exports = db.define('sensor', {
   bucket_parent: {
     type: Sequelize.HasMany(Bucket),
     allowNull: false
+  },
+
+  status: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: true
   }
 });

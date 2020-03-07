@@ -17,5 +17,11 @@ module.exports = db.define('user', {
   lastName: {
     type: Sequelize.STRING
     // allowNull defaults to true
+  },
+
+  status: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
   }
 });
+

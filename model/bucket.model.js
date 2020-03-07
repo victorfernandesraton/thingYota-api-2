@@ -11,6 +11,9 @@ module.exports = db.define('sensor', {
   type: {
     type: Sequelize.STRING,
     allowNull: false,
-
+  },
+  status: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: true
   }
 });
