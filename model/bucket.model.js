@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const db = require('../database/index')
 
-module.exports = db.define('sensor', {
+module.exports = db.define('bucket', {
   // attributes
   st_name: {
     type: Sequelize.STRING,
