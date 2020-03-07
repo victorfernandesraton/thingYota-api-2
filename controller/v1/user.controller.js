@@ -1,4 +1,4 @@
-const User = require('../../model/user.model');
+const {User} = require('../../database');
 
 /**
  * @description Get alll users use queeryparans to filter then

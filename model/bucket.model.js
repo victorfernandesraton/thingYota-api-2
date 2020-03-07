@@ -1,19 +1,27 @@
-const Sequelize = require('sequelize')
-const db = require('../database/index')
+module.exports = (sequelize, DataTypes) => {
+  const Bucket = sequelize.define('bucket', {
+    // attributes
+    st_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
 
-module.exports = db.define('bucket', {
-  // attributes
-  st_name: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
+  })
 
-  type: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  status: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: true
+  // Relatinship
+  Bucket.associate= (models) => {
+    Bucket.hasMany(models.Sensor, {
+      foreignKey: "parent"
+    })
   }
-});
+  return Bucket
+}
+

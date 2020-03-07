@@ -1,4 +1,4 @@
-const Bucket = require('../../model/bucket.model')
+const {Bucket} = require('../../database')
 
 /**
  * @description Get all buckets in database
