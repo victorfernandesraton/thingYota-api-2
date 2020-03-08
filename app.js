@@ -9,9 +9,9 @@ const server = require('./config/server')
 const PORT = process.env.PORT || 8000;
 const router = require('./routes');
 
-const sequelize = require('./database')
+const {sequelize} = require('./database')
 
-// Sequelize
+// db
 sequelize.authenticate()
   .then(() => console.info("Database has connected"))
   .catch((err) => console.warn("Dtabase Error connection", err))

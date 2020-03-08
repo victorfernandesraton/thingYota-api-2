@@ -1,7 +1,7 @@
-const {Bucket} = require('../../database')
+const {Sensor, Bucket} = require('../../database')
 
 /**
- * @description Get all buckets in database
+ * @description Get all Sensors in database
  * @param {Request} req
  * @param {Response} res
  * @param {*} next
@@ -10,7 +10,11 @@ const getAll = async (req,res,next) => {
   const limit = req.query.limit;
   const offset = req.query.page * limit;
   try{
-    const data = await Bucket.findAll();
+    const data = await Sensor.findAll({
+      inclue: [{
+        model: Bucket
+      }]
+    });
     if (!data || data.length == 0) {
       return res.status(404).json({
         res: false,
@@ -30,7 +34,7 @@ const getAll = async (req,res,next) => {
 }
 
 /**
- * @description Get one bucket using your PK value id
+ * @description Get one Sensor using your PK value id
  * @param {{params: {id: string}}} req
  * @param {Response} res
  * @requires params.id
@@ -48,7 +52,7 @@ const getOne = async (req,res,next) => {
     })
   }
   try{
-    const data = await Bucket.findByPk(req.params.id);
+    const data = await Sensor.findByPk(req.params.id);
     if (!data || data.length == 0) {
       return res.status(404).json({
         res: false,
@@ -75,10 +79,10 @@ const getOne = async (req,res,next) => {
  * @requires body.st_name
  * @requires body.type
  */
-const create = (req,res,next) => {
-  const {st_name, type} = req.body;
-  if(!st_name || !type) {
-    data= ['st_name', 'type'].filter(key => !req.body.hasOwnProperty(key))
+const create = async (req,res,next) => {
+  const {st_name, type, parentId} = req.body;
+  if(!st_name || !type || !parentId) {
+    data= ['st_name', 'type', 'parentId'].filter(key => !req.body.hasOwnProperty(key))
     return res.status(422).json({
       res: false,
       error: {
@@ -87,7 +91,16 @@ const create = (req,res,next) => {
       }
     })
   }
-  Bucket.create(req.body)
+  const bucket = await Bucket.findByPk(parentId)
+  if (!bucket) {
+    return res.status(404).json({
+      res: false,
+      error: {
+        message: `The bucket*${parentId} not found`
+      }
+    })
+  }
+  Sensor.create({st_name: st_name, type: type, parentId: parentId, bucketId: parentId})
     .then(data => res.status(201).json({
         res: true,
         data: data,
@@ -113,7 +126,7 @@ const putData = async (req,res,send) => {
     })
   }
   try {
-    const data = await Bucket.update({
+    const data = await Sensor.update({
       ...req.body
     }, {returning: true, where: {id: req.params.id} })
 

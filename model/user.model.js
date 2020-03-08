@@ -1,27 +1,26 @@
-const Sequelize = require('sequelize')
-const db = require('../database/index')
+module.exports = (sequelize, DataType) => {
+  const User = sequelize.define('user', {
+    // attributes
+    firstName: {
+      type: DataType.STRING,
+      allowNull: false
+    },
 
-module.exports = db.define('user', {
-  // attributes
-  firstName: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
+    userName: {
+      type: DataType.STRING,
+      allowNull: false,
+    },
 
-  userName: {
-    type: Sequelize.STRING,
-    allowNull: false,
+    lastName: {
+      type: DataType.STRING
+      // allowNull defaults to true
+    },
 
-  },
-
-  lastName: {
-    type: Sequelize.STRING
-    // allowNull defaults to true
-  },
-
-  status: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: false
-  }
-});
+    status: {
+      type: DataType.BOOLEAN,
+      defaultValue: false
+    }
+  });
+  return User;
+}
 
