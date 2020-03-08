@@ -1,17 +1,17 @@
 const Sequelize = require('sequelize');
-
-const sequelize = new Sequelize(process.env.DB || "testedb", 'postgres', '123456', {
-  host: process.env.DB_HOST,
+const {
+  DB,
+  DB_HOST,
+  DB_USER,
+  DB_PASS
+} = process.env
+const sequelize = new Sequelize(DB , DB_USER, DB_PASS, {
+  DB_HOST,
   dialect: 'postgres'
 })
 
-// Models
-const Bucket = require('../model/bucket.model');
-const Sensor = require('../model/sensor.model');
-const User = require('../model/user.model');
-const Register = require('../model/register.model');
-
 const db = {
+  // Models
   User : sequelize.import('../model/user.model'),
   Bucket : sequelize.import('../model/bucket.model'),
   Sensor : sequelize.import('../model/sensor.model'),
