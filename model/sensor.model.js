@@ -1,5 +1,5 @@
 module.exports = (db, DataTypes) => {
-  const Sensor = db.define('Sensor',{
+  const Sensor = db.define('sensor',{
     // attributes
     st_name: {
       type: DataTypes.STRING,
@@ -11,13 +11,13 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
     },
   });
-
   // Relationships
-  // Sensor.associate = models => {
-  //   Sensor.hasMany(models.Bucket, {
-  //     foreignKey: "children_id"
-  //   })
-  // }
+  Sensor.associate = models => {
+    Sensor.belongsTo(models.Bucket, {
+      foreignKey: "parentId",
+      as: 'parent'
+    })
+  }
 
   return Sensor;
 }

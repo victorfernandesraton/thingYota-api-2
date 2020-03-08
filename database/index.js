@@ -24,5 +24,8 @@ Object.keys(db).forEach((nodeLName) => {
     db[nodeLName].associate(db)
   }
 });
+// Relations
+db.Bucket.hasMany(db.Sensor)
+db.Sensor.belongsTo(db.Bucket)
 
 module.exports=db
