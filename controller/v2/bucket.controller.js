@@ -1,4 +1,4 @@
-const {Bucket} = require('../../database')
+const Bucket = require('../../schema/bucket.schema')
 
 /**
  * @description Get all buckets in database
@@ -10,7 +10,7 @@ const getAll = async (req,res,next) => {
   const limit = req.query.limit;
   const offset = req.query.page * limit;
   try{
-    const data = await Bucket.find(req.query);
+    const data = await Bucket.find();
     if (!data || data.length == 0) {
       return res.status(404).json({
         res: false,
@@ -48,7 +48,7 @@ const getOne = async (req,res,next) => {
     })
   }
   try{
-    const data = await Bucket.findByPk(req.params.id);
+    const data = await Bucket.findById(req.params.id);
     if (!data || data.length == 0) {
       return res.status(404).json({
         res: false,
@@ -87,7 +87,7 @@ const create = (req,res,next) => {
       }
     })
   }
-  Bucket.create(req.body)
+  Bucket.create({...req.body, create_at: Date()})
     .then(data => res.status(201).json({
         res: true,
         data: data,
@@ -113,7 +113,7 @@ const putData = async (req,res,send) => {
     })
   }
   try {
-    const data = await Bucket.update({id: req.params.id}, ...req.body)
+    const data = await Bucket.update({_id: req.params.id}, {...req.body}, {upsert:true})
     return res.status(204).json({
       res: true,
       data: data

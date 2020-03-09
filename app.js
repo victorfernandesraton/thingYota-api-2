@@ -8,8 +8,9 @@ if (process.env.NODE_ENV == "development") {
 const server = require('./config/server')
 const PORT = process.env.PORT || 8000;
 const router = require('./routes');
-
+// databse
 const {sequelize} = require('./database')
+const mongodb = require('./config/mongodb');
 
 // db
 sequelize.authenticate()
@@ -20,6 +21,11 @@ sequelize.sync({ force: true })
 .then(() => {
   console.log(`Database & tables created!`)
 })
+
+mongodb
+  .then(data => console.log('momgobd has coonected'))
+  .catch(error => console.log("eeror on first connection"))
+
 
 // Rotas
 server.use(router)
