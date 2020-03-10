@@ -14,8 +14,9 @@ module.exports = (db, DataTypes) => {
   // Relationships
   Sensor.associate = models => {
     Sensor.belongsTo(models.Bucket, {
-      foreignKey: "parentId",
-      as: 'parent'
+      foreignKey: "id",
+      as: 'parent',
+      sourceKey: "parentId"
     })
   }
 

@@ -19,8 +19,9 @@ module.exports = (sequelize, DataTypes) => {
   // Relatinship
   Bucket.associate= (models) => {
     Bucket.hasMany(models.Sensor, {
-      foreignKey: "parentId",
-      as: "parent"
+      foreignKey: "id",
+      as: "parent",
+      targetKey: "parentId"
     })
   }
   return Bucket
