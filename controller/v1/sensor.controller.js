@@ -11,6 +11,8 @@ const getAll = async (req,res,next) => {
   const offset = req.query.page * limit;
   try{
     const data = await Sensor.findAll({
+      raw: true,
+      atributes: [],
       inclue: [{
         model: Bucket
       }]

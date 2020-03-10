@@ -1,5 +1,5 @@
-const {Bucket} = require('../../database')
-
+const Sensor = require('../../schema/sensor.schema')
+const Bucket = require('../../schema/bucket.schema')
 /**
  * @description Get all buckets in database
  * @param {Request} req
@@ -10,7 +10,7 @@ const getAll = async (req,res,next) => {
   const limit = req.query.limit;
   const offset = req.query.page * limit;
   try{
-    const data = await Bucket.find(req.query);
+    const data = await Sensor.find();
     if (!data || data.length == 0) {
       return res.status(404).json({
         res: false,
@@ -48,7 +48,7 @@ const getOne = async (req,res,next) => {
     })
   }
   try{
-    const data = await Bucket.findByPk(req.params.id);
+    const data = await Sensor.findById(req.params.id);
     if (!data || data.length == 0) {
       return res.status(404).json({
         res: false,
@@ -76,9 +76,9 @@ const getOne = async (req,res,next) => {
  * @requires body.type
  */
 const create = (req,res,next) => {
-  const {st_name, type} = req.body;
-  if(!st_name || !type) {
-    data= ['st_name', 'type'].filter(key => !req.body.hasOwnProperty(key))
+  const {name, type, bucket_parent} = req.body;
+  if(!name || !type || !bucket_parent) {
+    data= ['name', 'type', 'bucket_parent'].filter(key => !req.body.hasOwnProperty(key))
     return res.status(422).json({
       res: false,
       error: {
@@ -87,16 +87,25 @@ const create = (req,res,next) => {
       }
     })
   }
-  Bucket.create(req.body)
-    .then(data => res.status(201).json({
-        res: true,
-        data: data,
-        metadata: "teste"
-    }))
+
+  Bucket.findById(bucket_parent)
+    .then(bucket => {
+      Sensor.create({...req.body, create_at: Date()})
+        .then(data => res.status(201).json({
+            res: true,
+            data: data,
+            metadata: "teste"
+        }))
+        .catch(error => res.status(500).json({
+          res: false,
+          error: error
+        }))
+    })
     .catch(error => res.status(500).json({
       res: false,
       error: error
     }))
+
 }
 
 /**
@@ -112,8 +121,25 @@ const putData = async (req,res,send) => {
       error: "id is required"
     })
   }
+
+  if (req.body.bucket_parent) {
+    Bucket.findById(req.body.bucket_parent)
+      .then((data) => {
+        if (!data) {
+          return res.status(404).json({
+            res: false,
+            error: {message: 'bucket not found'}
+            })
+          }
+      })
+      .catch(error => res.status(500).json({
+        res: false,
+        error: error
+      }))
+  }
   try {
-    const data = await Bucket.update({id: req.params.id}, ...req.body)
+    const data = await Sensor.update({_id: req.params.id}, {...req.body}, {upsert:true})
+
     return res.status(204).json({
       res: true,
       data: data

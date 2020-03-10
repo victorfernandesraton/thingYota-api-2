@@ -1,20 +1,21 @@
 const mongoose= require('mongoose');
 const bcrypt = require('bcryptjs')
 
-const bucketSchema = new mongoose.Schema({
+const sensorSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
   },
-  sensors: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Sensor'
-    }
-  ],
+  // Relação belongsto
+  bucket_parent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Bucket',
+    required: true,
+  },
+  // sensors: [],
   type: {
     type: String,
-    default: 'wather-bucket'
+    default: 'wather-sensor'
   },
   status: {
     type: Boolean,
@@ -30,5 +31,4 @@ const bucketSchema = new mongoose.Schema({
   }
 })
 
-
-module.exports = mongoose.model("Bucket", bucketSchema);
+module.exports = mongoose.model("Sensor", sensorSchema);
