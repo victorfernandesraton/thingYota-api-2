@@ -7,10 +7,18 @@ const User = require('../../schema/user.schema');
  * @param {Function} next
  */
 const getAll = async (req,res,next) => {
-  const limit = req.query.limit;
-  const offset = req.query.page * limit;
+  const limit = parseInt(req.query.limit) || 0;
+  const offset = parseInt(req.query.page) || 0;
+  const total = await User.count()
+  if (limit* offset > total) {
+    return res.status(404).json({
+      res: false,
+      error: {message: "out of range"}
+    })
+  }
   try{
-    const user = await User.find(req.query);
+    const user = await User.find()
+      .limit(limit).skip(offset);
     if (!user || user.length == 0) {
       return res.status(404).json({
         res: false,
@@ -20,6 +28,7 @@ const getAll = async (req,res,next) => {
     res.status(200).json({
       res: true,
       data: user,
+      metadata: {limit, offset, total: await User.count()}
     })
   } catch(error) {
     res.status(500).json({
