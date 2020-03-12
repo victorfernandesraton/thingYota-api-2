@@ -20,11 +20,11 @@ sequelize.authenticate()
 sequelize.sync({ force: true })
 .then(() => {
   console.log(`Database & tables created!`)
-})
+  mongodb
+    .then(data => console.log('momgobd has coonected'))
+    .catch(error => console.log("eeror on first connection"))
 
-mongodb
-  .then(data => console.log('momgobd has coonected'))
-  .catch(error => console.log("eeror on first connection"))
+})
 
 
 // Rotas

@@ -7,10 +7,10 @@ const Bucket = require('../../schema/bucket.schema')
  * @param {*} next
  */
 const getAll = async (req,res,next) => {
-  const limit = req.query.limit;
-  const offset = req.query.page * limit;
+  const limit = req.query.limit || 0;
+  const offset = req.query.offset|| 0;
   try{
-    const data = await Bucket.find();
+    const data = await Bucket.find().limit(limit).skip(offset);
     if (!data || data.length == 0) {
       return res.status(404).json({
         res: false,
@@ -20,6 +20,7 @@ const getAll = async (req,res,next) => {
     res.status(200).json({
       res: true,
       data: data,
+      metadata: {limit, ofsset, total: await Bucket.count()}
     })
   } catch(error) {
     res.status(500).json({
