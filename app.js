@@ -12,19 +12,30 @@ const router = require('./routes');
 const {sequelize} = require('./database')
 const mongodb = require('./config/mongodb');
 
-// db
-sequelize.authenticate()
-  .then(() => console.info("Database has connected"))
-  .catch((err) => console.warn("Dtabase Error connection", err))
+// ws client
+const ws = require('./services/websocket.server');
 
-sequelize.sync({ force: true })
-.then(() => {
-  console.log(`Database & tables created!`)
-  mongodb
-    .then(data => console.log('momgobd has coonected'))
-    .catch(error => console.log("eeror on first connection"))
 
+ws.on('connect', socket => {
+  console.log("connect")
+  socket.send("message", "teste");
 })
+
+ws.connect('http://localhost:8080');
+
+// // db
+// sequelize.authenticate()
+//   .then(() => console.info("Database has connected"))
+//   .catch((err) => console.warn("Dtabase Error connection", err))
+
+// sequelize.sync({ force: true })
+// .then(() => {
+//   console.log(`Database & tables created!`)
+//   mongodb
+//     .then(data => console.log('momgobd has coonected'))
+//     .catch(error => console.log("eeror on first connection"))
+
+// })
 
 
 // Rotas
@@ -36,4 +47,3 @@ server.listen(PORT , () => {
   console.info(`Server runs im ${PORT}`);
   console.info("Press CTRL+C to kill then")
 })
-
