@@ -5,6 +5,11 @@ const registerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  device: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Device",
+    required: true
+  },
   // Relação belongsto
   bucket: {
       type: mongoose.Schema.Types.ObjectId,

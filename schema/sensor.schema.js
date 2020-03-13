@@ -10,9 +10,12 @@ const sensorSchema = new mongoose.Schema({
   bucket_parent: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Bucket',
-    required: true,
   },
-  // sensors: [],
+  device_parent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Device",
+    required: true
+  },
   type: {
     type: String,
     default: 'wather-sensor'
