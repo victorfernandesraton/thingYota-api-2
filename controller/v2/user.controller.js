@@ -1,5 +1,4 @@
 const User = require('../../schema/user.schema');
-
 /**
  * @description Get alll users use queeryparans to filter then
  * @param {Request} req

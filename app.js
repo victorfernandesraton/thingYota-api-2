@@ -9,20 +9,14 @@ const server = require('./config/server')
 const PORT = process.env.PORT || 8000;
 const router = require('./routes');
 // databse
-const {sequelize} = require('./database')
+// const {sequelize} = require('./database')
 const mongodb = require('./config/mongodb');
-
-// ws client
-const ws = require('./services/websocket.server');
-
-
-ws.on('connect', socket => {
-  console.log("connect")
-  socket.send("message", "teste");
+const ws = require('./services/websocket.server')
+ws.on('teste', t => {
+  console.log(t)
 })
-
-ws.connect('http://localhost:8080');
-
+ws.emit("teste", "teste")
+// ws client
 // // db
 // sequelize.authenticate()
 //   .then(() => console.info("Database has connected"))
@@ -31,9 +25,9 @@ ws.connect('http://localhost:8080');
 // sequelize.sync({ force: true })
 // .then(() => {
 //   console.log(`Database & tables created!`)
-//   mongodb
-//     .then(data => console.log('momgobd has coonected'))
-//     .catch(error => console.log("eeror on first connection"))
+  mongodb
+    .then(data => console.log('momgobd has coonected'))
+    .catch(error => console.log("eeror on first connection"))
 
 // })
 
