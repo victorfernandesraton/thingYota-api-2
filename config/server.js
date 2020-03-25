@@ -1,18 +1,22 @@
-const express = require('express');
-const bodyparser = require('body-parser');
-
+const restify = require('restify');
+const plugins = require('restify').plugins
 // handlers de error
 const error = require('../utils/error');
-const server = express();
 
-server.use(bodyparser.json());
-server.use(bodyparser.urlencoded({extended: true}))
+const app = restify.createServer({
+  name: "thingYota-api"
+});
+
+app.use(plugins.jsonBodyParser({ mapParams: true }));
+app.use(plugins.acceptParser(app.acceptable));
+app.use(plugins.queryParser({ mapParams: true }));
+app.use(plugins.fullResponse());
 
 // Error do cliente
-server.use(error.clientErrorHandler)
+app.use(error.clientErrorHandler)
 // Logs de erro
-server.use(error.logErrors)
+app.use(error.logErrors)
 // error handler
-server.use(error.errorHandler)
+app.use(error.errorHandler)
 
-module.exports = server;
+module.exports = app;

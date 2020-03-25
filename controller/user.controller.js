@@ -1,5 +1,4 @@
-const {User} = require('../../database');
-
+const User = require('../model/user.schema');
 /**
  * @description Get alll users use queeryparans to filter then
  * @param {Request} req
@@ -7,22 +6,31 @@ const {User} = require('../../database');
  * @param {Function} next
  */
 const getAll = async (req,res,next) => {
-  const limit = req.query.limit;
-  const offset = req.query.page * limit;
+  const limit = parseInt(req.query.limit) || 0;
+  const offset = parseInt(req.query.page) || 0;
+  const total = await User.count()
+  if (limit* offset > total) {
+    return res.send(404, {
+      res: false,
+      error: {message: "out of range"}
+    })
+  }
   try{
-    const user = await User.findAll();
+    const user = await User.find()
+      .limit(limit).skip(offset);
     if (!user || user.length == 0) {
-      return res.status(404).json({
+      return res.send(404, {
         res: false,
         error: {message: "empty list"}
       })
     }
-    res.status(200).json({
+    res.send(200, {
       res: true,
       data: user,
+      metadata: {limit, offset, total: await User.count()}
     })
   } catch(error) {
-    res.status(500).json({
+    res.send(500, {
       error,
       res: false
     })
@@ -37,10 +45,10 @@ const getAll = async (req,res,next) => {
  * @requires req
  */
 const create = (req,res,next) => {
-  const {firstName, lastName, userName} = req.body;
-  if(!userName || !firstName) {
-    data= ['firstName', 'userName'].filter(key => !req.body.hasOwnProperty(key))
-    return res.status(422).json({
+  const {username, first_name, password, email} = req.body;
+  if(!username, !first_name, !password, !email) {
+    data= ['username', 'email', 'first_name'].filter(key => !req.body.hasOwnProperty(key))
+    return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
@@ -48,13 +56,13 @@ const create = (req,res,next) => {
       }
     })
   }
-  User.create(req.body)
-    .then(data => res.status(201).json({
+  User.create({...req.body, create_at: Date()})
+    .then(data => res.send(201, {
         res: true,
         data: data,
         metadata: "teste"
     }))
-    .catch(error => res.status(500).json({
+    .catch(error => res.send(500, {
       res: false,
       error: error
     }))
@@ -62,46 +70,44 @@ const create = (req,res,next) => {
 
 const getOne = async (req,res,next) => {
   if (!req.params.id) {
-    return res.status(422).json({
+    return res.send(422, {
       res: false,
       error: "id is required"
     })
   }
   try {
-    const data = await User.findByPk(req.params.id);
+    const data = await User.findById(req.params.id);
     if (!data || data.length == 0) {
-      return res.status(404).json({
+      return res.send(404, {
         res: false,
         error: {message: "User not found"}
       })
     }
-    res.status(200).json({
+    res.send(200, {
       res: true,
       data: data,
       metadata: "teste"
     })
   } catch(error) {
-    res.status(500).json({res: false, error: {error}})
+    res.send(500, {res: false, error: {error}})
   }
 }
 
 const putData = async (req,res,send) => {
   if (!req.params.id) {
-    return res.status(422).json({
+    return res.send(422, {
       res: false,
       error: "id is required"
     })
   }
   try {
-    const data = await User.update({
-      ...req.body
-    }, {returning: true, where: {id: req.params.id} })
-    res.status(204).json({
+    const data = await User.updateOne({_id: req.params.id},{...req.body})
+    res.send(204, {
       res: true,
       data: data
     })
   } catch(error) {
-    res.status(500).json({res: false, error: {error}})
+    res.send(500, {res: false, error: {error}})
   }
 }
 

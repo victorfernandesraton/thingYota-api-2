@@ -2,10 +2,10 @@
   "name": "thingyota-api-2",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=development node app"
+    "start": "NODE_ENV=development node server"
   },
   "author": "victorfeernandesraton",
   "license": "Apache 2.0 license",
@@ -25,7 +25,11 @@
     "mysql2": "^2.1.0",
     "pg": "^7.18.2",
     "pg-hstore": "^2.3.3",
+    "restify": "^8.5.1",
+    "restify-plugins": "^1.6.0",
+    "restify-router": "^0.5.1",
     "sequelize": "^5.21.5",
+    "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "websocket": "^1.0.31",
     "websocket-client": "^1.0.0"
