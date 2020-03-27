@@ -6,26 +6,39 @@ const Device = require('../model/device.schema')
  * @param {Response} res
  * @param {*} next
  */
-const getAll = async (req,res,next) => {
-  const limit = req.query.limit || 0;
-  const offset = req.query.offset|| 0;
+const find = async (req,res,next) => {
+  const {limit} = req.query
+  const offset = (req.query.offset -1) * limit || 0
   try{
-    const data = await Device.find().limit(limit).skip(offset);
+    const data = await Device.find()
+      .limit(parseInt(limit) || 0)
+      .skip(parseInt(offset) || 0)
+      .exec()
+
+    const total =await Device.estimatedDocumentCount()
+
+    if (offset >= total && total != 0) {
+      return res.send(404, {
+        res: false,
+        error: {message: "out of range"}
+      })
+    }
+
     if (!data || data.length == 0) {
       return res.send(404, {
         res: false,
         error: {message: "empty list"}
       })
     }
-    res.send(200, {
+    return res.send(200, {
       res: true,
       data: data,
-      metadata: {limit, ofsset, total: await Device.count()}
+      metadata: {limit, offset, total }
     })
-  } catch(error) {
-    res.send(500, {
-      error,
-      res: false
+  }catch(error) {
+    return res.send(500, {
+      res: false,
+      error
     })
   }
 }
@@ -37,9 +50,8 @@ const getAll = async (req,res,next) => {
  * @requires params.id
  * @param {*} next
  */
-const getOne = async (req,res,next) => {
-  const limit = req.query.limit;
-  const offset = req.query.page * limit;
+const findOne = async (req,res,next) => {
+  const {limit , offset} = req.query || 0;
   if (!req.params.id) {
     return res.send(404, {
       res: false,
@@ -106,7 +118,7 @@ const create = (req,res,next) => {
  * @param {Response} res
  * @param {*} send
  */
-const putData = async (req,res,send) => {
+const put = async (req,res,send) => {
   if (!req.params.id) {
     return res.send(422, {
       res: false,
@@ -125,8 +137,8 @@ const putData = async (req,res,send) => {
 }
 
 module.exports = {
-  getOne,
-  getAll,
+  findOne,
+  find,
   create,
-  putData
+  put
 }

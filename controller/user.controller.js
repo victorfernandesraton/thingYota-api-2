@@ -5,34 +5,39 @@ const User = require('../model/user.schema');
  * @param {Response} res
  * @param {Function} next
  */
-const getAll = async (req,res,next) => {
-  const limit = parseInt(req.query.limit) || 0;
-  const offset = parseInt(req.query.page) || 0;
-  const total = await User.count()
-  if (limit* offset > total) {
-    return res.send(404, {
-      res: false,
-      error: {message: "out of range"}
-    })
-  }
+const find = async (req,res,next) => {
+  const {limit} = req.query
+  const offset = (req.query.offset -1) * limit || 0
   try{
-    const user = await User.find()
-      .limit(limit).skip(offset);
-    if (!user || user.length == 0) {
+    const data = await User.find()
+      .limit(parseInt(limit) || 0)
+      .skip(parseInt(offset) || 0)
+      .exec()
+
+    const total =await User.estimatedDocumentCount()
+
+    if (offset >= total && total != 0) {
+      return res.send(404, {
+        res: false,
+        error: {message: "out of range"}
+      })
+    }
+
+    if (!data || data.length == 0) {
       return res.send(404, {
         res: false,
         error: {message: "empty list"}
       })
     }
-    res.send(200, {
+    return res.send(200, {
       res: true,
-      data: user,
-      metadata: {limit, offset, total: await User.count()}
+      data: data,
+      metadata: {limit, offset, total }
     })
   } catch(error) {
-    res.send(500, {
-      error,
-      res: false
+    return res.send(500, {
+      res: false,
+      error
     })
   }
 }
@@ -68,7 +73,7 @@ const create = (req,res,next) => {
     }))
 }
 
-const getOne = async (req,res,next) => {
+const findOne = async (req,res,next) => {
   if (!req.params.id) {
     return res.send(422, {
       res: false,
@@ -86,14 +91,13 @@ const getOne = async (req,res,next) => {
     res.send(200, {
       res: true,
       data: data,
-      metadata: "teste"
     })
   } catch(error) {
     res.send(500, {res: false, error: {error}})
   }
 }
 
-const putData = async (req,res,send) => {
+const put = async (req,res,send) => {
   if (!req.params.id) {
     return res.send(422, {
       res: false,
@@ -112,8 +116,8 @@ const putData = async (req,res,send) => {
 }
 
 module.exports = {
-  getAll,
-  getOne,
+  find,
+  findOne,
   create,
-  putData
+  put
 }
