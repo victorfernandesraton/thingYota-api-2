@@ -40,7 +40,7 @@ const auth = async (req, res, send) => {
     username: user.username,
     password: user.password,
     id: user._id
-  }, 'shhhhh');
+  }, process.env.ACESS_TOKEN_SECRET);
   return res.send(200, {
     res: true,
     data: {
@@ -50,6 +50,23 @@ const auth = async (req, res, send) => {
   })
 }
 
+const authToken = (req,res,send) => {
+  const authHeader = req.headers('authorization')
+  const token = authHeader && authHeader.split(' ')[1]
+  if (!token || token == null) return res.send(403, {
+    res: false,
+    error: {message: "token not found"}
+  })
+  jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, user) => {
+    if(err) return res.send(403, {
+      res: false,
+      error: {message: "token is not valid"}
+    })
+    send()
+  })
+}
+
 module.exports = {
-  auth
+  auth,
+  authToken
 }
