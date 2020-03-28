@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require('bcryptjs')
+const md5 = require('md5')
 
 const userSchema = new mongoose.Schema({
   first_name: {
@@ -43,14 +43,12 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-// Encriptador de senha
-userSchema.pre('save', async function (next) {
-  // hash de senha
-  const hashPassword = await bcrypt.hash(this.password, 10);
-  // alteração dos valores
-  this.password = hashPassword;
-  next();
-})
+// // Encriptador de senha
+// userSchema.pre('save', async function (next) {
+//   // alteração dos valores
+//   this.password = md5(password);
+//   next();
+// })
 
 
 module.exports = mongoose.model("User", userSchema);

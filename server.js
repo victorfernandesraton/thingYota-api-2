@@ -18,6 +18,7 @@ require('./routes/bucket.route').applyRoutes(server, '/bucket')
 require('./routes/user.route').applyRoutes(server, '/user')
 require('./routes/sensor.route').applyRoutes(server, '/sensor')
 require('./routes/device.route').applyRoutes(server, '/device')
+require('./routes/auth.route').applyRoutes(server, '/auth')
 
 // socket
 let connectedUsers = {};

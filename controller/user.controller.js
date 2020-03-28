@@ -1,4 +1,6 @@
-const User = require('../model/user.schema');
+const
+  User = require('../model/user.schema'),
+  md5 = require('md5')
 /**
  * @description Get alll users use queeryparans to filter then
  * @param {Request} req
@@ -50,7 +52,7 @@ const find = async (req,res,next) => {
  * @requires req
  */
 const create = (req,res,next) => {
-  const {username, first_name, password, email} = req.body;
+  const {username, first_name, last_name, password, email} = req.body;
   if(!username, !first_name, !password, !email) {
     data= ['username', 'email', 'first_name'].filter(key => !req.body.hasOwnProperty(key))
     return res.send(422, {
@@ -61,15 +63,23 @@ const create = (req,res,next) => {
       }
     })
   }
-  User.create({...req.body, create_at: Date()})
+  console.log(password)
+  const user = new User({
+    username,
+    first_name,
+    last_name,
+    email,
+    password: md5(password.toString()),
+    create_at: Date()
+  })
+  user.save()
     .then(data => res.send(201, {
-        res: true,
-        data: data,
-        metadata: "teste"
+      res: true,
+      data: data,
     }))
-    .catch(error => res.send(500, {
-      res: false,
-
+  .catch(error => res.send(500, {
+        res: false,
+        error: {message: "Error create user", data: error}
     }))
 }
 

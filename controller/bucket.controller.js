@@ -91,7 +91,7 @@ const findOne = async (req,res,next) => {
 const create = (req,res,next) => {
   const {name, type} = req.body;
   if(!name || !type) {
-    data= ['name', 'type'].filter(key => !req.body.hasOwnProperty(key))
+    const data= ['name', 'type'].filter(key => !req.body.hasOwnProperty(key))
     return res.send(422, {
       res: false,
       error: {
