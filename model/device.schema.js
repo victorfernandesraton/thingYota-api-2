@@ -12,10 +12,10 @@ const deviceSchemme = new mongoose.Schema({
     type: Date,
     required: true
   },
-  sensors: {
+  Sensors: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Sensor"
-  },
+  }],
   last_change: {
     type: Date,
     default: Date.now

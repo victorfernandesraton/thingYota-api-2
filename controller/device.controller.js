@@ -108,7 +108,7 @@ const create = (req,res,next) => {
     }))
     .catch(error => res.send(500, {
       res: false,
-      error: error
+
     }))
 }
 
