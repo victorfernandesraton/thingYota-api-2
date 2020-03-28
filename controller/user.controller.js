@@ -88,7 +88,7 @@ const findOne = async (req,res,next) => {
         error: {message: "User not found"}
       })
     }
-    res.send(200, {
+    return res.send(200, {
       res: true,
       data: data,
     })
@@ -98,20 +98,49 @@ const findOne = async (req,res,next) => {
 }
 
 const put = async (req,res,send) => {
-  if (!req.params.id) {
+  const {id} = req.params
+  const {
+    type,
+    status,
+    username,
+    first_name,
+    last_name,
+    email
+  } = req.body
+
+  if (!id) {
     return res.send(422, {
       res: false,
       error: "id is required"
     })
   }
+
   try {
-    const data = await User.updateOne({_id: req.params.id},{...req.body})
-    res.send(204, {
+    const data = await User.findById(id)
+
+    if (!data) {
+      return res.send(404, {
+        res: false,
+        message: `User._id ${id} not found`
+      })
+    }
+
+    await data.update({
+      type,
+      status,
+      username,
+      first_name,
+      last_name,
+      email
+    })
+
+    return res.send(204, {
       res: true,
       data: data
     })
+
   } catch(error) {
-    res.send(500, {res: false, error: {error}})
+    return res.send(500, {res: false, error: {error}})
   }
 }
 

@@ -51,8 +51,8 @@ const find = async (req,res,next) => {
  * @param {*} next
  */
 const findOne = async (req,res,next) => {
-  const {limit , offset} = req.query || 0;
-  if (!req.params.id) {
+  const {id} = req.params;
+  if (!id) {
     return res.send(404, {
       res: false,
       error: {
@@ -61,14 +61,14 @@ const findOne = async (req,res,next) => {
     })
   }
   try{
-    const data = await Device.findById(req.params.id);
+    const data = await Device.findById(id);
     if (!data || data.length == 0) {
       return res.send(404, {
         res: false,
-        error: {message: "empty list"}
+        message: `Device._id ${id} not found`
       })
     }
-    res.send(200, {
+    return res.send(200, {
       res: true,
       data: data,
     })
@@ -119,14 +119,30 @@ const create = (req,res,next) => {
  * @param {*} send
  */
 const put = async (req,res,send) => {
-  if (!req.params.id) {
+  const {id} = req.params
+  const {name, type, mac_addres, status} = req.body
+  if (!id) {
     return res.send(422, {
       res: false,
       error: "id is required"
     })
   }
   try {
-    const data = await Device.update({_id: req.params.id}, {...req.body}, {upsert:true})
+    const device = await Device.findById(id)
+
+    if (!device) {
+      return res.send(404, {
+        res: true,
+        message: `Device._id ${id} not found`
+      })
+    }
+
+    const data = await device.update({
+      name,
+      type,
+      mac_addres,
+      status
+    })
     return res.send(204, {
       res: true,
       data: data
