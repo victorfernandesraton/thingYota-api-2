@@ -1,23 +1,19 @@
 const mongoose= require('mongoose');
 
 const registerSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  device: {
+  Fk_device: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Device",
     required: true
   },
-  // Relação belongsto
-  bucket: {
+  // // Relação belongsto
+  Fk_bucket: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Bucket',
-      required: true,
+      // required: true,
   },
 
-  sensor: {
+  Fk_sensor: {
     origin: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Sensor',
