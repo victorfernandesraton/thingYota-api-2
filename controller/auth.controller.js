@@ -27,7 +27,6 @@ const auth = async (req, res, send) => {
   } else if (username) {
     delete query['email']
   }
-  console.log(query)
 
   const user = await User.find(query);
   if (!user  || user.length == 0) {
@@ -50,8 +49,14 @@ const auth = async (req, res, send) => {
   })
 }
 
+/**
+ * @description Função que valida o token de um usuário
+ * @param {Rwquest} req
+ * @param {Response} res
+ * @param {Send'} send
+ */
 const authToken = (req,res,send) => {
-  const authHeader = req.headers('authorization')
+  const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
   if (!token || token == null) return res.send(403, {
     res: false,

@@ -19,6 +19,7 @@ require('./routes/user.route').applyRoutes(server, '/user')
 require('./routes/sensor.route').applyRoutes(server, '/sensor')
 require('./routes/device.route').applyRoutes(server, '/device')
 require('./routes/auth.route').applyRoutes(server, '/auth')
+require('./routes/register.route').applyRoutes(server, '/register')
 
 // socket
 let connectedUsers = {};
@@ -39,7 +40,7 @@ server.use((req, res, next) => {
 })
 
 server.get("/", (req,res, next) => {
-  return res.send(200, {data: server})
+  return res.send(200, {data: server.toString()})
 })
 
 server.listen(process.env.PORT || 8000 , () => {
