@@ -51,7 +51,8 @@ const find = async (req,res,next) => {
  * @param {*} next
  */
 const findOne = async (req,res,next) => {
-  if (!req.params.id) {
+  const {id} = req.params;
+  if (!id) {
     return res.send(404, {
       res: false,
       error: {
@@ -64,7 +65,7 @@ const findOne = async (req,res,next) => {
     if (!data || data.length == 0) {
       return res.send(404, {
         res: false,
-        error: {message: "empty list"}
+        message: `Bucket._id ${id} not found`
       })
     }
     res.send(200, {
@@ -118,14 +119,27 @@ const create = (req,res,next) => {
  * @param {*} send
  */
 const put = (req,res,send) => {
-  if (!req.params.id) {
+  const {id} = req.params
+  const {name, type, status} = req.body
+  if (!id) {
     return res.send(422, {
       res: false,
-      error: "id is required"
+      error: {message: "id is required"}
+    })
+  }
+  const bucket = Bucket.findById(id)
+  if (!bucket) {
+    return res.send( 404, {
+      res: false,
+      error: {message: `Bucket._id ${id} not found`}
     })
   }
 
-  Bucket.update({_id: req.params.id}, {...req.body}, { new:true}).exec()
+  bucket.update({
+    name,
+    type,
+    status
+  })
     .then(data => {
       return res.send(204, {
         res: true,
@@ -135,7 +149,7 @@ const put = (req,res,send) => {
     .catch(error => {
       return res.send(500, {
         res: false,
-
+        error: {message: ""}
       })
     })
 }

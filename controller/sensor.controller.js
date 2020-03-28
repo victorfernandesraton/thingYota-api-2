@@ -107,7 +107,7 @@ const create = async (req,res,next) => {
   if (!device) {
     return res.send(404, {
       res: false,
-      message: `device ${device_parent} not found`
+      error :{message: `device ${device_parent} not found`}
     })
   }
   const sensor = new Sensor({
@@ -130,12 +130,12 @@ const create = async (req,res,next) => {
         }))
         .catch(error => res.send(500, {
           res: false,
-          message: `Don't save Sensor ${sensor}`
+          error: {message: `Don't save Sensor ${sensor}`}
         }))
       })
       .catch(error => res.send(500, {
         res: false,
-        message: `Don't update Device ${device}`
+        error: {message: `Don't update Device ${device}`}
       }))
 }
 
@@ -151,7 +151,7 @@ const put = async (req,res,send) => {
   if (!id) {
     return res.send(422, {
       res: false,
-      error: "id is required"
+      error: {message: `Sensor._id ${id} is required`}
     })
   }
   try {
@@ -160,7 +160,7 @@ const put = async (req,res,send) => {
     if (!sensor) {
       return res.send(404, {
         res: false,
-        message: `Sensor._id ${id} not found`
+        error: {message: `Sensor._id ${id} not found`}
       })
     }
 
@@ -170,7 +170,7 @@ const put = async (req,res,send) => {
       if (!device) {
         return res.send(404, {
           res: false,
-          message: `Device._id ${device_parent} not found`
+          error: {message: `Device._id ${device_parent} not found`}
         })
       }
 

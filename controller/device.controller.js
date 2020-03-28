@@ -108,7 +108,7 @@ const create = (req,res,next) => {
     }))
     .catch(error => res.send(500, {
       res: false,
-
+      error: error
     }))
 }
 
@@ -133,7 +133,7 @@ const put = async (req,res,send) => {
     if (!device) {
       return res.send(404, {
         res: true,
-        message: `Device._id ${id} not found`
+        error :{message: `Device._id ${id} not found`}
       })
     }
 
