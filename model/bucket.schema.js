@@ -5,7 +5,7 @@ const bucketSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  sensors: [
+  Sensors: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Sensor'
