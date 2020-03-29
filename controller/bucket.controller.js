@@ -104,7 +104,7 @@ const create = (req,res,next) => {
     .then(data => res.send(201, {
         res: true,
         data: data,
-        metadata: "teste"
+
     }))
     .catch(error => res.send(500, {
       res: false,

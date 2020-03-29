@@ -4,10 +4,10 @@ const
 
 // controllers
 const {
-  auth
+  authUser
 } = require('../controller/auth.controller');
 
 // endpoints
-router.post('/auth',auth);
+router.post('/auth',authUser);
 
 module.exports = router;

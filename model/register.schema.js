@@ -14,14 +14,14 @@ const registerSchema = new mongoose.Schema({
   },
 
   Fk_sensor: {
-    origin: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Sensor',
       required: true,
-    },
-    value: {
-      type: {}
-    }
+  },
+  value: {
+    type: String,
+    default: "0",
+    required: true
   },
   // registers: [],
   type: {

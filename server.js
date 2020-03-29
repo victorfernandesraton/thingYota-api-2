@@ -7,7 +7,10 @@ require('dotenv').config({
 const
   server = require('./config/server'),
   mongodb = require('./database/mongodb'),
-  io = require('socket.io')(server)
+  socketIo = require('socket.io')
+
+const
+  {onConnectArduino} = require('./socket/handlers.socket')
 
 mongodb
   .then(data => console.log('momgobd has coonected'))
@@ -21,16 +24,15 @@ require('./routes/device.route').applyRoutes(server, '/device')
 require('./routes/auth.route').applyRoutes(server, '/auth')
 require('./routes/register.route').applyRoutes(server, '/register')
 
+const io = socketIo.listen(server.server)
+
+const arduinoSocket = io.of('/arduino');
+
+// setando handler para socket
+arduinoSocket.on('connection', onConnectArduino)
+
 // socket
 let connectedUsers = {};
-
-io.on('connection', socket => {
-  // implementação de coneão genérica
-  const {user_id} =socket.handshake.query;
-  connectedUsers[user_id] =socket.id
-})
-
-// // setando handler para socket
 server.use((req, res, next) => {
   // socket
   req.io= io;

@@ -81,12 +81,13 @@ const findOne = async (req,res,next) => {
 }
 
 /**
- * @description Create user
- * @param {{body: {name: String, type: String}}} req
+ * @description Create device
+ * @param {{body: {name: String, type: String, mac_addres}}} req
  * @param {Response} res
  * @param {next} next
  * @requires body.name
  * @requires body.type
+ * @requires body.mac_addres
  */
 const create = (req,res,next) => {
   const {name, type, mac_addres} = req.body;
@@ -104,12 +105,21 @@ const create = (req,res,next) => {
     .then(data => res.send(201, {
         res: true,
         data: data,
-        metadata: "teste"
+
     }))
     .catch(error => res.send(500, {
       res: false,
       error: error
     }))
+}
+
+/**
+ *
+ * @param {{ma}} data
+ * @param {*} socket
+ */
+const createSocket = (data, socket) => {
+
 }
 
 /**

@@ -1,7 +1,10 @@
 const
     Router = require('restify-router').Router,
     router = new Router()
-    authToken = require('../controller/auth.controller').authToken
+
+const {
+  authUserToken
+} = require('../controller/auth.controller')
 
 // controllers
 const {
@@ -9,6 +12,6 @@ const {
 } = require('../controller/register.controller');
 
 // endpoints
-router.get('',authToken,find);
+router.get('',authUserToken,find);
 
 module.exports = router;

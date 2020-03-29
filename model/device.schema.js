@@ -6,7 +6,8 @@ const deviceSchemme = new mongoose.Schema({
   },
   mac_addres: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   create_at: {
     type: Date,
