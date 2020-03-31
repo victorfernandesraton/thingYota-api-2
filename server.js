@@ -27,17 +27,18 @@ require('./routes/register.route').applyRoutes(server, '/register')
 const io = socketIo.listen(server.server)
 
 const arduinoSocket = io.of('/arduino');
+const notificaationSocket = io.of('/notification');
 
 // setando handler para socket
 arduinoSocket.on('connection', onConnectArduino)
 
 // socket
-let connectedUsers = {};
 server.use((req, res, next) => {
   // socket
-  req.io= io;
-  // usuários conectados
-  req.connectedUsers = connectedUsers;
+  req.io= {
+    arduinoSocket,
+    notificaationSocket
+  }
   return next();
 })
 

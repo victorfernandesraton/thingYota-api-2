@@ -3,7 +3,7 @@ const
     router = new Router()
 
 const {
-  authUserToken
+  authArduinoToken
 } = require('../controller/auth.controller')
 
 // controllers
@@ -12,6 +12,6 @@ const {
 } = require('../controller/register.controller');
 
 // endpoints
-router.get('',authUserToken,find);
+router.get('',authArduinoToken,find);
 
 module.exports = router;

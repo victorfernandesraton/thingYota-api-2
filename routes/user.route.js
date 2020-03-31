@@ -10,10 +10,14 @@ const {
   put
 } = require('../controller/user.controller');
 
+const {
+  authUserToken
+} = require('../controller/auth.controller')
+
 // endpoints
-router.get('',find);
-router.get('/:id', findOne);
-router.post('', create);
-router.put('/:id', put)
+router.get('', authUserToken, find);
+router.get('/:id', authUserToken, findOne);
+router.post('', authUserToken, create);
+router.put('/:id', authUserToken, put)
 
 module.exports = router;

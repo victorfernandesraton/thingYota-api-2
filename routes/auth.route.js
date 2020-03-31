@@ -4,10 +4,13 @@ const
 
 // controllers
 const {
-  authUser
+  authUser,
+  authArduino,
+  authGuest
 } = require('../controller/auth.controller');
 
 // endpoints
-router.post('/auth',authUser);
-
+router.post('/login',authUser);
+router.post('/arduino', authArduino);
+router.post('/guest', authGuest);
 module.exports = router;
