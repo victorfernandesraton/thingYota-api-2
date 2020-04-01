@@ -90,6 +90,14 @@ const findOne = async (req,res,next) => {
  * @requires body.mac_addres
  */
 const create = (req,res,next) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   const {name, type, mac_addres} = req.body;
   if(!name || !type || !mac_addres) {
     data= ['name', 'type','mac_addres'].filter(key => !req.body.hasOwnProperty(key))
@@ -129,6 +137,14 @@ const createSocket = (data, socket) => {
  * @param {*} send
  */
 const put = async (req,res,send) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   const {id} = req.params
   const {name, type, mac_addres, status} = req.body
   if (!id) {

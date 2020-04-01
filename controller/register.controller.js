@@ -93,6 +93,14 @@ const findOne = async (req,res,next) => {
  * @requires body.type
  */
 const create = (req,res,next) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   const {
     Fk_sensor,
     Fk_device,
@@ -101,6 +109,7 @@ const create = (req,res,next) => {
     status,
     Fk_bucket
   } = req.body;
+
   if(!Fk_sensor || !Fk_device || !value || !type) {
     const data= ['Fk_sensor', 'Fk_device', 'value', 'type'].filter(key => !req.body.hasOwnProperty(key))
     return res.send(422, {

@@ -115,6 +115,14 @@ const findOne = async (req,res,next) => {
 }
 
 const put = async (req,res,send) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   const {id} = req.params
   const {
     type,

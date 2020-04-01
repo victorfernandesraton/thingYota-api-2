@@ -5,6 +5,14 @@ const
   jwt = require('jsonwebtoken')
 
 const authUser = async (req, res, send) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   let {username, email, password} = req.body
   if ((!username && !email) || !password) {
     const data= ['username', 'password', 'email'].filter(key => !req.body.hasOwnProperty(key))
@@ -58,6 +66,14 @@ const authUser = async (req, res, send) => {
  * @requires req.body.mac_addres
  */
 const authDevice = async (req, res, send) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   let {mac_addres} = req.body
   if (!mac_addres) {
     const data= ['mac_addres'].filter(key => !req.body.hasOwnProperty(key))

@@ -89,6 +89,14 @@ const findOne = async (req,res,next) => {
  * @requires body.type
  */
 const create = (req,res,next) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   const {name, type} = req.body;
   if(!name || !type) {
     const data= ['name', 'type'].filter(key => !req.body.hasOwnProperty(key))
@@ -119,6 +127,14 @@ const create = (req,res,next) => {
  * @param {*} send
  */
 const put = (req,res,send) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   const {id} = req.params
   const {name, type, status} = req.body
   if (!id) {
