@@ -44,7 +44,7 @@ server.use((req, res, next) => {
 })
 
 server.get("/", (req,res, next) => {
-  return res.send(200, {data: server.toString()})
+  return res.send(200, {data: {server}})
 })
 
 server.listen(process.env.PORT || 8000 , () => {
