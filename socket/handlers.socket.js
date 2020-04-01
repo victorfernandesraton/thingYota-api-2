@@ -1,6 +1,5 @@
 const {
-  authDevice,
-  authUserToken
+  authUser
 } = require('./auth.socket')
 
 /**
@@ -13,7 +12,7 @@ const onConnectArduino = socket => {
 
   // calback intened
   socket.on('arduinoAuth', (data) => {
-    authDevice(data, socket)
+    authUser(data, socket)
   })
 }
 
