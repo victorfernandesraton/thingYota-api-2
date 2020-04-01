@@ -11,12 +11,12 @@ const {
 } = require('../controller/device.controller');
 
 const {
-  authArduinoToken
+  authDeviceToken
 } = require('../controller/auth.controller')
 // endpoints
-router.get('', authArduinoToken, find);
-router.get('/:id', authArduinoToken, findOne);
-router.post('', authArduinoToken, create);
-router.put('/:id', authArduinoToken, put)
+router.get('', authDeviceToken, find);
+router.get('/:id', authDeviceToken, findOne);
+router.post('', authDeviceToken, create);
+router.put('/:id', authDeviceToken, put)
 
 module.exports = router;

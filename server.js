@@ -1,7 +1,7 @@
 const path = require('path');
 
 require('dotenv').config({
-  path: process.env.NODE_ENV == "development" ? path.resolve('.env.development'): path.resolve('.env')
+  path: process.env.NODE_ENV == "production" ? path.resolve('.env'): path.resolve('.env.development')
 });
 
 const
@@ -23,6 +23,7 @@ require('./routes/sensor.route').applyRoutes(server, '/sensor')
 require('./routes/device.route').applyRoutes(server, '/device')
 require('./routes/auth.route').applyRoutes(server, '/auth')
 require('./routes/register.route').applyRoutes(server, '/register')
+require('./routes/singup.route').applyRoutes(server,'/singup')
 
 const io = socketIo.listen(server.server)
 

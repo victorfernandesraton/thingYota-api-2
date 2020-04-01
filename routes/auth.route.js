@@ -5,12 +5,13 @@ const
 // controllers
 const {
   authUser,
-  authArduino,
+  authDevice,
   authGuest
 } = require('../controller/auth.controller');
 
 // endpoints
 router.post('/login',authUser);
-router.post('/arduino', authArduino);
+router.post('/device', authDevice);
 router.post('/guest', authGuest);
+
 module.exports = router;

@@ -52,6 +52,14 @@ const find = async (req,res,next) => {
  * @requires req
  */
 const create = (req,res,next) => {
+  if (req.body == null || req.body == undefined) {
+    return res.send(409, {
+      res: false,
+      error: {
+        message: "body is required"
+      }
+    })
+  }
   const {username, first_name, last_name, password, email} = req.body;
   if(!username, !first_name, !password, !email) {
     data= ['username', 'email', 'first_name'].filter(key => !req.body.hasOwnProperty(key))
@@ -63,7 +71,6 @@ const create = (req,res,next) => {
       }
     })
   }
-  console.log(password)
   const user = new User({
     username,
     first_name,

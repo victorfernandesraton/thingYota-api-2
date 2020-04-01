@@ -8,7 +8,7 @@ const
  * @param {Response} res
  * @param {Send'} send
  */
-const authArduinoToken = (data , socket) => {
+const authDeviceToken = (data , socket) => {
   const authHeader = data.authorization
   const token = authHeader && authHeader.split(' ')[1]
   if (!token || token == null) socket.emit("responseError", {
@@ -35,7 +35,7 @@ const authArduinoToken = (data , socket) => {
  * @requires payload.mac_addres
  * @requires socket
  */
-const authArduino = async (payload, socket) => {
+const authDevice = async (payload, socket) => {
   console.log(payload)
   let {mac_addres} = payload
   if (!mac_addres) {
@@ -73,6 +73,6 @@ const authArduino = async (payload, socket) => {
 }
 
 module.exports = {
-  authArduino,
-  authArduinoToken
+  authDevice,
+  authDeviceToken
 }

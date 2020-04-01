@@ -51,13 +51,13 @@ const authUser = async (req, res, send) => {
 }
 
 /**
- * @description Auth arduino in system
+ * @description Auth Device in system
  * @param {Request} req
  * @param {Response} res
  * @param {Send} send
  * @requires req.body.mac_addres
  */
-const authArduino = async (req, res, send) => {
+const authDevice = async (req, res, send) => {
   let {mac_addres} = req.body
   if (!mac_addres) {
     const data= ['mac_addres'].filter(key => !req.body.hasOwnProperty(key))
@@ -85,7 +85,7 @@ const authArduino = async (req, res, send) => {
     name: device.name,
     mac_addres: device.mac_addres,
     id: device._id
-  }, process.env.ACESS_TOKEN_SECRET_ARDUINO);
+  }, process.env.ACESS_TOKEN_SECRET_DEVICE);
   return res.send(200, {
     res: true,
     data: {
@@ -114,6 +114,29 @@ const authGuest = async (req, res, send) => {
 }
 
 /**
+ * @description Função que valida o token de huest
+ * @param {Rwquest} req
+ * @param {Response} res
+ * @param {Send'} send
+ */
+const authGuestToken = async (req,res,send) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader && authHeader.split(' ')[1]
+  if (!token || token == null) return res.send(403, {
+    res: false,
+    error: {message: "token not found"}
+  })
+  jwt.verify(token, process.env.ACESS_TOKEN_SECRET_GUEST, (err, decoded) => {
+    if(err) return res.send(403, {
+      res: false,
+      error: {message: "token is not valid"}
+    })
+    req.token = token
+    send()
+  })
+}
+
+/**
  * @description Função que valida o token de um usuário
  * @param {Rwquest} req
  * @param {Response} res
@@ -137,19 +160,19 @@ const authUserToken = (req,res,send) => {
 }
 
 /**
- * @description Função que valida o token de um arduino
+ * @description Função que valida o token de um Device
  * @param {Rwquest} req
  * @param {Response} res
  * @param {Send'} send
  */
-const authArduinoToken = (req,res,send) => {
+const authDeviceToken = (req,res,send) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
   if (!token || token == null) return res.send(403, {
     res: false,
     error: {message: "token not found"}
   })
-  jwt.verify(token, process.env.ACESS_TOKEN_SECRET_ARDUINO, (err, user) => {
+  jwt.verify(token, process.env.ACESS_TOKEN_SECRET_DEVICE, (err, user) => {
     if(err) return res.send(403, {
       res: false,
       error: {message: "token is not valid"}
@@ -162,7 +185,8 @@ const authArduinoToken = (req,res,send) => {
 module.exports = {
   authUser,
   authUserToken,
-  authArduino,
-  authArduinoToken,
-  authGuest
+  authDevice,
+  authDeviceToken,
+  authGuest,
+  authGuestToken
 }

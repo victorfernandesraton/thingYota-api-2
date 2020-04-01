@@ -1,10 +1,10 @@
 const {
-  authArduino,
-  authArduinoToken
+  authDevice,
+  authDeviceToken
 } = require('./auth.socket')
 
 /**
- * @description Handler for socket on connected
+ * @description Handler for socket 'on connected
  * @param {function} socket
  */
 const onConnectArduino = socket => {
@@ -13,7 +13,7 @@ const onConnectArduino = socket => {
 
   // calback intened
   socket.on('arduinoAuth', (data) => {
-    authArduino(data, socket)
+    authDevice(data, socket)
   })
 }
 
