@@ -1,6 +1,6 @@
 const {
   authDevice,
-  authDeviceToken
+  authUserToken
 } = require('./auth.socket')
 
 /**

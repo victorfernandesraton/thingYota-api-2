@@ -8,7 +8,7 @@ const
  * @param {Response} res
  * @param {Send'} send
  */
-const authDeviceToken = (data , socket) => {
+const authUserToken = (data , socket) => {
   const authHeader = data.authorization
   const token = authHeader && authHeader.split(' ')[1]
   if (!token || token == null) socket.emit("responseError", {
@@ -74,5 +74,5 @@ const authDevice = async (payload, socket) => {
 
 module.exports = {
   authDevice,
-  authDeviceToken
+  authUserToken
 }

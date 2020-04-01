@@ -47,8 +47,9 @@ const authUser = async (req, res, send) => {
   const token = await jwt.sign({
     username: user.username,
     password: user.password,
-    id: user._id
-  }, process.env.ACESS_TOKEN_SECRET_USER);
+    id: user._id,
+    entity: "User"
+  }, process.env.ACESS_TOKEN_SECRET);
   return res.send(200, {
     res: true,
     data: {
@@ -100,8 +101,9 @@ const authDevice = async (req, res, send) => {
   const token = await jwt.sign({
     name: device.name,
     mac_addres: device.mac_addres,
-    id: device._id
-  }, process.env.ACESS_TOKEN_SECRET_DEVICE);
+    id: device._id,
+    entity: "Device"
+  }, process.env.ACESS_TOKEN_SECRET);
   return res.send(200, {
     res: true,
     data: {
@@ -165,7 +167,7 @@ const authUserToken = (req,res,send) => {
     res: false,
     error: {message: "token not found"}
   })
-  jwt.verify(token, process.env.ACESS_TOKEN_SECRET_USER, (err, decoded) => {
+  jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, decoded) => {
     if(err) return res.send(403, {
       res: false,
       error: {message: "token is not valid"}
@@ -175,34 +177,11 @@ const authUserToken = (req,res,send) => {
   })
 }
 
-/**
- * @description Função que valida o token de um Device
- * @param {Rwquest} req
- * @param {Response} res
- * @param {Send'} send
- */
-const authDeviceToken = (req,res,send) => {
-  const authHeader = req.headers.authorization
-  const token = authHeader && authHeader.split(' ')[1]
-  if (!token || token == null) return res.send(403, {
-    res: false,
-    error: {message: "token not found"}
-  })
-  jwt.verify(token, process.env.ACESS_TOKEN_SECRET_DEVICE, (err, user) => {
-    if(err) return res.send(403, {
-      res: false,
-      error: {message: "token is not valid"}
-    })
-    req.token = token
-    send()
-  })
-}
 
 module.exports = {
   authUser,
-  authUserToken,
   authDevice,
-  authDeviceToken,
+  authUserToken,
   authGuest,
   authGuestToken
 }

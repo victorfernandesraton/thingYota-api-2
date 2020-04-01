@@ -3,15 +3,19 @@ const
     router = new Router()
 
 const {
-  authDeviceToken
+  authUserToken,
 } = require('../controller/auth.controller')
 
 // controllers
 const {
   find,
+  findOne,
+  create
 } = require('../controller/register.controller');
 
 // endpoints
-router.get('',authDeviceToken,find);
+router.get('',authUserToken,find);
+router.get('/:id',authUserToken,findOne);
+router.post('',authUserToken,create);
 
 module.exports = router;
