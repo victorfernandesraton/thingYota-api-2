@@ -160,21 +160,47 @@ const authGuestToken = async (req,res,send) => {
  * @param {Response} res
  * @param {Send'} send
  */
-const authUserToken = (req,res,send) => {
+const authUserToken = async (req,res,send) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
+
   if (!token || token == null) return res.send(403, {
     res: false,
     error: {message: "token not found"}
   })
+
   jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, decoded) => {
     if(err) return res.send(403, {
       res: false,
       error: {message: "token is not valid"}
     })
+  })
+
+  const {entity, id} = jwt.decode(token)
+    if (!entity) return res.send(404, {
+      res: false,
+      error:{message: "Entity not found"}
+    })
+    let data = {};
+
+    switch(entity) {
+      case "User":
+        data = await User.findById(id)
+      case "Device":
+        data = await Device.findById(id)
+      case "Guest":
+        data = {entity}
+      default:
+        data = {}
+    }
+
+    if (!data) return res.send(404, {
+      res: false,
+      error: {message:`Entity ${entity} id (${id}) not found`}
+    })
     req.token = token
     send()
-  })
+
 }
 
 

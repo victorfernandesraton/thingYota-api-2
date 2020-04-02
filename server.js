@@ -14,7 +14,7 @@ const
 
 mongodb
   .then(data => console.log('momgobd has coonected'))
-  .catch(error => console.log("eeror on first connection"))
+  .catch(error => console.log("eeror on first connection", error))
 
 // Rotas
 require('./routes/bucket.route').applyRoutes(server, '/bucket')

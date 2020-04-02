@@ -14,9 +14,9 @@ const {
   authUserToken
 } = require('../controller/auth.controller')
 // endpoints
-router.get('', authUserToken, find);
-router.get('/:id', authUserToken, findOne);
-router.post('', authUserToken, create);
-router.put('/:id', authUserToken, put)
-
+router.get('',  find);
+router.get('/:id',  findOne);
+router.post('',  create);
+router.put('/:id',  put)
+router.use(authUserToken)
 module.exports = router;

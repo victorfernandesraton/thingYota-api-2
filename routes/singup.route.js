@@ -10,8 +10,10 @@ const {
   authGuestToken
 } = require('../controller/auth.controller')
 
-router.post('/user', authGuestToken, createUser)
-router.post('/device', authGuestToken, createDevice)
+router.post('/user',  createUser)
+router.post('/device',  createDevice)
+
+router.use(authGuestToken)
 
 
 module.exports = router;
