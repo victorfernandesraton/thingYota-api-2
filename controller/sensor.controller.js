@@ -99,10 +99,10 @@ const create = async (req,res,next) => {
     })
   }
 
-  const {name, type, device_parent} = req.body;
+  const {name, type, device_parent, GPIO} = req.body;
 
-  if(!name || !type || !device_parent) {
-    let data= ['name', 'type', 'device_parent'].filter(key => !req.body.hasOwnProperty(key))
+  if(!name || !type || !device_parent || !GPIO) {
+    let data= ['name', 'type', 'device_parent', 'GPIO'].filter(key => !req.body.hasOwnProperty(key))
     return res.send(422, {
       res: false,
       error: {
@@ -123,7 +123,8 @@ const create = async (req,res,next) => {
     create_at: Date(),
     name,
     type,
-    device_parent
+    device_parent,
+    GPIO
   })
 
   device.update({

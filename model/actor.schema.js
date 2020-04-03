@@ -1,7 +1,6 @@
 const mongoose= require('mongoose');
 
-
-const sensorSchema = new mongoose.Schema({
+const actorSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -10,11 +9,6 @@ const sensorSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  // Relação belongsto
-  bucket_parent: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Bucket',
-  },
   device_parent: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Device",
@@ -22,7 +16,7 @@ const sensorSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    default: 'wather-sensor'
+    default: 'motor'
   },
   status: {
     type: Boolean,
@@ -38,4 +32,4 @@ const sensorSchema = new mongoose.Schema({
   }
 })
 
-module.exports = mongoose.model("Sensor", sensorSchema);
+module.exports = mongoose.model("Actor", actorSchema);
