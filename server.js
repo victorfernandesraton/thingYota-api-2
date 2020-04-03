@@ -32,19 +32,21 @@ const
   io = socketIo.listen(server.server);
 
 const
+  notification = io.of('/notification')
   arduinoSocket = io.of('/arduino'),
-  notificaationSocket = io.of('/notification');
+  userSocket = io.of('/user');
 
 // setando handler para socket
-arduinoSocket.on('connect', socket => onConnectArduino(socket, io))
-notificaationSocket.on('connection', socket => onConnectUser(socket, io))
+arduinoSocket.on('connection', socket => onConnectArduino(socket, io))
+userSocket.on('connection', socket => onConnectUser(socket, io))
 
 // socket
 server.use((req, res, next) => {
   // socket
   req.io= {
     arduinoSocket,
-    notificaationSocket
+    userSocket,
+    notification
   }
   return next();
 });

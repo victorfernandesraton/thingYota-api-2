@@ -7,7 +7,7 @@ const sensorSchema = new mongoose.Schema({
     required: true
   },
   GPIO: {
-    type: String,
+    type: Number,
     required: true
   },
   // Relação belongsto

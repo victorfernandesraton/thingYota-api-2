@@ -132,10 +132,14 @@ const create = (req,res,next) => {
   })
 
   resgister.save()
-    .then(data => res.send(201, {
+    .then(data => {
+      res.send(201, {
         res: true,
         data: data,
-    }))
+      })
+      // envio de dados para cliente do socket
+      req.io.notification.emit("responseRegister", data)
+    })
     .catch(error => res.send(500, {
       res: false,
       error: {message: "Error in store "}
