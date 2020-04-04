@@ -8,7 +8,8 @@ const registerSchema = new mongoose.Schema({
   },
   // No use refer because is have varios types
   Fk_iten: {
-    type: mongoose.Schema.Types.ObjectId
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   },
   value: {
     type: String,

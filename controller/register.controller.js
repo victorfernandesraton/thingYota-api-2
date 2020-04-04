@@ -84,10 +84,10 @@ const findOne = async (req,res,next) => {
 
 /**
  * @description Create Register
- * @param {{body: {Fk_sensor: String, Fk_device: String, value: String, type: String}}} req
+ * @param {{body: {Item: String, Fk_device: String, value: String, type: String}}} req
  * @param {Response} res
  * @param {next} next
- * @requires body.Fk_sensor
+ * @requires body.Item
  * @requires body.Fk_device
  * @requires body.value
  * @requires body.type
@@ -102,7 +102,7 @@ const create = (req,res,next) => {
     })
   }
   const {
-    Fk_sensor,
+    Fk_iten,
     Fk_device,
     value,
     type,
@@ -110,8 +110,8 @@ const create = (req,res,next) => {
     Fk_bucket
   } = req.body;
 
-  if(!Fk_sensor || !Fk_device || !value || !type) {
-    const data= ['Fk_sensor', 'Fk_device', 'value', 'type'].filter(key => !req.body.hasOwnProperty(key))
+  if(!Fk_iten || !Fk_device || !value || !type) {
+    const data= ['Fk_iten', 'Fk_device', 'value', 'type'].filter(key => !req.body.hasOwnProperty(key))
     return res.send(422, {
       res: false,
       error: {
@@ -122,7 +122,7 @@ const create = (req,res,next) => {
   }
 
   const resgister = new Register({
-    Fk_sensor,
+    Fk_iten,
     Fk_device,
     value,
     type,
@@ -142,7 +142,7 @@ const create = (req,res,next) => {
     })
     .catch(error => res.send(500, {
       res: false,
-      error: {message: "Error in store "}
+      error: {message: "Error in store ", error}
     }))
 }
 
