@@ -30,6 +30,7 @@ require('./routes/device.route').applyRoutes(server, '/device');
 require('./routes/auth.route').applyRoutes(server, '/auth');
 require('./routes/register.route').applyRoutes(server, '/register');
 require('./routes/singup.route').applyRoutes(server,'/singup');
+require('./routes/actor.route').applyRoutes(server,'/actor');
 
 const
   io = socketIo.listen(server.server);

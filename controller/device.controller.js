@@ -169,7 +169,7 @@ const put = async (req,res,send) => {
       mac_addres,
       status
     })
-    return res.send(204, {
+    return res.send(200, {
       res: true,
       data: data
     })

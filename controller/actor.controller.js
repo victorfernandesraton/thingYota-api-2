@@ -51,9 +51,8 @@ const find = async (req,res,next) => {
  * @param {*} next
  */
 const findOne = async (req,res,next) => {
-  const limit = req.query.limit;
-  const offset = req.query.page * limit;
-  if (!req.params.id) {
+  const {id} = req.params;
+  if (!id) {
     return res.send(404, {
       res: false,
       error: {
@@ -62,8 +61,8 @@ const findOne = async (req,res,next) => {
     })
   }
   try{
-    const data = await Actor.findById(req.params.id);
-    if (!data || data.length == 0) {
+    const data = await Actor.findById(id);
+    if (!data) {
       return res.send(404, {
         res: false,
         error: {message: "empty list"}
@@ -112,41 +111,46 @@ const create = async (req,res,next) => {
     })
   }
 
-  const device = await Device.findById(device_parent)
-  if (!device) {
-    return res.send(404, {
-      res: false,
-      error :{message: `device ${device_parent} not found`}
-    })
-  }
-  const actor = new Actor({
-    create_at: Date(),
-    name,
-    type,
-    device_parent,
-    GPIO
-  })
-
-  device.update({
-    $push: {
-      Actors: actor._id
+  try {
+    const device = await Device.findById(device_parent)
+    if (!device) {
+      return res.send(404, {
+        res: false,
+        error :{message: `device ${device_parent} not found`}
+      })
     }
-  })
-    .then(device => {
-      actor.save()
-        .then(data => res.send(201, {
-            res: true,
-            data: data,
-        }))
-        .catch(error => res.send(500, {
-          res: false,
-          error: {message: `Don't save Actor ${actor}`}
-        }))
+
+    const actor = new Actor({
+      create_at: Date(),
+      name,
+      type,
+      device_parent,
+      GPIO
+    })
+
+    actor.save()
+      .then(data => {
+        device.update({
+          $push: {
+            Actors: actor._id
+          }
+        })
+          .then(data => res.send(201, {
+              res: true,
+              data: actor,
+          }))
+          .catch(error => res.send(500, {
+            res: false,
+            error: {message: `Don't update Device ${device}`}
+          }))
       })
       .catch(error => res.send(500, {
         res: false,
-        error: {message: `Don't update Device ${device}`}
+        error: {message: `Don't save Actor ${actor}`}
       }))
+  } catch(error) {
+    return res.send(500, {res: false, error: {error}})
+  }
 }
 
 /**
@@ -205,10 +209,11 @@ const put = async (req,res,send) => {
       status
     })
 
-    return res.send(204, {
+    return res.send(200, {
       res: true,
       data: data
     })
+
   } catch(error) {
     return res.send(500, {res: false, error: {error}})
   }
