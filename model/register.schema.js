@@ -6,31 +6,18 @@ const registerSchema = new mongoose.Schema({
     ref: "Device",
     required: true
   },
-  // // Relação belongsto
-  Fk_bucket: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Bucket',
-      // required: true,
-  },
-
-  Fk_sensor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Sensor',
-      required: true,
+  // No use refer because is have varios types
+  Fk_iten: {
+    type: mongoose.Schema.Types.ObjectId
   },
   value: {
     type: String,
     default: "0",
     required: true
   },
-  // registers: [],
   type: {
     type: String,
-    default: 'wather-register'
-  },
-  status: {
-    type: Boolean,
-    default: true
+    default: 'Sensor'
   },
   create_at: {
     type: Date,

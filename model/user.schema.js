@@ -44,11 +44,11 @@ const userSchema = new mongoose.Schema({
 })
 
 // // Encriptador de senha
-// userSchema.pre('save', async function (next) {
-//   // alteração dos valores
-//   this.password = md5(password);
-//   next();
-// })
+userSchema.pre('save', async function (next) {
+  // alteração dos valores
+  this.password = md5(password.toString());
+  next();
+})
 
 
 module.exports = mongoose.model("User", userSchema);

@@ -17,6 +17,10 @@ const deviceSchemme = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Sensor"
   }],
+  Actors: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Actor"
+  }],
   last_change: {
     type: Date,
     default: Date.now

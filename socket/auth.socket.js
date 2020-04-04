@@ -1,5 +1,6 @@
 const
   jwt = require('jsonwebtoken'),
+  config = require('../config/env');
   Device = require('../model/device.schema')
 
 /**
@@ -10,7 +11,7 @@ const
  */
 const authUserToken = (data , socket, io) => {
   const {authorization} = data;
-  jwt.verify(authorization, process.env.ACESS_TOKEN_SECRET, (err, decoded) => {
+  jwt.verify(authorization, config.secret.user, (err, decoded) => {
     if(err)  {
       socket.emit("responseError", {
         res: false,
@@ -51,7 +52,7 @@ const authArduino = async (socket, data) => {
         mac_addres: device.mac_addres,
         id: device._id,
         entity: "Device"
-      }, process.env.ACESS_TOKEN_SECRET)
+      }, config.secret.user)
       const private = socket.join(token)
       private.emit("responseToken", {
         data :{

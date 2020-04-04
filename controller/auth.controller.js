@@ -2,6 +2,7 @@ const
   User = require('../model/user.schema'),
   Device = require('../model/device.schema'),
   md5 = require('md5'),
+  config = require('../config/env');
   jwt = require('jsonwebtoken')
 
 const authUser = async (req, res, send) => {
@@ -25,6 +26,7 @@ const authUser = async (req, res, send) => {
     })
   }
   password = await md5(password.toString())
+  console.log(password)
   let query = {
     username,
     password,
@@ -49,7 +51,7 @@ const authUser = async (req, res, send) => {
     password: user.password,
     id: user._id,
     entity: "User"
-  }, process.env.ACESS_TOKEN_SECRET);
+  }, config.secret.user);
   return res.send(200, {
     res: true,
     data: {
@@ -103,7 +105,7 @@ const authDevice = async (req, res, send) => {
     mac_addres: device.mac_addres,
     id: device._id,
     entity: "Device"
-  }, process.env.ACESS_TOKEN_SECRET);
+  }, config.secret.user);
   return res.send(200, {
     res: true,
     data: {
@@ -122,7 +124,7 @@ const authDevice = async (req, res, send) => {
 const authGuest = async (req, res, send) => {
   const token = await jwt.sign({
     entity: "Guest"
-  }, process.env.ACESS_TOKEN_SECRET_GUEST);
+  }, config.secret.guest);
   return res.send(200, {
     res: true,
     data: {
@@ -144,7 +146,7 @@ const authGuestToken = async (req,res,send) => {
     res: false,
     error: {message: "token not found"}
   })
-  jwt.verify(token, process.env.ACESS_TOKEN_SECRET_GUEST, (err, decoded) => {
+  jwt.verify(token, config.secret.guest, (err, decoded) => {
     if(err) return res.send(403, {
       res: false,
       error: {message: "token is not valid"}
@@ -169,7 +171,7 @@ const authUserToken = async (req,res,send) => {
     error: {message: "token not found"}
   })
 
-  jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, decoded) => {
+  jwt.verify(token, config.secret.user, (err, decoded) => {
     if(err) return res.send(403, {
       res: false,
       error: {message: "token is not valid"}

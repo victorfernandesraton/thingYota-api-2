@@ -1,4 +1,8 @@
 const mongoose = require('mongoose')
+const config = require('../config/env')
 
-const connect = process.env.MDB_USER ? `mongodb+srv://${process.env.MDB_USER}:${process.env.MDB_PASS}@${process.env.MDB_HOST}/${process.env.MDB_DOC}`: `'mongodb://${process.env.MDB_HOST}:${process.env.MDB_PORT}/${process.env.MDB_DOC}`
-module.exports =  mongoose.connect(connect, {useNewUrlParser: true});
+const url = config.db.username ?
+  `${config.db.url}://${config.db.username}:${config.db.password}@${config.db.host}/${config.db.database}` :
+  `${config.db.url}://${config.db.host}/${config.db.database}`
+
+module.exports =  mongoose.connect(url, {useNewUrlParser: true});

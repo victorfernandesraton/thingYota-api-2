@@ -2,7 +2,10 @@ const
   path = require('path')
 
 require('dotenv').config({
-  path: process.env.NODE_ENV == "production" ? path.resolve('.env'): path.resolve('.env.development')
+  path:
+    process.env.NODE_ENV == "production" ?
+      path.resolve(__dirname,'config','prod.env') :
+      path.resolve(__dirname,'config','dev.env')
 });
 
 const
