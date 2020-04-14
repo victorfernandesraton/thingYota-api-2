@@ -1,6 +1,7 @@
 const
   User = require('../model/user.schema'),
-  md5 = require('md5')
+  md5 = require('md5');
+const {validaionBodyEmpty} = require("../utils/commen")
 /**
  * @description Get alll users use queeryparans to filter then
  * @param {Request} req
@@ -60,17 +61,21 @@ const create = (req,res,next) => {
       }
     })
   }
-  const {username, first_name, last_name, password, email} = req.body;
-  if(!username, !first_name, !password, !email) {
-    data= ['username', 'email', 'first_name'].filter(key => !req.body.hasOwnProperty(key))
+
+  const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'email', 'first_name', 'password']);
+
+  if(bodyNotFound.length < 0) {
     return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
+
+  const {username, first_name, last_name, password, email} = req.body;
+
   const user = new User({
     username,
     first_name,
@@ -83,10 +88,10 @@ const create = (req,res,next) => {
     .then(data => res.send(201, {
       res: true,
       data: data,
-    }))
-  .catch(error => res.send(500, {
-        res: false,
-        error: {message: "Error create user", data: error}
+    })).catch(data => console.log(data))
+    .catch(error => res.send(500, {
+      res: false,
+      error: {message: "Error create user", data: error}
     }))
 }
 

@@ -1,5 +1,6 @@
 const Actor = require('../model/actor.schema')
 const Device = require('../model/device.schema')
+const {validaionBodyEmpty} = require("../utils/commen")
 /**
  * @description Get all devices in database
  * @param {Request} req
@@ -98,18 +99,19 @@ const create = async (req,res,next) => {
     })
   }
 
-  const {name, type, device_parent, port} = req.body;
+  const bodyNotFound = validaionBodyEmpty(req.body,['name', 'type', 'device_parent', 'port'])
 
-  if(!name || !type || !device_parent || !port) {
-    let data= ['name', 'type', 'device_parent', 'port'].filter(key => !req.body.hasOwnProperty(key))
+  if (bodyNotFound.length > 0) {
     return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
+
+  let {name, type, device_parent, port} = req.body;
 
   try {
     const device = await Device.findById(device_parent)

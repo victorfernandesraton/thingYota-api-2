@@ -14,22 +14,23 @@ const authUser = async (req, res, send) => {
       }
     })
   }
-  let {username, email, password} = req.body
-  if ((!username && !email) || !password) {
-    const data= ['username', 'password', 'email'].filter(key => !req.body.hasOwnProperty(key))
-    return res.send(200, {
+  const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'password', 'email']);
+
+  if(bodyNotFound.length < 0) {
+    return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
-  password = await md5(password.toString())
-  console.log(password)
+
+  let {username, email, password} = req.body
+
   let query = {
+    password: md5(password.toString()),
     username,
-    password,
     email
   }
 
@@ -77,21 +78,22 @@ const authDevice = async (req, res, send) => {
       }
     })
   }
-  let {mac_addres} = req.body
-  if (!mac_addres) {
-    const data= ['mac_addres'].filter(key => !req.body.hasOwnProperty(key))
-    return res.send(404, {
+
+  const bodyNotFound = validaionBodyEmpty(req.body, ['mac_addres']);
+
+  if(bodyNotFound.length < 0) {
+    return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
+
   let query = {
     mac_addres
   }
-
 
   const device = await Device.findOne(query);
   if (!device  || device.length == 0) {

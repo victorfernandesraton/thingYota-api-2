@@ -98,16 +98,18 @@ const create = (req,res,next) => {
     })
   }
   const {name, type} = req.body;
-  if(!name || !type) {
-    const data= ['name', 'type'].filter(key => !req.body.hasOwnProperty(key))
+  const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type']);
+
+  if(bodyNotFound.length < 0) {
     return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
+
   Bucket.create({...req.body, create_at: Date()})
     .then(data => res.send(201, {
         res: true,
