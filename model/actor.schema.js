@@ -5,8 +5,8 @@ const actorSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  GPIO: {
-    type: Number,
+  port: {
+    type: String,
     required: true
   },
   device_parent: {
