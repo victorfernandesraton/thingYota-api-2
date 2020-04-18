@@ -6,14 +6,9 @@ const sensorSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  GPIO: {
-    type: Number,
+  port: {
+    type: String,
     required: true
-  },
-  // Relação belongsto
-  bucket_parent: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Bucket',
   },
   device_parent: {
     type: mongoose.Schema.Types.ObjectId,

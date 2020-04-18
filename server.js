@@ -1,5 +1,4 @@
-const
-  path = require('path')
+const path = require('path');
 
 require('dotenv').config({
   path:
@@ -8,37 +7,27 @@ require('dotenv').config({
       path.resolve(__dirname,'config','dev.env')
 });
 
-const
-  server = require('./config/server'),
-  mongodb = require('./database/mongodb'),
-  socketIo = require('socket.io')
+const server = require('./config/server');
+const mongodb = require('./database/mongodb');
+const socketIo = require('socket.io');
+const router = require('./routes/');
 
 const {
   onConnectArduino,
   onConnectUser
 } = require('./socket/onConnect.socket')
 
+
 mongodb
-  .then(data => console.log('momgobd has coonected'))
+  .then(data => console.log('momgobd has coonected', data.connection.db.databaseName))
   .catch(error => console.log("eeror on first connection", error))
 
-// Rotas
-require('./routes/bucket.route').applyRoutes(server, '/bucket');
-require('./routes/user.route').applyRoutes(server, '/user');
-require('./routes/sensor.route').applyRoutes(server, '/sensor');
-require('./routes/device.route').applyRoutes(server, '/device');
-require('./routes/auth.route').applyRoutes(server, '/auth');
-require('./routes/register.route').applyRoutes(server, '/register');
-require('./routes/singup.route').applyRoutes(server,'/singup');
-require('./routes/actor.route').applyRoutes(server,'/actor');
 
-const
-  io = socketIo.listen(server.server);
+const io = socketIo.listen(server.server);
 
-const
-  notification = io.of('/notification')
-  arduinoSocket = io.of('/arduino'),
-  userSocket = io.of('/user');
+const notification = io.of('/notification');
+const arduinoSocket = io.of('/arduino');
+const userSocket = io.of('/user');
 
 // setando handler para socket
 arduinoSocket.on('connection', socket => onConnectArduino(socket, io))
@@ -54,6 +43,8 @@ server.use((req, res, next) => {
   }
   return next();
 });
+
+router.applyRoutes(server)
 
 server.get("/", (req,res, next) => {
   return res.send(200, {data: {server}})

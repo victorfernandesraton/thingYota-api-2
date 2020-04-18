@@ -98,22 +98,29 @@ const create = (req,res,next) => {
       }
     })
   }
-  const {name, type, mac_addres} = req.body;
-  if(!name || !type || !mac_addres) {
-    data= ['name', 'type','mac_addres'].filter(key => !req.body.hasOwnProperty(key))
+  const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type','mac_addres']);
+
+  if(bodyNotFound.length < 0) {
     return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
-  Device.create({...req.body, create_at: Date.now()})
-    .then(data => res.send(201, {
-        res: true,
-        data: data,
 
+  const {name, type, mac_addres} = req.body;
+
+  Device.create({
+    name,
+    type,
+    mac_addres,
+    create_at: Date.now()
+  })
+    .then(data => res.send(201, {
+      res: true,
+      data: data,
     }))
     .catch(error => res.send(500, {
       res: false,

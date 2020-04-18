@@ -1,5 +1,6 @@
-const
-  Bucket = require('../model/bucket.schema')
+const Bucket = require('../model/bucket.schema');
+const {validaionBodyEmpty} = require('../utils/common');
+
 /**
  * @description Get all buckets in database
  * @param {Request} req
@@ -98,25 +99,29 @@ const create = (req,res,next) => {
     })
   }
   const {name, type} = req.body;
-  if(!name || !type) {
-    const data= ['name', 'type'].filter(key => !req.body.hasOwnProperty(key))
+  const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type']);
+
+  if(bodyNotFound.length < 0) {
     return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
-  Bucket.create({...req.body, create_at: Date()})
+
+  Bucket.create({
+    name,
+    type,
+    create_at: Date()
+  })
     .then(data => res.send(201, {
         res: true,
         data: data,
-
     }))
     .catch(error => res.send(500, {
       res: false,
-
     }))
 }
 

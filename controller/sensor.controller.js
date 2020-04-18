@@ -99,18 +99,19 @@ const create = async (req,res,next) => {
     })
   }
 
-  const {name, type, device_parent, GPIO} = req.body;
+  const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type', 'device_parent', 'port']);
 
-  if(!name || !type || !device_parent || !GPIO) {
-    let data= ['name', 'type', 'device_parent', 'GPIO'].filter(key => !req.body.hasOwnProperty(key))
+  if(bodyNotFound.length < 0) {
     return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
+
+  const {name, type, device_parent, port} = req.body;
 
   const device = await Device.findById(device_parent)
   if (!device) {
@@ -124,7 +125,7 @@ const create = async (req,res,next) => {
     name,
     type,
     device_parent,
-    GPIO
+    port
   })
 
   device.update({

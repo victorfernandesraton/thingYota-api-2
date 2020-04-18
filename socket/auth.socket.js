@@ -1,7 +1,8 @@
 const
   jwt = require('jsonwebtoken'),
-  config = require('../config/env');
-  Device = require('../model/device.schema')
+  config = require('../config/env'),
+  Device = require('../model/device.schema'),
+  User = require('../model/user.schema');
 
 /**
  * @description Função que valida o token de um arduino via socketio
@@ -9,27 +10,19 @@ const
  * @param {WebSocketEventMap} socket
  * @param {WebSocket} io
  */
-const authUserToken = (data , socket, io) => {
-  const {authorization} = data;
-  jwt.verify(authorization, config.secret.user, (err, decoded) => {
-    if(err)  {
-      socket.emit("responseError", {
-        res: false,
-        error: {message: "token is not valid"}
-      })
-      return false
-    }
-  })
-
-  const payload = jwt.decode(authorization)
-  // priovate roon
-  const private = socket.join(authorization)
-
-  socket.emit("responseOk", {
-    res: true,
-    data: {authorization, payload}
-  })
-  return true;
+const authUser = (data , socket, io) => {
+  const user = User.findOne(data);
+  if (user) {
+    const private = socket.join(user.username)
+    private.emit("responseOk", {
+      res: true,
+      data: {
+        user,
+        message: "ok"
+      }
+    })
+  }
+  return
 }
 
 /**
@@ -38,40 +31,20 @@ const authUserToken = (data , socket, io) => {
  * @param {Object} data
  */
 const authArduino = async (socket, data) => {
-  try {
-    const device = await Device.findOne(data)
-    if (!device) {
-      socket.emit("responseError" ,{
-        res: false,
-        error: {message: "device not found"}
-      })
-      return false
-    } else {
-      const token = await jwt.sign({
-        name: device.name,
-        mac_addres: device.mac_addres,
-        id: device._id,
-        entity: "Device"
-      }, config.secret.user)
-      const private = socket.join(token)
-      private.emit("responseToken", {
-        data :{
-          ...device,
-          token
-        }
-      })
-    }
-  } catch(error) {
-    console.log(error)
-    socket.emit("responseError" ,{
-      res: false,
-      error: {message: "error as occures", data: error}
+  const device = await Device.findOne(data)
+  if (device) {
+    const private = socket.join(device.mac_addres)
+    private.emit("responseOk", {
+      data :{
+        device,
+        message: "Ok"
+      }
     })
-    return false
   }
+  return
 }
 
 module.exports = {
-  authUserToken,
+  authUser,
   authArduino
 }

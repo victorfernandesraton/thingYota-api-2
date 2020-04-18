@@ -1,7 +1,4 @@
-const
-  Register = require('../model/register.schema'),
-  jwt = require('jsonwebtoken')
-
+const Register = require('../model/register.schema');
 /**
  * @description Rota que retorna registros de dados
  * @param {Request} req
@@ -101,6 +98,19 @@ const create = (req,res,next) => {
       }
     })
   }
+
+  const bodyNotFound = validaionBodyEmpty(req.body, ['Fk_iten', 'Fk_device', 'value', 'type']);
+
+  if(bodyNotFound.length < 0) {
+    return res.send(422, {
+      res: false,
+      error: {
+        message: "The parans request not found",
+        data: bodyNotFound
+      }
+    })
+  }
+
   const {
     Fk_iten,
     Fk_device,
@@ -109,17 +119,6 @@ const create = (req,res,next) => {
     status,
     Fk_bucket
   } = req.body;
-
-  if(!Fk_iten || !Fk_device || !value || !type) {
-    const data= ['Fk_iten', 'Fk_device', 'value', 'type'].filter(key => !req.body.hasOwnProperty(key))
-    return res.send(422, {
-      res: false,
-      error: {
-        message: "The parans request not found",
-        data
-      }
-    })
-  }
 
   const resgister = new Register({
     Fk_iten,

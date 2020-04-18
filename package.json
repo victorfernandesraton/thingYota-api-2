@@ -23,7 +23,9 @@
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.2.1",
     "mongoose": "^5.9.3",
+    "morgan": "^1.10.0",
     "restify": "^8.5.1",
+    "restify-cors-middleware": "^1.1.1",
     "restify-plugins": "^1.6.0",
     "restify-router": "^0.5.1",
     "socket.io": "^2.3.0"

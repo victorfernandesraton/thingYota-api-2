@@ -1,9 +1,9 @@
-const
-  User = require('../model/user.schema'),
-  Device = require('../model/device.schema'),
-  md5 = require('md5'),
-  config = require('../config/env');
-  jwt = require('jsonwebtoken')
+const User = require('../model/user.schema');
+const Device = require('../model/device.schema');
+const md5 = require('md5');
+const jwt = require('jsonwebtoken');
+const config = require('../config/env');
+const {validaionBodyEmpty} = require('../utils/common')
 
 const authUser = async (req, res, send) => {
   if (req.body == null || req.body == undefined) {
@@ -14,29 +14,23 @@ const authUser = async (req, res, send) => {
       }
     })
   }
-  let {username, email, password} = req.body
-  if ((!username && !email) || !password) {
-    const data= ['username', 'password', 'email'].filter(key => !req.body.hasOwnProperty(key))
-    return res.send(200, {
+  const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'password']);
+
+  if(bodyNotFound.length < 0) {
+    return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
-  password = await md5(password.toString())
-  console.log(password)
-  let query = {
-    username,
-    password,
-    email
-  }
 
-  if (email) {
-    delete query['username']
-  } else if (username) {
-    delete query['email']
+  let {username, email, password} = req.body
+
+  let query = {
+    password: md5(password),
+    email: username
   }
 
   const user = await User.findOne(query);
@@ -77,21 +71,22 @@ const authDevice = async (req, res, send) => {
       }
     })
   }
-  let {mac_addres} = req.body
-  if (!mac_addres) {
-    const data= ['mac_addres'].filter(key => !req.body.hasOwnProperty(key))
-    return res.send(404, {
+
+  const bodyNotFound = validaionBodyEmpty(req.body, ['mac_addres']);
+
+  if(bodyNotFound.length < 0) {
+    return res.send(422, {
       res: false,
       error: {
         message: "The parans request not found",
-        data
+        data: bodyNotFound
       }
     })
   }
+
   let query = {
     mac_addres
   }
-
 
   const device = await Device.findOne(query);
   if (!device  || device.length == 0) {

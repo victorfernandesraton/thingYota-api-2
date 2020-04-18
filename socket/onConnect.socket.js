@@ -1,7 +1,5 @@
-const
-  jwt = require('jsonwebtoken')
 const {
-  authUserToken,
+  authUser,
   authArduino
 } = require('./auth.socket')
 
@@ -11,10 +9,10 @@ const {
  */
 const onConnectUser = (socket, io) => {
   // implementação de coneão genérica
-  console.log("new connection")
+  console.log("new connection with user")
 
   // autenticação
-  socket.on('arduinoAuth', (data) => {
+  socket.on('userAuth', (data) => {
     authUser(data, socket, io)
   })
 }
@@ -24,12 +22,12 @@ const onConnectUser = (socket, io) => {
  */
 const onConnectArduino = (socket, io) => {
   // implementação de coneão genérica
-  console.log("new connection")
+  console.log("new connection with arduino")
   // calback intened
   socket.on('arduinoAuth', async (data) => {
     // gera o token do socket para arduino
     // await authUser(data)
-    authUserToken(data, socket, io)
+    authArduino(data, socket, io)
   })
 }
 
