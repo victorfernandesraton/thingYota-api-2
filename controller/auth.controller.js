@@ -1,9 +1,9 @@
-const
-  User = require('../model/user.schema'),
-  Device = require('../model/device.schema'),
-  md5 = require('md5'),
-  config = require('../config/env');
-  jwt = require('jsonwebtoken')
+const User = require('../model/user.schema');
+const Device = require('../model/device.schema');
+const md5 = require('md5');
+const jwt = require('jsonwebtoken');
+const config = require('../config/env');
+const {validaionBodyEmpty} = require('../utils/common')
 
 const authUser = async (req, res, send) => {
   if (req.body == null || req.body == undefined) {
@@ -14,7 +14,7 @@ const authUser = async (req, res, send) => {
       }
     })
   }
-  const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'password', 'email']);
+  const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'password']);
 
   if(bodyNotFound.length < 0) {
     return res.send(422, {
@@ -29,15 +29,8 @@ const authUser = async (req, res, send) => {
   let {username, email, password} = req.body
 
   let query = {
-    password: md5(password.toString()),
-    username,
-    email
-  }
-
-  if (email) {
-    delete query['username']
-  } else if (username) {
-    delete query['email']
+    password: md5(password),
+    email: username
   }
 
   const user = await User.findOne(query);

@@ -1,7 +1,4 @@
-const
-  Register = require('../model/register.schema'),
-  jwt = require('jsonwebtoken')
-
+const Register = require('../model/register.schema');
 /**
  * @description Rota que retorna registros de dados
  * @param {Request} req

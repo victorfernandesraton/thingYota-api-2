@@ -1,5 +1,4 @@
-const
-  path = require('path')
+const path = require('path');
 
 require('dotenv').config({
   path:
@@ -8,10 +7,9 @@ require('dotenv').config({
       path.resolve(__dirname,'config','dev.env')
 });
 
-const
-  server = require('./config/server'),
-  mongodb = require('./database/mongodb'),
-  socketIo = require('socket.io')
+const server = require('./config/server');
+const mongodb = require('./database/mongodb');
+const socketIo = require('socket.io');
 
 const {
   onConnectArduino,
@@ -32,13 +30,11 @@ require('./routes/register.route').applyRoutes(server, '/register');
 require('./routes/singup.route').applyRoutes(server,'/singup');
 require('./routes/actor.route').applyRoutes(server,'/actor');
 
-const
-  io = socketIo.listen(server.server);
+const io = socketIo.listen(server.server);
 
-const
-  notification = io.of('/notification')
-  arduinoSocket = io.of('/arduino'),
-  userSocket = io.of('/user');
+const notification = io.of('/notification');
+const arduinoSocket = io.of('/arduino');
+const userSocket = io.of('/user');
 
 // setando handler para socket
 arduinoSocket.on('connection', socket => onConnectArduino(socket, io))

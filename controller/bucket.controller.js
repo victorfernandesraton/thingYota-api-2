@@ -1,5 +1,6 @@
-const
-  Bucket = require('../model/bucket.schema')
+const Bucket = require('../model/bucket.schema');
+const {validaionBodyEmpty} = require('../utils/common');
+
 /**
  * @description Get all buckets in database
  * @param {Request} req
@@ -110,15 +111,17 @@ const create = (req,res,next) => {
     })
   }
 
-  Bucket.create({...req.body, create_at: Date()})
+  Bucket.create({
+    name,
+    type,
+    create_at: Date()
+  })
     .then(data => res.send(201, {
         res: true,
         data: data,
-
     }))
     .catch(error => res.send(500, {
       res: false,
-
     }))
 }
 

@@ -1,6 +1,6 @@
 const Actor = require('../model/actor.schema')
 const Device = require('../model/device.schema')
-const {validaionBodyEmpty} = require("../utils/commen")
+const {validaionBodyEmpty} = require("../utils/common")
 /**
  * @description Get all devices in database
  * @param {Request} req
