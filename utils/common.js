@@ -5,4 +5,20 @@
  * @returns
  */
 
-exports.validaionBodyEmpty = (object, requires) => requires.filter(key => !object.hasOwnProperty(key))
+const validaionBodyEmpty = (object, requires) => requires.filter(key => !object.hasOwnProperty(key))
+
+/**
+ * @description Trim undefuned and null propety in object
+ * @param {*} obj
+ * @returns
+ */
+const trimObjctt = (obj) => {
+  Object.keys(obj).forEach((key) => (obj[key] == null || obj[key] == undefined || obj[key] == {}) && delete obj[key])
+  return obj
+};
+
+console.log(trimObjctt({valyue: 0, b: null, c: undefined, d: {}}))
+module.exports = {
+  validaionBodyEmpty,
+  trimObjctt
+}

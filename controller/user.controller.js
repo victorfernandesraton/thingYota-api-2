@@ -1,6 +1,8 @@
 const User = require('../model/user.schema');
 const md5 = require('md5');
 const {validaionBodyEmpty} = require("../utils/common");
+const errors = require('restify-errors');
+
 /**
  * @description Get alll users use queeryparans to filter then
  * @param {Request} req
