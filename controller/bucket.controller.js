@@ -1,5 +1,6 @@
 const Bucket = require('../model/bucket.schema');
 const {validaionBodyEmpty} = require('../utils/common');
+const errors = require('restify-errors');
 
 /**
  * @description Get all buckets in database
@@ -18,29 +19,16 @@ const find = async (req,res,next) => {
 
     const total =await Bucket.estimatedDocumentCount()
 
-    if (offset >= total && total != 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "out of range"}
-      })
-    }
+    if (offset >= total && total != 0) return res.send(new errors.LengthRequiredError("out of rnge"))
 
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "empty list"}
-      })
-    }
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Bucket not found"))
+
     return res.send(200, {
-      res: true,
       data: data,
       metadata: {limit, offset, total }
     })
   } catch(error) {
-    return res.send(500, {
-      res: false,
-      error
-    })
+    return res.send(new errors.InternalServerError(error))
   }
 }
 
@@ -53,31 +41,17 @@ const find = async (req,res,next) => {
  */
 const findOne = async (req,res,next) => {
   const {id} = req.params;
-  if (!id) {
-    return res.send(404, {
-      res: false,
-      error: {
-        message: "id parmas as required"
-      }
-    })
-  }
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"))
   try{
     const data = await Bucket.findById(req.params.id);
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        message: `Bucket._id ${id} not found`
-      })
-    }
+
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError(`Bucket._id ${id} not found`))
+
     res.send(200, {
-      res: true,
       data: data,
     })
   } catch(error) {
-    res.send(500, {
-      error,
-      res: false
-    })
+    return res.send(new errors.InternalServerError(error))
   }
 }
 
@@ -90,26 +64,13 @@ const findOne = async (req,res,next) => {
  * @requires body.type
  */
 const create = (req,res,next) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
   const {name, type} = req.body;
+
   const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type']);
 
-  if(bodyNotFound.length < 0) {
-    return res.send(422, {
-      res: false,
-      error: {
-        message: "The parans request not found",
-        data: bodyNotFound
-      }
-    })
-  }
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
   Bucket.create({
     name,
@@ -117,7 +78,6 @@ const create = (req,res,next) => {
     create_at: Date()
   })
     .then(data => res.send(201, {
-        res: true,
         data: data,
     }))
     .catch(error => res.send(500, {
@@ -132,29 +92,16 @@ const create = (req,res,next) => {
  * @param {*} send
  */
 const put = (req,res,send) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
-  const {id} = req.params
-  const {name, type, status} = req.body
-  if (!id) {
-    return res.send(422, {
-      res: false,
-      error: {message: "id is required"}
-    })
-  }
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
+  const {id} = req.params;
+  const {name, type, status} = req.body;
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
   const bucket = Bucket.findById(id)
-  if (!bucket) {
-    return res.send( 404, {
-      res: false,
-      error: {message: `Bucket._id ${id} not found`}
-    })
-  }
+
+  if (!bucket) return res.send(new errors.NotFoundError(`Bucket._id ${id} not found`))
 
   bucket.update({
     name,
@@ -163,15 +110,11 @@ const put = (req,res,send) => {
   })
     .then(data => {
       return res.send(200, {
-        res: true,
         data
       })
     })
     .catch(error => {
-      return res.send(500, {
-        res: false,
-        error: {message: ""}
-      })
+      return res.send(new errors.InternalServerError(`${error}`))
     })
 }
 

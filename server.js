@@ -11,6 +11,7 @@ const server = require('./config/server');
 const mongodb = require('./database/mongodb');
 const socketIo = require('socket.io');
 const router = require('./routes/');
+const logger = require('morgan')
 
 const {
   onConnectArduino,
@@ -44,6 +45,9 @@ server.use((req, res, next) => {
   return next();
 });
 
+server.use(logger('dev'))
+
+// routers
 router.applyRoutes(server)
 
 server.get("/", (req,res, next) => {

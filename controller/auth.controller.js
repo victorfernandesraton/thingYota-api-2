@@ -3,28 +3,15 @@ const Device = require('../model/device.schema');
 const md5 = require('md5');
 const jwt = require('jsonwebtoken');
 const config = require('../config/env');
-const {validaionBodyEmpty} = require('../utils/common')
+const {validaionBodyEmpty} = require('../utils/common');
+const errors = require('restify-errors');
 
 const authUser = async (req, res, send) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
   const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'password']);
 
-  if(bodyNotFound.length < 0) {
-    return res.send(422, {
-      res: false,
-      error: {
-        message: "The parans request not found",
-        data: bodyNotFound
-      }
-    })
-  }
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
   let {username, email, password} = req.body
 
@@ -34,12 +21,10 @@ const authUser = async (req, res, send) => {
   }
 
   const user = await User.findOne(query);
-  if (!user  || user.length == 0) {
-    return res.send(404, {
-      res: false,
-      error: {message: "user not found", user}
-    })
-  }
+
+  if (!user  || user.length == 0) return res.send(new errors.NotFoundError("User not found"))
+
+
   const token = await jwt.sign({
     username: user.username,
     password: user.password,
@@ -47,7 +32,6 @@ const authUser = async (req, res, send) => {
     entity: "User"
   }, config.secret.user);
   return res.send(200, {
-    res: true,
     data: {
       token,
       user
@@ -64,37 +48,22 @@ const authUser = async (req, res, send) => {
  */
 const authDevice = async (req, res, send) => {
   if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
+    return res.send(new errors.InvalidArgumentError("body is empty"))
   }
 
   const bodyNotFound = validaionBodyEmpty(req.body, ['mac_addres']);
 
-  if(bodyNotFound.length < 0) {
-    return res.send(422, {
-      res: false,
-      error: {
-        message: "The parans request not found",
-        data: bodyNotFound
-      }
-    })
-  }
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
   let query = {
     mac_addres
   }
 
   const device = await Device.findOne(query);
-  if (!device  || device.length == 0) {
-    return res.send(404, {
-      res: false,
-      error: {message: "user not found", user}
-    })
-  }
+
+  if (!device  || device.length == 0) return res.send(new errors.NotFoundError("Device not found"))
+
+
   const token = await jwt.sign({
     name: device.name,
     mac_addres: device.mac_addres,
@@ -102,7 +71,6 @@ const authDevice = async (req, res, send) => {
     entity: "Device"
   }, config.secret.user);
   return res.send(200, {
-    res: true,
     data: {
       token,
       device
@@ -121,7 +89,6 @@ const authGuest = async (req, res, send) => {
     entity: "Guest"
   }, config.secret.guest);
   return res.send(200, {
-    res: true,
     data: {
       token
     }
@@ -137,13 +104,11 @@ const authGuest = async (req, res, send) => {
 const authGuestToken = async (req,res,send) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
-  if (!token || token == null) return res.send(403, {
-    res: false,
-    error: {message: "token not found"}
-  })
+
+  if (!token || token == null) return res.send(new errors.InvalidHeaderError("Token not found"))
+
   jwt.verify(token, config.secret.guest, (err, decoded) => {
-    if(err) return res.send(403, {
-      res: false,
+    if (err) return res.send(403, {
       error: {message: "token is not valid"}
     })
     req.token = token
@@ -161,23 +126,14 @@ const authUserToken = async (req,res,send) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
 
-  if (!token || token == null) return res.send(403, {
-    res: false,
-    error: {message: "token not found"}
-  })
+  if (!token || token == null) return res.send(new errors.InvalidHeaderError("Token not found"))
 
   jwt.verify(token, config.secret.user, (err, decoded) => {
-    if(err) return res.send(403, {
-      res: false,
-      error: {message: "token is not valid"}
-    })
+    if(err) return res.send(new errors.InvalidHeaderError("Invalid Token"))
   })
 
   const {entity, id} = jwt.decode(token)
-    if (!entity) return res.send(404, {
-      res: false,
-      error:{message: "Entity not found"}
-    })
+    if (!entity) return res.send(new errors.InvalidArgumentError("Entity info not found "))
     let data = {};
 
     switch(entity) {
@@ -191,13 +147,9 @@ const authUserToken = async (req,res,send) => {
         data = {}
     }
 
-    if (!data) return res.send(404, {
-      res: false,
-      error: {message:`Entity ${entity} id (${id}) not found`}
-    })
+    if (!data) return res.send(new errors.InvalidArgumentError(`Entity ${entity} id (${id}) not found`))
     req.token = token
     send()
-
 }
 
 

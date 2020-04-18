@@ -16,29 +16,16 @@ const find = async (req, res, send) => {
 
     const total =await Register.estimatedDocumentCount()
 
-    if (offset >= total && total != 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "out of range"}
-      })
-    }
+    if (offset >= total && total != 0) return res.send(new errors.LengthRequiredError("out of rnge"))
 
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "empty list"}
-      })
-    }
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Register not found"))
+
     return res.send(200, {
-      res: true,
       data: data,
       metadata: {limit, offset, total }
     })
   } catch(error) {
-    return res.send(500, {
-      res: false,
-      error
-    })
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
@@ -51,31 +38,19 @@ const find = async (req, res, send) => {
  */
 const findOne = async (req,res,next) => {
   const {id} = req.params;
-  if (!id) {
-    return res.send(404, {
-      res: false,
-      error: {
-        message: "id parmas as required"
-      }
-    })
-  }
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
   try{
     const data = await Register.findById(req.params.id);
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        message: `Bucket._id ${id} not found`
-      })
-    }
+
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError(`Register._id ${id} not found`))
+
     res.send(200, {
-      res: true,
       data: data,
     })
   } catch(error) {
-    res.send(500, {
-      error,
-      res: false
-    })
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
@@ -90,26 +65,11 @@ const findOne = async (req,res,next) => {
  * @requires body.type
  */
 const create = (req,res,next) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
   const bodyNotFound = validaionBodyEmpty(req.body, ['Fk_iten', 'Fk_device', 'value', 'type']);
 
-  if(bodyNotFound.length < 0) {
-    return res.send(422, {
-      res: false,
-      error: {
-        message: "The parans request not found",
-        data: bodyNotFound
-      }
-    })
-  }
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
   const {
     Fk_iten,
@@ -133,19 +93,13 @@ const create = (req,res,next) => {
   resgister.save()
     .then(data => {
       res.send(201, {
-        res: true,
         data: data,
       })
       // envio de dados para cliente do socket
       req.io.notification.emit("responseRegister", data)
     })
-    .catch(error => res.send(500, {
-      res: false,
-      error: {message: "Error in store ", error}
-    }))
+    .catch(error => res.send(new errors.InternalServerError(`${error}`)))
 }
-
-
 
 module.exports = {
   find,

@@ -17,29 +17,16 @@ const find = async (req,res,next) => {
 
     const total =await Device.estimatedDocumentCount()
 
-    if (offset >= total && total != 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "out of range"}
-      })
-    }
+    if (offset >= total && total != 0) return res.send(new errors.LengthRequiredError("out of rnge"))
 
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "empty list"}
-      })
-    }
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Device not found"))
+
     return res.send(200, {
-      res: true,
       data: data,
       metadata: {limit, offset, total }
     })
   }catch(error) {
-    return res.send(500, {
-      res: false,
-      error
-    })
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
@@ -52,31 +39,19 @@ const find = async (req,res,next) => {
  */
 const findOne = async (req,res,next) => {
   const {id} = req.params;
-  if (!id) {
-    return res.send(404, {
-      res: false,
-      error: {
-        message: "id parmas as required"
-      }
-    })
-  }
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
   try{
     const data = await Device.findById(id);
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        message: `Device._id ${id} not found`
-      })
-    }
+
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError(`Device._id ${id} not found`))
+
     return res.send(200, {
-      res: true,
       data: data,
     })
   } catch(error) {
-    res.send(500, {
-      error,
-      res: false
-    })
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
@@ -89,52 +64,29 @@ const findOne = async (req,res,next) => {
  * @requires body.type
  * @requires body.mac_addres
  */
-const create = (req,res,next) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
+const create = async (req,res,next) => {
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
   const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type','mac_addres']);
 
-  if(bodyNotFound.length < 0) {
-    return res.send(422, {
-      res: false,
-      error: {
-        message: "The parans request not found",
-        data: bodyNotFound
-      }
-    })
-  }
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
   const {name, type, mac_addres} = req.body;
 
-  Device.create({
-    name,
-    type,
-    mac_addres,
-    create_at: Date.now()
-  })
-    .then(data => res.send(201, {
-      res: true,
-      data: data,
-    }))
-    .catch(error => res.send(500, {
-      res: false,
-      error: error
-    }))
-}
+  try {
+    const data = await Device.create({
+      name,
+      type,
+      mac_addres,
+      create_at: Date.now()
+    })
 
-/**
- *
- * @param {{ma}} data
- * @param {*} socket
- */
-const createSocket = (data, socket) => {
-
+    return res.send(200, {
+      data: data
+    })
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`))
+  }
 }
 
 /**
@@ -144,31 +96,17 @@ const createSocket = (data, socket) => {
  * @param {*} send
  */
 const put = async (req,res,send) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
   const {id} = req.params
   const {name, type, mac_addres, status} = req.body
-  if (!id) {
-    return res.send(422, {
-      res: false,
-      error: "id is required"
-    })
-  }
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
   try {
     const device = await Device.findById(id)
 
-    if (!device) {
-      return res.send(404, {
-        res: true,
-        error :{message: `Device._id ${id} not found`}
-      })
-    }
+    if (!device) return res.send(new errors.NotFoundError(`Device._id ${id} not found`))
 
     const data = await device.update({
       name,
@@ -176,12 +114,12 @@ const put = async (req,res,send) => {
       mac_addres,
       status
     })
+
     return res.send(200, {
-      res: true,
       data: data
     })
   } catch(error) {
-    res.send(500, {res: false, error: {error}})
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 

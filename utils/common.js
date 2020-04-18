@@ -6,4 +6,3 @@
  */
 
 exports.validaionBodyEmpty = (object, requires) => requires.filter(key => !object.hasOwnProperty(key))
-

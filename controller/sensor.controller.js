@@ -17,29 +17,16 @@ const find = async (req,res,next) => {
 
     const total =await Sensor.estimatedDocumentCount()
 
-    if (offset >= total && total != 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "out of range"}
-      })
-    }
+    if (offset >= total && total != 0) return res.send(new errors.LengthRequiredError("out of rnge"))
 
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "empty list"}
-      })
-    }
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Sensor not found"))
+
     return res.send(200, {
-      res: true,
       data: data,
       metadata: {limit, offset, total }
     })
   } catch(error) {
-    return res.send(500, {
-      res: false,
-      error
-    })
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
@@ -51,33 +38,21 @@ const find = async (req,res,next) => {
  * @param {*} next
  */
 const findOne = async (req,res,next) => {
-  const limit = req.query.limit;
-  const offset = req.query.page * limit;
-  if (!req.params.id) {
-    return res.send(404, {
-      res: false,
-      error: {
-        message: "id parmas as required"
-      }
-    })
-  }
+  const {id} = req.params
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
   try{
     const data = await Sensor.findById(req.params.id);
-    if (!data || data.length == 0) {
-      return res.send(404, {
-        res: false,
-        error: {message: "empty list"}
-      })
-    }
+
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Sensor not found"))
+
     res.send(200, {
       res: true,
       data: data,
     })
   } catch(error) {
-    res.send(500, {
-      error,
-      res: false
-    })
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
@@ -90,36 +65,19 @@ const findOne = async (req,res,next) => {
  * @requires body.type
  */
 const create = async (req,res,next) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
+
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
   const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type', 'device_parent', 'port']);
 
-  if(bodyNotFound.length < 0) {
-    return res.send(422, {
-      res: false,
-      error: {
-        message: "The parans request not found",
-        data: bodyNotFound
-      }
-    })
-  }
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
   const {name, type, device_parent, port} = req.body;
 
   const device = await Device.findById(device_parent)
-  if (!device) {
-    return res.send(404, {
-      res: false,
-      error :{message: `device ${device_parent} not found`}
-    })
-  }
+
+  if (!device) return res.send(new errors.NotFoundError(`Device._id ${device_parent} not found`))
+
   const sensor = new Sensor({
     create_at: Date(),
     name,
@@ -139,15 +97,9 @@ const create = async (req,res,next) => {
             res: true,
             data: data,
         }))
-        .catch(error => res.send(500, {
-          res: false,
-          error: {message: `Don't save Sensor ${sensor}`}
-        }))
+        .catch(error =>  res.send(new errors.InternalServerError(`${error}`)))
       })
-      .catch(error => res.send(500, {
-        res: false,
-        error: {message: `Don't update Device ${device}`}
-      }))
+      .catch(error =>  res.send(new errors.InternalServerError(`${error}`)))
 }
 
 /**
@@ -157,41 +109,22 @@ const create = async (req,res,next) => {
  * @param {*} send
  */
 const put = async (req,res,send) => {
-  if (req.body == null || req.body == undefined) {
-    return res.send(409, {
-      res: false,
-      error: {
-        message: "body is required"
-      }
-    })
-  }
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
   const {device_parent, name, type, status} = req.body
   const {id} = req.params;
-  if (!id) {
-    return res.send(422, {
-      res: false,
-      error: {message: `Sensor._id ${id} is required`}
-    })
-  }
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
   try {
     const sensor = await Sensor.findById(id)
 
-    if (!sensor) {
-      return res.send(404, {
-        res: false,
-        error: {message: `Sensor._id ${id} not found`}
-      })
-    }
+    if (!sensor) return res.send(new errors.NotFoundError(`Sensor_id ${id} not found`))
 
     if (device_parent) {
       const device = await Device.findById(req.body.device_parent)
 
-      if (!device) {
-        return res.send(404, {
-          res: false,
-          error: {message: `Device._id ${device_parent} not found`}
-        })
-      }
+      if (!device) return res.send(new errors.NotFoundError(`Device_id ${device_parent} not found`))
 
       device.update({
         $push: {
@@ -207,11 +140,10 @@ const put = async (req,res,send) => {
     })
 
     return res.send(200, {
-      res: true,
       data: data
     })
   } catch(error) {
-    return res.send(500, {res: false, error: {error}})
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
