@@ -47,6 +47,7 @@ const authUser = async (req, res, send) => {
  * @requires req.body.mac_addres
  */
 const authDevice = async (req, res, send) => {
+  const {mac_addres} = req.body
   if (req.body == null || req.body == undefined) {
     return res.send(new errors.InvalidArgumentError("body is empty"))
   }

@@ -1,4 +1,5 @@
 const Register = require('../model/register.schema');
+const {validaionBodyEmpty} = require('../utils/common')
 /**
  * @description Rota que retorna registros de dados
  * @param {Request} req

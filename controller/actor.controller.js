@@ -1,6 +1,8 @@
 const Actor = require('../model/actor.schema')
 const Device = require('../model/device.schema')
 const {validaionBodyEmpty} = require("../utils/common")
+const errors = require('restify-errors');
+
 /**
  * @description Get all devices in database
  * @param {Request} req

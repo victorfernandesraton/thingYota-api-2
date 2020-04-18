@@ -1,5 +1,9 @@
 const Sensor = require('../model/sensor.schema')
 const Device = require('../model/device.schema')
+const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
+const errors = require('restify-errors');
+
+
 /**
  * @description Get all devices in database
  * @param {Request} req
@@ -111,7 +115,7 @@ const create = async (req,res,next) => {
 const put = async (req,res,send) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
-  const {device_parent, name, type, status} = req.body
+  const {device_parent, name, type, status, port} = req.body
   const {id} = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
@@ -132,13 +136,18 @@ const put = async (req,res,send) => {
         }
       })
     }
-    const data = await Sensor.findByIdAndUpdate(id, {
+
+    let sendData = {
       device_parent,
       name,
       type,
-      status
-    })
+      status,
+      port
+    }
 
+    sendData = trimObjctt(sendData)
+
+    const data = await Sensor.updateOne({_id: id},sendData)
     return res.send(200, {
       data: data
     })
