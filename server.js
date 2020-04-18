@@ -10,25 +10,18 @@ require('dotenv').config({
 const server = require('./config/server');
 const mongodb = require('./database/mongodb');
 const socketIo = require('socket.io');
+const router = require('./routes/');
 
 const {
   onConnectArduino,
   onConnectUser
 } = require('./socket/onConnect.socket')
 
+
 mongodb
-  .then(data => console.log('momgobd has coonected'))
+  .then(data => console.log('momgobd has coonected', data.connection.db.databaseName))
   .catch(error => console.log("eeror on first connection", error))
 
-// Rotas
-require('./routes/bucket.route').applyRoutes(server, '/bucket');
-require('./routes/user.route').applyRoutes(server, '/user');
-require('./routes/sensor.route').applyRoutes(server, '/sensor');
-require('./routes/device.route').applyRoutes(server, '/device');
-require('./routes/auth.route').applyRoutes(server, '/auth');
-require('./routes/register.route').applyRoutes(server, '/register');
-require('./routes/singup.route').applyRoutes(server,'/singup');
-require('./routes/actor.route').applyRoutes(server,'/actor');
 
 const io = socketIo.listen(server.server);
 
@@ -50,6 +43,8 @@ server.use((req, res, next) => {
   }
   return next();
 });
+
+router.applyRoutes(server)
 
 server.get("/", (req,res, next) => {
   return res.send(200, {data: {server}})

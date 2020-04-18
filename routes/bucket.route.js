@@ -1,6 +1,4 @@
-const
-    Router = require('restify-router').Router,
-    router = new Router()
+const router = new (require('restify-router')).Router();
 
 // controllers
 const {
