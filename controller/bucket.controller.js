@@ -1,5 +1,5 @@
 const Bucket = require('../model/bucket.schema');
-const {validaionBodyEmpty} = require('../utils/common');
+const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
 const errors = require('restify-errors');
 
 /**
@@ -99,23 +99,16 @@ const put = (req,res,send) => {
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
-  const bucket = Bucket.findById(id)
+  const sendParans = trimObjctt({name, type, status});
 
-  if (!bucket) return res.send(new errors.NotFoundError(`Bucket._id ${id} not found`))
-
-  bucket.update({
-    name,
-    type,
-    status
-  })
+  Bucket.findByIdAndUpdate(id, sendParans, {new: true})
     .then(data => {
-      return res.send(200, {
-        data
+      if (!data) return res.semd(new errors.NotFoundError(`Bucket_id ${id} not found`))
+      if (data) return res.send(200, {
+        data: data
       })
     })
-    .catch(error => {
-      return res.send(new errors.InternalServerError(`${error}`))
-    })
+    .catch(error => res.send(new errors.InternalServerError(`${error}`)))
 }
 
 module.exports = {

@@ -50,11 +50,15 @@ server.use(logger('dev'))
 // routers
 router.applyRoutes(server)
 
-server.get("/", (req,res, next) => {
+server.get("/helth", (req,res, next) => {
   return res.send(200, {data: {server}})
 });
 
 server.listen(process.env.PORT || 8000 , () => {
   console.info(`Server runs in localhost:${server.address().port}`);
   console.info("Press CTRL+C to kill then")
+})
+
+server.on('error', (error) => {
+  console.info(error)
 })

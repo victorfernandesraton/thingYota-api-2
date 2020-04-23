@@ -1,5 +1,5 @@
 const Device = require('../model/device.schema')
-const {validaionBodyEmpty} = require('../utils/common')
+const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
 const errors = require('restify-errors');
 
 /**
@@ -105,24 +105,18 @@ const put = async (req,res,send) => {
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
-  try {
-    const device = await Device.findById(id)
+  const sendParans = trimObjctt({
+    name, type, mac_addres, status
+  })
 
-    if (!device) return res.send(new errors.NotFoundError(`Device._id ${id} not found`))
-
-    const data = await device.update({
-      name,
-      type,
-      mac_addres,
-      status
+  Device.findByIdAndUpdate(id, sendParans, {new: true})
+    .then(data => {
+      if (!data) return res.semd(new errors.NotFoundError(`Device ${id} not found`))
+      if (data) return res.send(200, {
+        data: data
+      })
     })
-
-    return res.send(200, {
-      data: data
-    })
-  } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
-  }
+    .catch(error => res.send(new errors.InternalServerError(`${error}`)))
 }
 
 module.exports = {

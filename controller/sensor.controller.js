@@ -137,17 +137,15 @@ const put = async (req,res,send) => {
       })
     }
 
-    let sendData = {
+    let sendData = trimObjctt({
       device_parent,
       name,
       type,
       status,
       port
-    }
+    })
 
-    sendData = trimObjctt(sendData)
-
-    const data = await Sensor.updateOne({_id: id},sendData)
+    const data = await Sensor.findByIdAndUpdate(id,sendData, {new: true, useFindAndModify: false })
     return res.send(200, {
       data: data
     })

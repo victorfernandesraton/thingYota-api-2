@@ -1,6 +1,6 @@
 const User = require('../model/user.schema');
 const md5 = require('md5');
-const {validaionBodyEmpty} = require("../utils/common");
+const {validaionBodyEmpty, trimObjctt} = require("../utils/common");
 const errors = require('restify-errors');
 
 /**
@@ -70,7 +70,7 @@ const findOne = async (req,res,next) => {
 
   try {
     const data = await User.findById(req.params.id);
-
+    console.log(data)
     if (!data || data.length == 0) return res.send(new errors.NotFoundError(`User_id ${id} not found`))
 
     return res.send(200, {
@@ -97,24 +97,21 @@ const put = async (req,res,send) => {
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
+  let sendParans = trimObjctt({
+    type,
+    status,
+    username,
+    first_name,
+    last_name,
+    email
+  });
+
   try {
-    const data = await User.findById(id)
+    const user = await User.findById(id);
+    if (!user || user.length == 0) return res.semd(new errors.NotFoundError(`User_id ${id} not found`));
 
-    if (!data) return res.send(new errors.NotFoundError(`User_id ${id} not found`))
-
-    await data.update({
-      type,
-      status,
-      username,
-      first_name,
-      last_name,
-      email
-    })
-
-    return res.send(200, {
-      data: data
-    })
-
+    const data = await user.update(sendParans, {new: true});
+    return res.semd(200, {data: data})
   } catch(error) {
     return res.send(new errors.InternalServerError(`${error}`))
   }
