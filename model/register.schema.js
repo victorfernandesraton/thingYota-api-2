@@ -7,9 +7,15 @@ const registerSchema = new mongoose.Schema({
     required: true
   },
   // No use refer because is have varios types
-  Fk_iten: {
+  Fk_Sensor: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true
+    ref: "Sensor",
+    default: null
+  },
+  Fk_Actor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Actor",
+    default: null
   },
   value: {
     type: String,

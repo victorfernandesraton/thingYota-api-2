@@ -109,14 +109,12 @@ const put = async (req,res,send) => {
     name, type, mac_addres, status
   })
 
-  Device.findByIdAndUpdate(id, sendParans, {new: true})
-    .then(data => {
-      if (!data) return res.semd(new errors.NotFoundError(`Device ${id} not found`))
-      if (data) return res.send(200, {
-        data: data
-      })
-    })
-    .catch(error => res.send(new errors.InternalServerError(`${error}`)))
+  try {
+    const data = await Device.findByIdAndUpdate(id, sendParans, {new: true})
+    if (!data) return res.semd(new errors.NotFoundError(`Device ${id} not found`))
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`))
+  }
 }
 
 module.exports = {

@@ -1,6 +1,6 @@
 const Actor = require('../model/actor.schema')
 const Device = require('../model/device.schema')
-const {validaionBodyEmpty} = require("../utils/common")
+const {validaionBodyEmpty, trimObjctt} = require("../utils/common")
 const errors = require('restify-errors');
 
 /**
@@ -16,13 +16,14 @@ const find = async (req,res,next) => {
     const data = await Actor.find()
       .limit(parseInt(limit) || 0)
       .skip(parseInt(offset) || 0)
+      .populate('device_parent')
       .exec()
 
     const total =await Actor.estimatedDocumentCount()
 
     if (offset >= total && total != 0) return res.send(new errors.LengthRequiredError("out of rnge"))
 
-    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Sensor not found"))
+    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Actors not found"))
 
     return res.send(200, {
       data: data,
@@ -46,7 +47,7 @@ const findOne = async (req,res,next) => {
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
   try{
-    const data = await Actor.findById(id);
+    const data = await Actor.findById(id).populate('device_parent');
 
     if (!data || data.length == 0) return res.send(new errors.NotFoundError("Sensor not found"))
 
@@ -76,32 +77,20 @@ const create = async (req,res,next) => {
 
   let {name, type, device_parent, port} = req.body;
 
+  const sendData = trimObjctt({name, type, device_parent, port, create_at: Date.now()});
+
   try {
     const device = await Device.findById(device_parent)
 
     if (!device) return res.send(new errors.NotFoundError(`Device._id ${device_parent} not found`))
 
-    const actor = new Actor({
-      create_at: Date(),
-      name,
-      type,
-      device_parent,
-      port
+    const data = await Actor.create(sendData)
+    await device.update({
+      $push: {
+        Actors: data._id
+      }
     })
-
-    actor.save()
-      .then(data => {
-        device.update({
-          $push: {
-            Actors: actor._id
-          }
-        })
-          .then(data => res.send(201, {
-              data: actor,
-          }))
-          .catch(error =>  res.send(new errors.InternalServerError(`${error}`)))
-      })
-      .catch(error =>  res.send(new errors.InternalServerError(`${error}`)))
+    return res.send(200, {data: data})
   } catch(error) {
     return res.send(new errors.InternalServerError(`${error}`))
   }
@@ -145,7 +134,6 @@ const put = async (req,res,send) => {
     })
 
     return res.send(200, {
-      res: true,
       data: data
     })
 

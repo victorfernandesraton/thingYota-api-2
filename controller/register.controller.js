@@ -1,5 +1,6 @@
 const Register = require('../model/register.schema');
-const {validaionBodyEmpty} = require('../utils/common')
+const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
+const errors = require('restify-errors')
 /**
  * @description Rota que retorna registros de dados
  * @param {Request} req
@@ -12,7 +13,7 @@ const find = async (req, res, send) => {
   try{
     const data = await Register.find()
       .limit(parseInt(limit) || 0)
-      .skip(parseInt(offset) || 0)
+      .skip(parseInt(offset) || 0).populate('Fk_device').populate('Fk_iten')
       .exec()
 
     const total =await Register.estimatedDocumentCount()
@@ -65,15 +66,16 @@ const findOne = async (req,res,next) => {
  * @requires body.value
  * @requires body.type
  */
-const create = (req,res,next) => {
+const create = async (req,res,next) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
-  const bodyNotFound = validaionBodyEmpty(req.body, ['Fk_iten', 'Fk_device', 'value', 'type']);
+  const bodyNotFound = validaionBodyEmpty(req.body, ['Fk_device', 'value', 'type']);
 
   if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
   const {
-    Fk_iten,
+    Fk_Sensor,
+    Fk_Actor,
     Fk_device,
     value,
     type,
@@ -81,8 +83,9 @@ const create = (req,res,next) => {
     Fk_bucket
   } = req.body;
 
-  const resgister = new Register({
-    Fk_iten,
+  const sendData = trimObjctt({
+    Fk_Sensor,
+    Fk_Actor,
     Fk_device,
     value,
     type,
@@ -91,15 +94,17 @@ const create = (req,res,next) => {
     create_at: Date()
   })
 
-  resgister.save()
-    .then(data => {
-      res.send(201, {
-        data: data,
-      })
-      // envio de dados para cliente do socket
-      req.io.notification.emit("responseRegister", data)
+  try {
+    const data = await Register.create(sendData);
+
+    req.io.notification.emit("responseRegister", data)
+
+    return res.send(200, {
+      data: data
     })
-    .catch(error => res.send(new errors.InternalServerError(`${error}`)))
+  } catch(error)  {
+    return res.send(new errors.InternalServerError(`${error}`))
+  }
 }
 
 module.exports = {

@@ -63,7 +63,7 @@ const findOne = async (req,res,next) => {
  * @requires body.name
  * @requires body.type
  */
-const create = (req,res,next) => {
+const create =  async (req,res,next) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
   const {name, type} = req.body;
@@ -72,17 +72,19 @@ const create = (req,res,next) => {
 
   if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
-  Bucket.create({
+  const sendData = trimObjctt({
     name,
     type,
     create_at: Date()
   })
-    .then(data => res.send(201, {
+  try {
+    const data = await Bucket.create(sendData)
+    return res.send(201, {
         data: data,
-    }))
-    .catch(error => res.send(500, {
-      res: false,
-    }))
+    })
+  } catch (error) {
+    return res.send(new errors.InternalServerError(error))
+  }
 }
 
 /**
@@ -91,7 +93,7 @@ const create = (req,res,next) => {
  * @param {Response} res
  * @param {*} send
  */
-const put = (req,res,send) => {
+const put = async (req,res,send) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
   const {id} = req.params;
@@ -101,14 +103,15 @@ const put = (req,res,send) => {
 
   const sendParans = trimObjctt({name, type, status});
 
-  Bucket.findByIdAndUpdate(id, sendParans, {new: true})
-    .then(data => {
-      if (!data) return res.semd(new errors.NotFoundError(`Bucket_id ${id} not found`))
-      if (data) return res.send(200, {
-        data: data
-      })
+  try {
+    const data = await Bucket.findByIdAndUpdate(id, sendParans, {new: true})
+    if (!data) return res.semd(new errors.NotFoundError(`Bucket_id ${id} not found`))
+    return res.send(200, {
+      data: data
     })
-    .catch(error => res.send(new errors.InternalServerError(`${error}`)))
+  } catch (error) {
+    return res.send(new errors.InternalServerError(error))
+  }
 }
 
 module.exports = {

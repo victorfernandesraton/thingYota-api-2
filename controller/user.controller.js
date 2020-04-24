@@ -70,7 +70,7 @@ const findOne = async (req,res,next) => {
 
   try {
     const data = await User.findById(req.params.id);
-    console.log(data)
+
     if (!data || data.length == 0) return res.send(new errors.NotFoundError(`User_id ${id} not found`))
 
     return res.send(200, {
@@ -107,13 +107,14 @@ const put = async (req,res,send) => {
   });
 
   try {
-    const user = await User.findById(id);
-    if (!user || user.length == 0) return res.semd(new errors.NotFoundError(`User_id ${id} not found`));
+    const user = await User.findByIdAndUpdate(id, sendParans, {useFindAndModify: false })
 
-    const data = await user.update(sendParans, {new: true});
-    return res.semd(200, {data: data})
+    if (!user || user.length == 0) return res.send(new errors.NotFoundError(`User_id ${id} not found`));
+
+    return res.send(200, {data: user})
+
   } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+    res.send(new errors.InternalServerError(`${error}`))
   }
 }
 
