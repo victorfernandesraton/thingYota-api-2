@@ -1,7 +1,7 @@
 const {
   authUser,
   authArduino
-} = require('./auth.socket')
+} = require('./auth')
 
 /**
  * @description Handler for socket 'on connected

@@ -1,4 +1,4 @@
-const User = require('../model/user.schema');
+const User = require('../model/user');
 const md5 = require('md5');
 const {validaionBodyEmpty, trimObjctt} = require("../utils/common");
 const errors = require('restify-errors');

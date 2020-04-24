@@ -1,8 +1,8 @@
 const
   jwt = require('jsonwebtoken'),
   config = require('../config/env'),
-  Device = require('../model/device.schema'),
-  User = require('../model/user.schema');
+  Device = require('../model/device'),
+  User = require('../model/user');
 
 /**
  * @description Função que valida o token de um arduino via socketio

@@ -16,7 +16,7 @@ const logger = require('morgan')
 const {
   onConnectArduino,
   onConnectUser
-} = require('./socket/onConnect.socket')
+} = require('./socket/onConnect')
 
 
 mongodb

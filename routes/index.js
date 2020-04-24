@@ -1,16 +1,16 @@
 const router = new (require('restify-router')).Router();
 
-const auth = require('./auth.route');
-const singup = require('./singup.route');
+const auth = require('./auth');
+const singup = require('./singup.');
 
-const user = require('./user.route');
-const device = require('./device.route');
+const user = require('./user');
+const device = require('./device');
 
-const bucket = require('./bucket.route');
-const sensor = require('./sensor.route');
-const actor = require('./actor.route');
+const bucket = require('./bucket');
+const sensor = require('./sensor');
+const actor = require('./actor');
 
-const register = require('./register.route');
+const register = require('./register');
 
 router.add('/auth', auth);
 router.add('/singup', singup);

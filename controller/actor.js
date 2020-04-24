@@ -1,5 +1,5 @@
-const Actor = require('../model/actor.schema')
-const Device = require('../model/device.schema')
+const Actor = require('../model/actor')
+const Device = require('../model/device')
 const {validaionBodyEmpty, trimObjctt} = require("../utils/common")
 const errors = require('restify-errors');
 

@@ -1,4 +1,4 @@
-const Register = require('../model/register.schema');
+const Register = require('../model/register');
 const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
 const errors = require('restify-errors')
 /**

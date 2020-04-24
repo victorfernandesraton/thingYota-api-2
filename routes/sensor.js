@@ -2,22 +2,23 @@ const
     Router = require('restify-router').Router,
     router = new Router()
 
-const {
-  authUserToken
-} = require('../controller/auth.controller')
-
 // controllers
 const {
   find,
   findOne,
-  create
-} = require('../controller/register.controller');
+  create,
+  put
+} = require('../controller/sensor');
 
+const {
+  authUser
+} = require('../middleware/auth')
 // endpoints
 router.get('',find);
 router.get('/:id',findOne);
 router.post('',create);
+router.put('/:id',put)
 
-router.use(authUserToken)
+router.use(authUser)
 
 module.exports = router;

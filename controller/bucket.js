@@ -1,4 +1,4 @@
-const Bucket = require('../model/bucket.schema');
+const Bucket = require('../model/bucket');
 const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
 const errors = require('restify-errors');
 

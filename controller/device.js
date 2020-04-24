@@ -1,4 +1,4 @@
-const Device = require('../model/device.schema')
+const Device = require('../model/device')
 const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
 const errors = require('restify-errors');
 

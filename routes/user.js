@@ -8,16 +8,16 @@ const {
   findOne,
   create,
   put
-} = require('../controller/user.controller');
+} = require('../controller/user');
 
 const {
-  authUserToken
-} = require('../controller/auth.controller')
+  authUser
+} = require('../middleware/auth')
 
 // endpoints
 router.get('',  find);
 router.get('/:id',  findOne);
 router.post('',  create);
 router.put('/:id',  put)
-router.use(authUserToken)
+router.use(authUser)
 module.exports = router;

@@ -1,5 +1,5 @@
-const Sensor = require('../model/sensor.schema')
-const Device = require('../model/device.schema')
+const Sensor = require('../model/sensor')
+const Device = require('../model/device')
 const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
 const errors = require('restify-errors');
 

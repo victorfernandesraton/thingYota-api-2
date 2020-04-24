@@ -5,7 +5,7 @@ const {
   authUser,
   authDevice,
   authGuest
-} = require('../controller/auth.controller');
+} = require('../controller/auth');
 
 // endpoints
 router.post('/login',authUser);
