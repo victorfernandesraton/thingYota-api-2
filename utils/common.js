@@ -17,7 +17,6 @@ const trimObjctt = (obj) => {
   return obj
 };
 
-console.log(trimObjctt({valyue: 0, b: null, c: undefined, d: {}}))
 module.exports = {
   validaionBodyEmpty,
   trimObjctt
