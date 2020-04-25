@@ -1,8 +1,12 @@
 const mongoose = require('mongoose')
-const config = require('../config/env')
+const env = require('../config/env')
 
-const url = config.db.username ?
-  `${config.db.url}://${config.db.username}:${config.db.password}@${config.db.host}/${config.db.database}` :
-  `${config.db.url}://${config.db.host}/${config.db.database}`
+const url = env.db.username ?
+  `${env.db.url}://${env.db.username}:${env.db.password}@${env.db.host}/${env.db.database}` :
+  `${env.db.url}://${env.db.host}/${env.db.database}`
 
-module.exports =  mongoose.connect(url, {useNewUrlParser: true});
+module.exports =  mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+});

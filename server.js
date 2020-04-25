@@ -9,6 +9,7 @@ require('dotenv').config({
 
 const server = require('./config/server');
 const mongodb = require('./database/mongodb');
+const env = require('./config/env');
 const socketIo = require('socket.io');
 const router = require('./routes/');
 const logger = require('morgan')
@@ -17,12 +18,6 @@ const {
   onConnectArduino,
   onConnectUser
 } = require('./socket/onConnect')
-
-
-mongodb
-  .then(data => console.log('momgobd has coonected', data.connection.db.databaseName))
-  .catch(error => console.log("eeror on first connection", error))
-
 
 const io = socketIo.listen(server.server);
 
@@ -51,14 +46,21 @@ server.use(logger('dev'))
 router.applyRoutes(server)
 
 server.get("/helth", (req,res, next) => {
-  return res.send(200, {data: {server}})
+  return res.send(200, {data: "OK"})
 });
-
-server.listen(process.env.PORT || 8000 , () => {
-  console.info(`Server runs in localhost:${server.address().port}`);
-  console.info("Press CTRL+C to kill then")
-})
 
 server.on('error', (error) => {
   console.info(error)
 })
+
+mongodb.then(data => {
+    console.log('momgobd has coonected', data.connection.db.databaseName)
+    server.listen(env.sever.port , () => {
+      console.info(`Server runs in localhost:${server.address().port}`);
+      console.info("Press CTRL+C to kill then")
+    })
+  })
+  .catch(error => console.log("eeror on first connection", error))
+
+
+

@@ -13,6 +13,6 @@ module.exports = {
   },
   sever: {
     name: process.env.SERVER_NAME,
-    port: process.env.SERVER_PORT
+    port: process.env.PORT
   }
 }
