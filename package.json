@@ -10,7 +10,7 @@
     "start": "NODE_ENV=production && node bin/server"
   },
   "author": "victorfeernandesraton",
-  "license": "MIT license",
+  "license": "MIT",
   "repository": {
     "type": "github",
     "url": "https://github.com/victorfernandesraton/thingYota-api2"
