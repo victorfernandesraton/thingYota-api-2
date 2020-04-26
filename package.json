@@ -5,8 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server",
-    "start": "NODE_ENV=development node server"
+    "dev": "NODE_ENV=development  node bin/server",
+    "dev-docker": "NODE_ENV=development-docker node bin/server",
+    "start": "NODE_ENV=production && node bin/server"
   },
   "author": "victorfeernandesraton",
   "license": "MIT license",
