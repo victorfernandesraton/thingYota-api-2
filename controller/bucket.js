@@ -66,11 +66,12 @@ const findOne = async (req,res,next) => {
 const create =  async (req,res,next) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
-  const {name, type} = req.body;
 
   const bodyNotFound = validaionBodyEmpty(req.body, ['name', 'type']);
 
   if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
+
+  const {name, type} = req.body;
 
   const sendData = trimObjctt({
     name,

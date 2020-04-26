@@ -3,7 +3,7 @@ const Device = require('../model/device');
 const md5 = require('md5');
 const jwt = require('jsonwebtoken');
 const config = require('../config/env');
-const {validaionBodyEmpty} = require('../utils/common');
+const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
 const errors = require('restify-errors');
 
 const authUser = async (req, res, send) => {
@@ -15,10 +15,10 @@ const authUser = async (req, res, send) => {
 
   let {username, email, password} = req.body
 
-  let query = {
+  let query = trimObjctt({
     password: md5(password),
     email: username
-  }
+  })
 
   const user = await User.findOne(query);
 
@@ -47,18 +47,17 @@ const authUser = async (req, res, send) => {
  * @requires req.body.mac_addres
  */
 const authDevice = async (req, res, send) => {
-  const {mac_addres} = req.body
   if (req.body == null || req.body == undefined) {
     return res.send(new errors.InvalidArgumentError("body is empty"))
   }
-
   const bodyNotFound = validaionBodyEmpty(req.body, ['mac_addres']);
-
   if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
-  let query = {
+  const {mac_addres} = req.body
+
+  let query = trimObjctt({
     mac_addres
-  }
+  })
 
   const device = await Device.findOne(query);
 

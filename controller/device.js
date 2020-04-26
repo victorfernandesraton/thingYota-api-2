@@ -100,10 +100,11 @@ const create = async (req,res,next) => {
 const put = async (req,res,send) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
   const {id} = req.params
   const {name, type, mac_addres, status} = req.body
 
-  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
   const sendParans = trimObjctt({
     name, type, mac_addres, status
