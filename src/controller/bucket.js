@@ -1,4 +1,6 @@
 const Bucket = require('../model/bucket');
+const Sensor = require('../model/sensor');
+const Actor = require('../model/actor');
 const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
 const errors = require('restify-errors');
 
@@ -106,7 +108,64 @@ const put = async (req,res,send) => {
 
   try {
     const data = await Bucket.findByIdAndUpdate(id, sendParans, {new: true})
-    if (!data) return res.semd(new errors.NotFoundError(`Bucket_id ${id} not found`))
+    if (!data) return res.send(new errors.NotFoundError(`Bucket_id ${id} not found`))
+    return res.send(200, {
+      data: data
+    })
+  } catch (error) {
+    return res.send(new errors.InternalServerError(error))
+  }
+}
+
+const createRelationShip = async (req, res, send) => {
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
+  const {id} = req.params;
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
+  const bodyNotFound = validaionBodyEmpty(req.body, ['to', 'type']);
+
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
+
+  const {to, type} = req.body;
+
+  const bucket = await Bucket.findById(req.params.id);
+
+  if (!bucket || bucket.length == 0) return res.send(new errors.NotFoundError(`Bucket._id ${id} not found`))
+
+  let dataTo, data;
+
+  try {
+    switch(type) {
+      case "Sensor":
+      case "sensor":
+        dataTo = await Sensor.findById(to.id);
+
+        if (!dataTo) return res.send(new errors.NotFoundError(`Sensor._id ${to.id} not found`))
+
+        data = await Bucket.findByIdAndUpdate(id, {
+          $push: {
+            Sensors: dataTo._id
+          }
+        })
+        break;
+      case "Actor":
+      case "actor":
+        dataTo = await Actor.findById(to.id);
+
+        if (!dataTo) return res.send(new errors.NotFoundError(`Sensor._id ${to.id} not found`))
+
+        data = await Bucket.findByIdAndUpdate(id, {
+          $push: {
+            Actors: dataTo._id
+          }
+        })
+        break;
+      default:
+        return res.send(new errors.InvalidContentError(`type ${type} is not valid.`))
+    }
+
     return res.send(200, {
       data: data
     })
@@ -119,5 +178,6 @@ module.exports = {
   findOne,
   find,
   create,
-  put
+  put,
+  createRelationShip
 }

@@ -6,6 +6,12 @@ const config = require('../config/env');
 const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
 const errors = require('restify-errors');
 
+/**
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Send} send
+ */
 const authUser = async (req, res, send) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
@@ -62,7 +68,6 @@ const authDevice = async (req, res, send) => {
   const device = await Device.findOne(query);
 
   if (!device  || device.length == 0) return res.send(new errors.NotFoundError("Device not found"))
-
 
   const token = await jwt.sign({
     name: device.name,
