@@ -1,4 +1,5 @@
 const User = require('../model/user');
+const Bucket = require('../model/bucket');
 const md5 = require('md5');
 const {validaionBodyEmpty, trimObjctt} = require("../utils/common");
 const errors = require('restify-errors');
@@ -118,9 +119,55 @@ const put = async (req,res,send) => {
   }
 }
 
+const createRelationShip = async (req, res, send) => {
+  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+
+  const {id} = req.params;
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
+  const bodyNotFound = validaionBodyEmpty(req.body, ['to', 'type']);
+
+  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
+
+  const {to, type} = req.body;
+
+  const user = await User.findById(req.params.id);
+
+  if (!user || user.length == 0) return res.send(new errors.NotFoundError(`User._id ${id} not found`))
+
+  let dataTo, data;
+
+  try {
+    switch(type) {
+      case "Bucket":
+      case "bucket":
+        dataTo = await Bucket.findById(to.id);
+
+        if (!dataTo) return res.send(new errors.NotFoundError(`Bucket._id ${to.id} not found`))
+
+        data = await User.findByIdAndUpdate(id,{
+          $push: {
+            Buckets: dataTo._id
+          }
+        }, {new: true})
+        break;
+      default:
+        return res.send(new errors.InvalidContentError(`type ${type} is not valid.`))
+    }
+
+    return res.send(200, {
+      data: data
+    })
+  } catch (error) {
+    return res.send(new errors.InternalServerError(error))
+  }
+}
+
 module.exports = {
   find,
   findOne,
   create,
-  put
+  put,
+  createRelationShip
 }

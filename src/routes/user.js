@@ -7,7 +7,8 @@ const {
   find,
   findOne,
   create,
-  put
+  put,
+  createRelationShip
 } = require('../controller/user');
 
 const {
@@ -19,5 +20,6 @@ router.get('',  find);
 router.get('/:id',  findOne);
 router.post('',  create);
 router.put('/:id',  put)
+router.post("/:id/relationship", createRelationShip)
 router.use(authUser)
 module.exports = router;

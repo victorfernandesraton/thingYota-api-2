@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  Buckets : [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Bucket"
+  }],
   last_change: {
     type: Date,
     default: Date.now
