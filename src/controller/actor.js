@@ -1,5 +1,6 @@
-const Actor = require('../model/actor')
-const Device = require('../model/device')
+const Actor = require('../model/actor');
+const Device = require('../model/device');
+const Bucket = require('../model/bucket');
 const {validaionBodyEmpty, trimObjctt} = require("../utils/common")
 const errors = require('restify-errors');
 
@@ -103,17 +104,17 @@ const create = async (req,res,next) => {
  * @param {*} send
  */
 const put = async (req,res,send) => {
-
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
-  const {device_parent, name, type, status} = req.body
+  const {device_parent, name, type, status, port} = req.body
+  const {id} = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
   try {
-    const actor = await Actor.findById(id)
+    const sensor = await Actor.findById(id)
 
-    if (!actor) return res.send(new errors.NotFoundError(`Actor_id ${id} not found`))
+    if (!sensor) return res.send(new errors.NotFoundError(`Actor_id ${id} not found`))
 
     if (device_parent) {
       const device = await Device.findById(req.body.device_parent)
@@ -126,19 +127,39 @@ const put = async (req,res,send) => {
         }
       })
     }
-    const data = await Actor.findByIdAndUpdate(id, {
+
+    let sendData = trimObjctt({
       device_parent,
       name,
       type,
-      status
+      status,
+      port
     })
 
+
+
+    const data = await Actor.findByIdAndUpdate(id,sendData, {new: true, useFindAndModify: false })
+
+    const buckets = await Bucket.find({Actors: {"$in" : {_id: id}}})
+
+    if(buckets.length > 0) {
+      buckets.forEach(el => {
+        const dispatch = req.io.io.of(`/Bucket_${el._id}`);
+
+        dispatch.emit("updated", {
+          data: {
+            Actor: data,
+            entity: "Actors",
+            Bucket: el
+          }
+        })
+      })
+    }
     return res.send(200, {
       data: data
     })
-
   } catch(error) {
-    return res.send(500, {res: false, error: {error}})
+    return res.send(new errors.InternalServerError(`${error}`))
   }
 }
 

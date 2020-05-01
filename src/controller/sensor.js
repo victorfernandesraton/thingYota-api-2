@@ -1,6 +1,7 @@
-const Sensor = require('../model/sensor')
-const Device = require('../model/device')
-const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
+const Sensor = require('../model/sensor');
+const Device = require('../model/device');
+const Bucket = require('../model/bucket');
+const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
 const errors = require('restify-errors');
 
 
@@ -146,6 +147,21 @@ const put = async (req,res,send) => {
     })
 
     const data = await Sensor.findByIdAndUpdate(id,sendData, {new: true, useFindAndModify: false })
+
+    const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
+
+    if(buckets.length > 0) {
+      buckets.forEach(el => {
+        const dispatch = req.io.io.of(`/Bucket_${el._id}`);
+        dispatch.emit("updated", {
+          data: {
+            Sensor: data,
+            entity: "Actor",
+            Bucket: el
+          }
+        })
+      })
+    }
     return res.send(200, {
       data: data
     })
