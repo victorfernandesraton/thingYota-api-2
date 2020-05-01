@@ -11,6 +11,12 @@ const bucketSchema = new mongoose.Schema({
       ref: 'Sensor'
     }
   ],
+  Actors : [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Actor'
+    }
+  ],
   type: {
     type: String,
     default: 'wather-bucket'
