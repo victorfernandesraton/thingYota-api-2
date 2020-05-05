@@ -62,6 +62,13 @@ server.get("/helth", (req, res, next) => {
   return res.send(200, { data: "OK" })
 });
 
+// hello
+server.get("/", (req,res, next) => {
+  return res.send(200, {
+    messgae: "This is a single rest api"
+  })
+})
+
 server.on('error', (error) => {
   console.info(error)
 })
