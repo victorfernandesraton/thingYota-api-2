@@ -41,8 +41,7 @@ server.use((req, res, next) => {
     userSocket,
     notification,
     bucketSocket,
-    arduino,
-    io
+    arduino
   }
   let mqtt = {
     client: clientMqtt
