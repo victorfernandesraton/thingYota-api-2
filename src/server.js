@@ -1,7 +1,9 @@
+const env = require('./config/env');
 const server = require('./config/server');
 const socketIo = require('socket.io');
 const router = require('./routes');
-const logger = require('morgan')
+const logger = require('morgan');
+const mqtt = require('mqtt');
 
 const {
   onConnectArduino,
@@ -9,6 +11,10 @@ const {
 } = require('./socket/onConnect')
 
 const io = socketIo.listen(server.server);
+const arduino = socketIo.listen(server.server, {
+  path: "/arduino",
+})
+io.set('log level', 1);
 
 const notification = io.of('/notification');
 const arduinoSocket = io.of('/arduino');
@@ -19,18 +25,33 @@ const bucketSocket = io.of("/bucket");
 arduinoSocket.on('connection', socket => onConnectArduino(socket, io))
 userSocket.on('connection', socket => onConnectUser(socket, io))
 
+io.on("authArduino", data => {
+  console.log(data)
+})
+// mqtt
+const clientMqtt = mqtt.connect(`http://${env.mqtt.host}:${env.mqtt.port}`);
+clientMqtt.on('connect', data => {
+  console.info(`connected sucessful in mqtt broker at ${env.mqtt.host}::${env.mqtt.port}`)
+})
 // socket
 server.use((req, res, next) => {
   // socket
-  req.io = {
+  let io = {
     arduinoSocket,
     userSocket,
     notification,
     bucketSocket,
+    arduino,
     io
   }
+  let mqtt = {
+    client: clientMqtt
+  }
+  req.io = io
+  req.mqtt = mqtt
   return next();
 });
+
 
 server.use(logger('dev'))
 
@@ -40,6 +61,13 @@ router.applyRoutes(server)
 server.get("/helth", (req, res, next) => {
   return res.send(200, { data: "OK" })
 });
+
+// hello
+server.get("/", (req,res, next) => {
+  return res.send(200, {
+    messgae: "This is a single rest api"
+  })
+})
 
 server.on('error', (error) => {
   console.info(error)
