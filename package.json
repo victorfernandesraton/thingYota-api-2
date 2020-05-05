@@ -22,6 +22,7 @@
     "md5": "^2.2.1",
     "mongoose": "^5.9.3",
     "morgan": "^1.10.0",
+    "mqtt": "^4.0.0",
     "restify": "^8.5.1",
     "restify-cors-middleware": "^1.1.1",
     "restify-errors": "^8.0.2",

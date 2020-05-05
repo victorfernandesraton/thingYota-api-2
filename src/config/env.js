@@ -14,5 +14,9 @@ module.exports = {
   sever: {
     name: process.env.SERVER_NAME,
     port: process.env.PORT
+  },
+  mqtt: {
+    host: process.env.MQTT_HOST,
+    port: process.env.MQTT_PORT
   }
 }

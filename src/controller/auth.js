@@ -38,6 +38,7 @@ const authUser = async (req, res, send) => {
     entity: "User"
   }, config.secret.user);
   return res.send(200, {
+    res: true,
     data: {
       token,
       user
@@ -76,6 +77,7 @@ const authDevice = async (req, res, send) => {
     entity: "Device"
   }, config.secret.user);
   return res.send(200, {
+    res: true,
     data: {
       token,
       device
