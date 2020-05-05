@@ -34,7 +34,7 @@ mongoose.connect(url, {
 })
   .then(data => {
     console.log("Database as connected");
-    server.listen(process.env.PORT || env.sever.port, (data) => {
+    server.listen(env.sever.port, (data) => {
       console.info(`Press CTRL+C to kill`);
       // console.info(`PORT: ${server.address().port}`);
     });
