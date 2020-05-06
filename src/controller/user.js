@@ -41,7 +41,7 @@ const find = async (req,res,next) => {
  * @param {next} next
  * @requires req
  */
-const create = (req,res,next) => {
+const create = async (req,res,next) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
   const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'email', 'first_name', 'password']);
@@ -50,19 +50,21 @@ const create = (req,res,next) => {
 
   const {username, first_name, last_name, password, email} = req.body;
 
-  const user = new User({
-    username,
-    first_name,
-    last_name,
-    email,
-    password: md5(password.toString()),
-    create_at: Date()
-  })
-  user.save()
-    .then(data => res.send(201, {
+  try {
+    const data = await User.create({
+      username,
+      first_name,
+      last_name,
+      email,
+      password: md5(password.toString()),
+      create_at: Date()
+    })
+    return res.send(201, {
       data: data,
-    }))
-    .catch(error => res.send(new errors.InternalServerError(`${error}`)))
+    })
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`An database error has occoured`))
+  }
 }
 
 const findOne = async (req,res,next) => {
@@ -79,7 +81,7 @@ const findOne = async (req,res,next) => {
       data: data,
     })
   } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+    return res.send(new errors.InternalServerError(`An database error has occoured`))
   }
 }
 
