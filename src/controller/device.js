@@ -86,8 +86,11 @@ const create = async (req,res,next) => {
     return res.send(200, {
       data: data
     })
-  } catch (error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+  } catch(error) {
+    if(error.code == 11000 ) {
+      return res.send(new errors.ConflictError(`duplicated : ${JSON.stringify(error.keyValue)}`))
+    }
+    return res.send(new errors.InternalServerError(`An database error has occoured`))
   }
 }
 
