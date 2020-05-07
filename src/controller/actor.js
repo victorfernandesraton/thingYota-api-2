@@ -80,6 +80,7 @@ const create = async (req,res,next) => {
 
   const sendData = trimObjctt({name, type, device_parent, port, create_at: Date.now()});
 
+
   try {
     const device = await Device.findById(device_parent)
 
@@ -93,7 +94,10 @@ const create = async (req,res,next) => {
     })
     return res.send(200, {data: data})
   } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+    if(error.code == 11000 ) {
+      return res.send(new errors.ConflictError(`duplicated : ${JSON.stringify(error.keyValue)}`))
+    }
+    return res.send(new errors.InternalServerError(`An database error has occoured`))
   }
 }
 

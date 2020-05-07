@@ -5,7 +5,7 @@
  * @returns
  */
 
-const validaionBodyEmpty = (object, requires) => requires.filter(key => !object.hasOwnProperty(key))
+const validaionBodyEmpty = (object, requires) => requires.filter(key => !trimObjctt(object).hasOwnProperty(key))
 
 /**
  * @description Trim undefuned and null propety in object
@@ -13,7 +13,7 @@ const validaionBodyEmpty = (object, requires) => requires.filter(key => !object.
  * @returns
  */
 const trimObjctt = (obj) => {
-  Object.keys(obj).forEach((key) => (obj[key] == null || obj[key] == undefined || obj[key] == {}) && delete obj[key])
+  Object.keys(obj).forEach((key) => (obj[key] == null || obj[key] == undefined || obj[key] == {} || obj[key]) == "" && delete obj[key])
   return obj
 };
 

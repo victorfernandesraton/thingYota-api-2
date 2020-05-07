@@ -50,21 +50,21 @@ const create = async (req,res,next) => {
 
   const {username, first_name, last_name, password, email} = req.body;
 
-  try {
-    const data = await User.create({
-      username,
-      first_name,
-      last_name,
-      email,
-      password: md5(password.toString()),
-      create_at: Date()
-    })
-    return res.send(201, {
-      data: data,
-    })
-  } catch (error) {
+  User.create({
+    username,
+    first_name,
+    last_name,
+    email,
+    password: md5(password.toString()),
+    create_at: Date()
+  })
+  .then(data => res.send(201, {data: data}))
+  .catch (error => {
+    if(error.code == 11000 ) {
+      return res.send(new errors.ConflictError(`duplicated : ${JSON.stringify(error.keyValue)}`))
+    }
     return res.send(new errors.InternalServerError(`An database error has occoured`))
-  }
+  })
 }
 
 const findOne = async (req,res,next) => {
@@ -146,7 +146,7 @@ const createRelationShip = async (req, res, send) => {
       case "bucket":
         dataTo = await Bucket.findById(to.id);
 
-        if (!dataTo) return res.send(new errors.NotFoundError(`Bucket._id ${to.id} not found`))
+        if (!dataTo) return res.send(new errors.NotFoundError(`Bucket._id ${JSON.stringify(to.id)} not found`))
 
         data = await User.findByIdAndUpdate(id,{
           $push: {
