@@ -29,9 +29,9 @@ io.on("authArduino", data => {
   console.log(data)
 })
 // mqtt
-const clientMqtt = mqtt.connect(`http://${env.mqtt.host}:${env.mqtt.port}`);
+const clientMqtt = mqtt.connect(`${env.mqtt.host}`);
 clientMqtt.on('connect', data => {
-  console.info(`connected sucessful in mqtt broker at ${env.mqtt.host}::${env.mqtt.port}`)
+  console.info(`connected sucessful in mqtt broker at ${env.mqtt.host}`)
 })
 // socket
 server.use((req, res, next) => {
