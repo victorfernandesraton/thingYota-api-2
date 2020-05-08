@@ -159,6 +159,19 @@ const put = async (req,res,send) => {
         })
       })
     }
+
+    const devices = await Device.find({Actors: {"$in": {_id: id}}})
+
+    // envio de dados usando mqtt client prara enviar ao tópico
+    if(devices.length > 0) {
+      devices.forEach(el => {
+        req.mqtt.client.publish(`teste`, JSON.stringify({
+          port: el.port,
+          action: true
+        }))
+      })
+    }
+
     return res.send(200, {
       data: data
     })
