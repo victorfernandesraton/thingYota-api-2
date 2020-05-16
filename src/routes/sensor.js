@@ -7,7 +7,8 @@ const {
   find,
   findOne,
   create,
-  put
+  put,
+  registerValue
 } = require('../controller/sensor');
 
 const {
@@ -17,7 +18,8 @@ const {
 router.get('',find);
 router.get('/:id',findOne);
 router.post('',create);
-router.put('/:id',put)
+router.put('/:id',put);
+router.post('/:id/value', registerValue);
 
 router.use(authUser)
 

@@ -18,6 +18,9 @@ const actorSchema = new mongoose.Schema({
     type: String,
     default: 'motor'
   },
+  value: {
+    type: Object
+  },
   status: {
     type: Boolean,
     default: true

@@ -14,7 +14,7 @@ const find = async (req,res,next) => {
   const {limit} = req.query
   const offset = (req.query.offset -1) * limit || 0
   try{
-    const data = await Bucket.find()
+    const data = await Bucket.find().populate('Sensors')
       .limit(parseInt(limit) || 0)
       .skip(parseInt(offset) || 0)
       .exec()
@@ -43,7 +43,10 @@ const findOne = async (req,res,next) => {
   const {id} = req.params;
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"))
   try{
-    const data = await Bucket.findById(req.params.id);
+    const data = await Bucket.findById(req.params.id)
+      .populate('Sensors')
+      .populate('Actors')
+      .exec()
 
     if (!data || data.length == 0) return res.send(new errors.NotFoundError(`Bucket._id ${id} not found`))
 

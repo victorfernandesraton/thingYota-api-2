@@ -36,17 +36,17 @@ clientMqtt.on('connect', data => {
 // socket
 server.use((req, res, next) => {
   // socket
-  let io = {
+  req.io = {
     arduinoSocket,
     userSocket,
     notification,
     bucketSocket,
-    arduino
+    arduino,
+    main : io
   }
   let mqtt = {
     client: clientMqtt
   }
-  req.io = io
   req.mqtt = mqtt
   return next();
 });

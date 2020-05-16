@@ -170,9 +170,50 @@ const put = async (req,res,send) => {
   }
 }
 
+const registerValue = async (req, res, next) => {
+  const {id} = req.params
+  const {value} = req.body;
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
+  if (!value) return res.send(new errors.InvalidContentError("Body not found"));
+
+  try {
+    const sensor = await Sensor.findById(id);
+
+    if (!sensor || sensor.length == 0) return res.send(new errors.NotFoundError("Sensor not found"))
+
+    const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
+
+    const data = await Sensor.findOneAndUpdate({_id: id},{value}, {new: true, useFindAndModify: false })
+
+    if(buckets.length > 0) {
+      buckets.forEach(el => {
+        const dispatch = req.io.main.of(`/Bucket_${el._id}`);
+        dispatch.emit("updated", {
+          data: {
+            value,
+            entity: buckets,
+            type: "Sensor",
+            Bucket: el
+          }
+        })
+      })
+    }
+
+    return res.send(200, {
+      data: data
+    })
+  } catch(error) {
+    console.log(error)
+    return res.send(new errors.InternalServerError(`${error}`))
+  }
+}
+
 module.exports = {
   findOne,
   find,
   create,
-  put
+  put,
+  registerValue
 }

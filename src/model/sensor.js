@@ -19,6 +19,9 @@ const sensorSchema = new mongoose.Schema({
     type: String,
     default: 'wather-sensor'
   },
+  value: {
+    type: Object
+  },
   status: {
     type: Boolean,
     default: true
@@ -31,6 +34,7 @@ const sensorSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+
 })
 
 module.exports = mongoose.model("Sensor", sensorSchema);
