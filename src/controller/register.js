@@ -90,8 +90,7 @@ const create = async (req,res,next) => {
     value,
     type,
     status,
-    Fk_bucket,
-    create_at: Date()
+    Fk_bucket
   })
 
   try {

@@ -151,7 +151,12 @@ const createRelationShip = async (req, res, send) => {
           $push: {
             Buckets: dataTo._id
           }
-        }, {new: true})
+        },
+        {
+          new: true,
+          upsert: true,
+          setDefaultsOnInsert: true,
+        })
         break;
       default:
         return res.send(new errors.InvalidContentError(`type ${type} is not valid.`))

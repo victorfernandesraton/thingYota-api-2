@@ -79,8 +79,7 @@ const create = async (req,res,next) => {
     const data = await Device.create({
       name,
       type,
-      mac_addres,
-      create_at: Date.now()
+      mac_addres
     })
 
     return res.send(200, {

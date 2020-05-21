@@ -78,8 +78,7 @@ const create =  async (req,res,next) => {
 
   const sendData = trimObjctt({
     name,
-    type,
-    create_at: Date()
+    type
   })
   try {
     const data = await Bucket.create(sendData)
