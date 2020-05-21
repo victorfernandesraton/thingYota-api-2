@@ -148,9 +148,8 @@ const put = async (req,res,send) => {
 
     const data = await Sensor.findByIdAndUpdate(id,sendData, {
       new: true,
-      useFindAndModify: false ,
-      timestamps: true,
-
+      upsert: true,
+      setDefaultsOnInsert: true,
     })
 
     const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
@@ -193,8 +192,7 @@ const registerValue = async (req, res, next) => {
     const data = await Sensor.findOneAndUpdate({
       _id: id
     },{
-      value,
-      last_change: Date.now()
+      value
     }, {
       new: true,
       upsert: true,

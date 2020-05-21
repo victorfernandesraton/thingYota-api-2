@@ -13,7 +13,7 @@ const validaionBodyEmpty = (object, requires) => requires.filter(key => !trimObj
  * @returns
  */
 const trimObjctt = (obj) => {
-  Object.keys(obj).forEach((key) => (obj[key] == null || obj[key] == undefined || obj[key] == {} || obj[key]) == "" && delete obj[key])
+  Object.keys(obj).forEach((key) => (obj[key] === null || obj[key] === undefined || obj[key] === {} || obj[key] === "" ) && delete obj[key])
   return obj
 };
 

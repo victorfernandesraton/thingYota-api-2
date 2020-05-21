@@ -25,16 +25,12 @@ const sensorSchema = new mongoose.Schema({
   status: {
     type: Boolean,
     default: true
-  },
-  create_at: {
-    type: Date,
-    required: true
-  },
-  last_change: {
-    type: Date,
-    default: Date.now
   }
-
+}, {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'last_change'
+  }
 })
 
 module.exports = mongoose.model("Sensor", sensorSchema);
