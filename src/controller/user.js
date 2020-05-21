@@ -55,8 +55,7 @@ const create = async (req,res,next) => {
     first_name,
     last_name,
     email,
-    password: md5(password.toString()),
-    create_at: Date()
+    password
   })
   .then(data => res.send(201, {data: data}))
   .catch (error => {
