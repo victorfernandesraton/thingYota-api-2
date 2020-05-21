@@ -8,7 +8,8 @@ const {
   findOne,
   create,
   put,
-  createRelationShip
+  createRelationShip,
+  deleteRelationShip
 } = require('../controller/user');
 
 const {
@@ -21,5 +22,6 @@ router.get('/:id',  findOne);
 router.post('',  create);
 router.put('/:id',  put)
 router.post("/:id/relationship", createRelationShip)
+router.del("/:id/relationship", deleteRelationShip)
 router.use(authUser)
 module.exports = router;
