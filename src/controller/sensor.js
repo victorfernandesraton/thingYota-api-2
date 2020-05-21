@@ -146,7 +146,12 @@ const put = async (req,res,send) => {
       port
     })
 
-    const data = await Sensor.findByIdAndUpdate(id,sendData, {new: true, useFindAndModify: false })
+    const data = await Sensor.findByIdAndUpdate(id,sendData, {
+      new: true,
+      useFindAndModify: false ,
+      timestamps: true,
+
+    })
 
     const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
 
@@ -185,11 +190,20 @@ const registerValue = async (req, res, next) => {
 
     const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
 
-    const data = await Sensor.findOneAndUpdate({_id: id},{value}, {new: true, useFindAndModify: false })
+    const data = await Sensor.findOneAndUpdate({
+      _id: id
+    },{
+      value,
+      last_change: Date.now()
+    }, {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+    })
 
     if(buckets.length > 0) {
       buckets.forEach(el => {
-        const dispatch = req.io.main.of(`/Bucket_${el._id}`);
+        const dispatch = req.io.io.of(`/Bucket_${el._id}`);
         dispatch.emit("updated", {
           data: {
             value,
