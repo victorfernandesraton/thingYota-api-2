@@ -116,7 +116,7 @@ const create = async (req,res,next) => {
 const put = async (req,res,send) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
-  const {device_parent, name, type, status, port} = req.body
+  const {device_parent, name, type, status, port, value} = req.body
   const {id} = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
@@ -143,17 +143,17 @@ const put = async (req,res,send) => {
       name,
       type,
       status,
-      port
+      port,
+      value
     })
 
     const data = await Sensor.findByIdAndUpdate(id,sendData, {
       new: true,
-      useFindAndModify: false ,
-      timestamps: true,
-
+      upsert: true,
+      setDefaultsOnInsert: true,
     })
 
-    const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
+    const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}}).populate('Sensors')
 
     if(buckets.length > 0) {
       buckets.forEach(el => {
@@ -161,7 +161,7 @@ const put = async (req,res,send) => {
         dispatch.emit("updated", {
           data: {
             Sensor: data,
-            entity: "Actor",
+            entity: "Sensor",
             Bucket: el
           }
         })
@@ -193,8 +193,7 @@ const registerValue = async (req, res, next) => {
     const data = await Sensor.findOneAndUpdate({
       _id: id
     },{
-      value,
-      last_change: Date.now()
+      value
     }, {
       new: true,
       upsert: true,
@@ -207,7 +206,6 @@ const registerValue = async (req, res, next) => {
         dispatch.emit("updated", {
           data: {
             value,
-            entity: buckets,
             type: "Sensor",
             Bucket: el
           }

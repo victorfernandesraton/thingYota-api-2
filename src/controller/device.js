@@ -79,8 +79,7 @@ const create = async (req,res,next) => {
     const data = await Device.create({
       name,
       type,
-      mac_addres,
-      create_at: Date.now()
+      mac_addres
     })
 
     return res.send(200, {
@@ -114,7 +113,11 @@ const put = async (req,res,send) => {
   })
 
   try {
-    const data = await Device.findByIdAndUpdate(id, sendParans, {new: true})
+    const data = await Device.findByIdAndUpdate(id, sendParans, {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+    })
     if (!data) return res.send(new errors.NotFoundError(`Device ${id} not found`))
   } catch (error) {
     return res.send(new errors.InternalServerError(`${error}`))

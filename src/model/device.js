@@ -9,10 +9,6 @@ const deviceSchemme = new mongoose.Schema({
     required: true,
     unique: true
   },
-  create_at: {
-    type: Date,
-    required: true
-  },
   Sensors: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Sensor"
@@ -21,13 +17,14 @@ const deviceSchemme = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Actor"
   }],
-  last_change: {
-    type: Date,
-    default: Date.now
-  },
   status: {
     type: Boolean,
     default: true
+  }
+} , {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'last_change'
   }
 })
 

@@ -40,19 +40,16 @@ const userSchema = new mongoose.Schema({
   Buckets : [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Bucket"
-  }],
-  last_change: {
-    type: Date,
-    default: Date.now
-  }
+  }]
 })
 
-// // Encriptador de senha
-// userSchema.pre('save', async function (next) {
-//   // alteração dos valores
-//   this.password = md5(password.toString());
-//   next();
-// })
+// Encriptador de senha
+userSchema.pre('save', async function (next) {
+  // alteração dos valores
+  const hash = md5(this.password.toString());
+  this.password = hash;
+  next();
+})
 
 
 module.exports = mongoose.model("User", userSchema);

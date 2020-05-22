@@ -26,13 +26,10 @@ const registerSchema = new mongoose.Schema({
     type: String,
     default: 'Sensor'
   },
-  create_at: {
-    type: Date,
-    required: true
-  },
-  last_change: {
-    type: Date,
-    default: Date.now
+}, {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'last_change'
   }
 })
 

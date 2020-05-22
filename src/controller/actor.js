@@ -129,6 +129,11 @@ const put = async (req,res,send) => {
         $push: {
           Actors: await Actor.findById(id)
         }
+      },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
       })
     }
 
@@ -195,7 +200,11 @@ const registerValue = async (req, res, next) => {
 
     const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
 
-    const data = await actor.update(id,sendData, {new: true, useFindAndModify: false })
+    const data = await actor.update(id,sendData, {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+    })
 
     if(buckets.length > 0) {
       buckets.forEach(el => {
