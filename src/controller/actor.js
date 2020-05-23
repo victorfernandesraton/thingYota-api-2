@@ -4,13 +4,16 @@ const Bucket = require('../model/bucket');
 const {validaionBodyEmpty, trimObjctt} = require("../utils/common")
 const errors = require('restify-errors');
 
+const {mockBuckets} = require('../utils/socket');
+const {mockDevices} = require('../utils/mqtt');
+
 /**
  * @description Get all devices in database
  * @param {Request} req
  * @param {Response} res
- * @param {*} next
+ * @param {*} send
  */
-const find = async (req,res,next) => {
+const find = async (req,res,send) => {
   const {limit} = req.query
   const offset = (req.query.offset -1) * limit || 0
   try{
@@ -110,7 +113,7 @@ const create = async (req,res,next) => {
 const put = async (req,res,send) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
-  const {device_parent, name, type, status, port} = req.body
+  const {device_parent, name, type, status, port, value} = req.body
   const {id} = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
@@ -142,7 +145,8 @@ const put = async (req,res,send) => {
       name,
       type,
       status,
-      port
+      port,
+      value
     })
 
 
@@ -151,35 +155,26 @@ const put = async (req,res,send) => {
 
     const buckets = await Bucket.find({Actors: {"$in" : {_id: id}}})
 
-    if(buckets.length > 0) {
-      buckets.forEach(el => {
-        const dispatch = req.io.io.of(`/Bucket_${el._id}`);
-
-        dispatch.emit("updated", {
-          data: {
-            Actor: data,
-            entity: "Actors",
-            Bucket: el
-          }
-        })
-      })
-    }
+    // emiters para socketio
+    let recives = buckets.map(el => {
+      return mockBuckets(el, data, "Actors")
+    });
 
     const devices = await Device.find({Actors: {"$in": {_id: id}}})
 
     // envio de dados usando mqtt client prara enviar ao tópico
-    if(devices.length > 0) {
-      devices.forEach(el => {
-        req.mqtt.client.publish(`teste`, JSON.stringify({
-          port: el.port,
-          action: true
-        }))
-      })
+    let dispensor = devices.map(el => {
+      return mockDevices(el, data);
+    })
+
+    req.locals = {
+      recives,
+      dispensor,
+      data
     }
 
-    return res.send(200, {
-      data: data
-    })
+    send();
+
   } catch(error) {
     return res.send(new errors.InternalServerError(`${error}`))
   }
@@ -194,7 +189,7 @@ const registerValue = async (req, res, next) => {
   if (!value) return res.send(new errors.InvalidContentError("Body not found"));
 
   try {
-    const actor = await Actor.findById(id);
+    const actor = await Actor.findById(id).populate('device_parent');
 
     if (!actor || actor.length == 0) return res.send(new errors.NotFoundError("Actor not found"))
 

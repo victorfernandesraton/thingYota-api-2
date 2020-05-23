@@ -21,6 +21,10 @@ const bucketSchema = new mongoose.Schema({
     type: String,
     default: 'wather-bucket'
   },
+  volume: {
+    type: Object,
+    default: {data: {value: 0, unity: 'L'}}
+  },
   status: {
     type: Boolean,
     default: true

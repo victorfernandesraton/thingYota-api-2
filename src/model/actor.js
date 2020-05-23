@@ -24,6 +24,10 @@ const actorSchema = new mongoose.Schema({
   status: {
     type: Boolean,
     default: true
+  },
+  rules: {
+    type: Array,
+    default: []
   }
 }, {
   timestamps: {

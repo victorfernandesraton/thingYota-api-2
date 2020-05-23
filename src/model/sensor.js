@@ -20,7 +20,8 @@ const sensorSchema = new mongoose.Schema({
     default: 'wather-sensor'
   },
   value: {
-    type: Object
+    type: Object,
+    default: {data : true, entity: 'boolean'}
   },
   status: {
     type: Boolean,
