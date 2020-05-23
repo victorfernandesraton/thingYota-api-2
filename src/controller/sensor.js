@@ -4,6 +4,8 @@ const Bucket = require('../model/bucket');
 const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
 const errors = require('restify-errors');
 
+const {mockBuckets} = require('../utils/socket')
+
 
 /**
  * @description Get all devices in database
@@ -155,21 +157,31 @@ const put = async (req,res,send) => {
 
     const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}}).populate('Sensors')
 
-    if(buckets.length > 0) {
-      buckets.forEach(el => {
-        const dispatch = req.io.io.of(`/Bucket_${el._id}`);
-        dispatch.emit("updated", {
-          data: {
-            Sensor: data,
-            entity: "Sensor",
-            Bucket: el
-          }
-        })
-      })
+    // if(buckets.length > 0) {
+    //   buckets.forEach(el => {
+    //     const dispatch = req.io.io.of(`/Bucket_${el._id}`);
+    //     dispatch.emit("updated", {
+    //       data: {
+    //         Sensor: data,
+    //         entity: "Sensor",
+    //         Bucket: el
+    //       }
+    //     })
+    //   })
+    // }
+
+    // emiters para socketio
+    let recives = buckets.map(el => {
+      return mockBuckets(el, data, "Actors")
+    });
+
+
+    req.locals = {
+      recives,
+      data
     }
-    return res.send(200, {
-      data: data
-    })
+
+    send();
   } catch(error) {
     return res.send(new errors.InternalServerError(`${error}`))
   }
