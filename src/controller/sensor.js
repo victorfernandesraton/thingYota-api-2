@@ -79,7 +79,7 @@ const create = async (req,res,next) => {
 
   if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
 
-  const {name, type, device_parent, port} = req.body;
+  const {name, type, device_parent, port, value} = req.body;
 
   const device = await Device.findById(device_parent)
 
@@ -90,7 +90,8 @@ const create = async (req,res,next) => {
     name,
     type,
     device_parent,
-    port
+    port,
+    value
   })
 
   device.update({

@@ -103,11 +103,11 @@ const put = async (req,res,send) => {
   if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
 
   const {id} = req.params;
-  const {name, type, status} = req.body;
+  const {name, type, status, volume} = req.body;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
-  const sendParans = trimObjctt({name, type, status});
+  const sendParans = trimObjctt({name, type, status, volume});
 
   try {
     const data = await Bucket.findByIdAndUpdate(id, sendParans, {new: true})
