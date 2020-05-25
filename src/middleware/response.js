@@ -1,15 +1,14 @@
-const responseOk =(req, res, send) => {
+const responseOk = (req, res, send) => {
   try {
-    const {data} =req.locals
+    const { data } = req.locals;
     return res.send(200, {
-      data: data
-    })
+      data: data,
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-  catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
-  }
-}
+};
 
 module.exports = {
-  responseOk
-}
+  responseOk,
+};

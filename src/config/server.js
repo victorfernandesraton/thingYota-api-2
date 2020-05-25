@@ -1,15 +1,15 @@
-const restify = require('restify');
-const plugins = require('restify').plugins
+const restify = require("restify");
+const plugins = require("restify").plugins;
 const corsMiddleware = require("restify-cors-middleware");
 
 const cors = corsMiddleware({
   origins: ["*"],
   allowHeaders: ["Authorization"],
-  exposeHeaders: ["Authorization"]
+  exposeHeaders: ["Authorization"],
 });
 
 const app = restify.createServer({
-  name: "thingYota-api"
+  name: "thingYota-api",
 });
 
 app.use(plugins.jsonBodyParser({ mapParams: true }));

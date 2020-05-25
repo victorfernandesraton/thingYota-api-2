@@ -1,6 +1,6 @@
-const Register = require('../model/register');
-const {validaionBodyEmpty, trimObjctt} = require('../utils/common')
-const errors = require('restify-errors')
+const Register = require("../model/register");
+const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
+const errors = require("restify-errors");
 /**
  * @description Rota que retorna registros de dados
  * @param {Request} req
@@ -8,28 +8,32 @@ const errors = require('restify-errors')
  * @param {Send} send
  */
 const find = async (req, res, send) => {
-  const {limit} = req.query
-  const offset = (req.query.offset -1) * limit || 0
-  try{
+  const { limit } = req.query;
+  const offset = (req.query.offset - 1) * limit || 0;
+  try {
     const data = await Register.find()
       .limit(parseInt(limit) || 0)
-      .skip(parseInt(offset) || 0).populate('Fk_device').populate('Fk_iten')
-      .exec()
+      .skip(parseInt(offset) || 0)
+      .populate("Fk_device")
+      .populate("Fk_iten")
+      .exec();
 
-    const total =await Register.estimatedDocumentCount()
+    const total = await Register.estimatedDocumentCount();
 
-    if (offset >= total && total != 0) return res.send(new errors.LengthRequiredError("out of rnge"))
+    if (offset >= total && total != 0)
+      return res.send(new errors.LengthRequiredError("out of rnge"));
 
-    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Register not found"))
+    if (!data || data.length == 0)
+      return res.send(new errors.NotFoundError("Register not found"));
 
     return res.send(200, {
       data: data,
-      metadata: {limit, offset, total }
-    })
-  } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+      metadata: { limit, offset, total },
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-}
+};
 
 /**
  * @description Get one register using your PK value id
@@ -38,23 +42,24 @@ const find = async (req, res, send) => {
  * @requires params.id
  * @param {*} next
  */
-const findOne = async (req,res,next) => {
-  const {id} = req.params;
+const findOne = async (req, res, next) => {
+  const { id } = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
-  try{
+  try {
     const data = await Register.findById(req.params.id);
 
-    if (!data || data.length == 0) return res.send(new errors.NotFoundError(`Register._id ${id} not found`))
+    if (!data || data.length == 0)
+      return res.send(new errors.NotFoundError(`Register._id ${id} not found`));
 
     res.send(200, {
       data: data,
-    })
-  } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-}
+};
 
 /**
  * @description Create Register
@@ -66,12 +71,20 @@ const findOne = async (req,res,next) => {
  * @requires body.value
  * @requires body.type
  */
-const create = async (req,res,next) => {
-  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+const create = async (req, res, next) => {
+  if (req.body == null || req.body == undefined)
+    return res.send(new errors.InvalidArgumentError("body is empty"));
 
-  const bodyNotFound = validaionBodyEmpty(req.body, ['Fk_device', 'value', 'type']);
+  const bodyNotFound = validaionBodyEmpty(req.body, [
+    "Fk_device",
+    "value",
+    "type",
+  ]);
 
-  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
+  if (bodyNotFound.length > 0)
+    return res.send(
+      new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
+    );
 
   const {
     Fk_Sensor,
@@ -80,7 +93,7 @@ const create = async (req,res,next) => {
     value,
     type,
     status,
-    Fk_bucket
+    Fk_bucket,
   } = req.body;
 
   const sendData = trimObjctt({
@@ -90,25 +103,24 @@ const create = async (req,res,next) => {
     value,
     type,
     status,
-    Fk_bucket
-  })
+    Fk_bucket,
+  });
 
   try {
     const data = await Register.create(sendData);
 
-    req.io.notification.emit("responseRegister", data)
+    req.io.notification.emit("responseRegister", data);
 
     return res.send(200, {
-      data: data
-    })
-  } catch(error)  {
-    return res.send(new errors.InternalServerError(`${error}`))
+      data: data,
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-}
+};
 
 module.exports = {
   find,
   findOne,
-  create
-}
-
+  create,
+};

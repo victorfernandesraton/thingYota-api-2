@@ -1,6 +1,4 @@
-const
-    Router = require('restify-router').Router,
-    router = new Router()
+const router = new (require("restify-router").Router)();
 
 // controllers
 const {
@@ -9,19 +7,17 @@ const {
   create,
   put,
   createRelationShip,
-  deleteRelationShip
-} = require('../controller/user');
+  deleteRelationShip,
+} = require("../controller/user");
 
-const {
-  authUser
-} = require('../middleware/auth')
+const { authUser } = require("../middleware/auth");
 
 // endpoints
-router.get('',  find);
-router.get('/:id',  findOne);
-router.post('',  create);
-router.put('/:id',  put)
-router.post("/:id/relationship", createRelationShip)
-router.del("/:id/relationship", deleteRelationShip)
-router.use(authUser)
+router.get("", find);
+router.get("/:id", findOne);
+router.post("", create);
+router.put("/:id", put);
+router.post("/:id/relationship", createRelationShip);
+router.del("/:id/relationship", deleteRelationShip);
+router.use(authUser);
 module.exports = router;

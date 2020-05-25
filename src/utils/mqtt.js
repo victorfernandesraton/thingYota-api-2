@@ -4,12 +4,12 @@ const mockDevices = (el, data) => {
     payload: {
       data: {
         port: data.port,
-        value: data.value
-      }
-    }
-  }
-}
+        value: data.value,
+      },
+    },
+  };
+};
 
 module.exports = {
-  mockDevices
-}
+  mockDevices,
+};

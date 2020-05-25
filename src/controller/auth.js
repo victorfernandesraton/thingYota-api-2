@@ -1,10 +1,10 @@
-const User = require('../model/user');
-const Device = require('../model/device');
-const md5 = require('md5');
-const jwt = require('jsonwebtoken');
-const config = require('../config/env');
-const {validaionBodyEmpty, trimObjctt} = require('../utils/common');
-const errors = require('restify-errors');
+const User = require("../model/user");
+const Device = require("../model/device");
+const md5 = require("md5");
+const jwt = require("jsonwebtoken");
+const config = require("../config/env");
+const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
+const errors = require("restify-errors");
 
 /**
  *
@@ -13,38 +13,45 @@ const errors = require('restify-errors');
  * @param {Send} send
  */
 const authUser = async (req, res, send) => {
-  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+  if (req.body == null || req.body == undefined)
+    return res.send(new errors.InvalidArgumentError("body is empty"));
 
-  const bodyNotFound = validaionBodyEmpty(req.body, ['username', 'password']);
+  const bodyNotFound = validaionBodyEmpty(req.body, ["username", "password"]);
 
-  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
+  if (bodyNotFound.length > 0)
+    return res.send(
+      new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
+    );
 
-  let {username, email, password} = req.body
+  let { username, email, password } = req.body;
 
   let query = trimObjctt({
     password: md5(password),
-    email: username
-  })
+    email: username,
+  });
 
   const user = await User.findOne(query);
 
-  if (!user  || user.length == 0) return res.send(new errors.NotFoundError("User not found"))
+  if (!user || user.length == 0)
+    return res.send(new errors.NotFoundError("User not found"));
 
-
-  const token = await jwt.sign({
-    username: user.username,
-    password: user.password,
-    id: user._id,
-    entity: "User"
-  }, config.secret.user);
+  const token = await jwt.sign(
+    {
+      username: user.username,
+      password: user.password,
+      id: user._id,
+      entity: "User",
+    },
+    config.secret.user
+  );
   return res.send(200, {
     res: true,
     data: {
       token,
-      user
-    }
-  })
-}
+      user,
+    },
+  });
+};
 
 /**
  * @description Auth Device in system
@@ -55,35 +62,42 @@ const authUser = async (req, res, send) => {
  */
 const authDevice = async (req, res, send) => {
   if (req.body == null || req.body == undefined) {
-    return res.send(new errors.InvalidArgumentError("body is empty"))
+    return res.send(new errors.InvalidArgumentError("body is empty"));
   }
-  const bodyNotFound = validaionBodyEmpty(req.body, ['mac_addres']);
-  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
+  const bodyNotFound = validaionBodyEmpty(req.body, ["mac_addres"]);
+  if (bodyNotFound.length > 0)
+    return res.send(
+      new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
+    );
 
-  const {mac_addres} = req.body
+  const { mac_addres } = req.body;
 
   let query = trimObjctt({
-    mac_addres
-  })
+    mac_addres,
+  });
 
   const device = await Device.findOne(query);
 
-  if (!device  || device.length == 0) return res.send(new errors.NotFoundError("Device not found"))
+  if (!device || device.length == 0)
+    return res.send(new errors.NotFoundError("Device not found"));
 
-  const token = await jwt.sign({
-    name: device.name,
-    mac_addres: device.mac_addres,
-    id: device._id,
-    entity: "Device"
-  }, config.secret.user);
+  const token = await jwt.sign(
+    {
+      name: device.name,
+      mac_addres: device.mac_addres,
+      id: device._id,
+      entity: "Device",
+    },
+    config.secret.user
+  );
   return res.send(200, {
     res: true,
     data: {
       token,
-      device
-    }
-  })
-}
+      device,
+    },
+  });
+};
 
 /**
  * @description Auth guest in system
@@ -92,18 +106,21 @@ const authDevice = async (req, res, send) => {
  * @param {Send} send
  */
 const authGuest = async (req, res, send) => {
-  const token = await jwt.sign({
-    entity: "Guest"
-  }, config.secret.guest);
+  const token = await jwt.sign(
+    {
+      entity: "Guest",
+    },
+    config.secret.guest
+  );
   return res.send(200, {
     data: {
-      token
-    }
-  })
-}
+      token,
+    },
+  });
+};
 
 module.exports = {
   authUser,
   authDevice,
   authGuest,
-}
+};
