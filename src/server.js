@@ -11,10 +11,10 @@ const {
 } = require('./socket/onConnect')
 
 const io = socketIo.listen(server.server);
+
 const arduino = socketIo.listen(server.server, {
   path: "/arduino",
 })
-io.set('log level', 1);
 
 const notification = io.of('/notification');
 const arduinoSocket = io.of('/arduino');
@@ -25,9 +25,6 @@ const bucketSocket = io.of("/bucket");
 arduinoSocket.on('connection', socket => onConnectArduino(socket, io))
 userSocket.on('connection', socket => onConnectUser(socket, io))
 
-io.on("authArduino", data => {
-  console.log(data)
-})
 // mqtt
 const clientMqtt = mqtt.connect(`${env.mqtt.host}`);
 clientMqtt.on('connect', data => {
@@ -63,9 +60,7 @@ server.get("/helth", (req, res, next) => {
 
 // hello
 server.get("/", (req,res, next) => {
-  return res.send(200, {
-    messgae: "This is a single rest api"
-  })
+  return res.end("<h1>This is a REST API</h1>")
 })
 
 server.on('error', (error) => {
