@@ -1,15 +1,15 @@
-const mockBuckets = (el, data, entity="Sensors") => {
+const mockBuckets = (el, data, entity = "Sensors") => {
   return {
     url: `/Bucket_${el._id}`,
     payload: {
-        entity,
-        Actor: data,
-        Bucket: el
+      entity,
+      Actor: data,
+      Bucket: el,
     },
-    event: 'updated'
-  }
-}
+    event: "updated",
+  };
+};
 
 module.exports = {
-  mockBuckets
-}
+  mockBuckets,
+};

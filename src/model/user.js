@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
-const md5 = require('md5')
+const md5 = require("md5");
 
 const userSchema = new mongoose.Schema({
   first_name: {
     type: String,
-    required: true
+    required: true,
   },
   last_name: {
     type: String,
@@ -18,38 +18,42 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    select: false
+    select: false,
   },
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   type: {
     type: String,
-    default: 'client'
+    default: "client",
   },
   status: {
     type: Boolean,
-    default: true
+    default: true,
   },
-  create_at: {
-    type: Date,
-    required: true
+  Buckets: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Bucket",
+    },
+  ],
+},
+{
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "last_change",
   },
-  Buckets : [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Bucket"
-  }]
-})
+}
+);
 
 // Encriptador de senha
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   // alteração dos valores
   const hash = md5(this.password.toString());
   this.password = hash;
   next();
-})
-
+});
 
 module.exports = mongoose.model("User", userSchema);

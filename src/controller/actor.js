@@ -1,11 +1,11 @@
-const Actor = require('../model/actor');
-const Device = require('../model/device');
-const Bucket = require('../model/bucket');
-const {validaionBodyEmpty, trimObjctt} = require("../utils/common")
-const errors = require('restify-errors');
+const Actor = require("../model/actor");
+const Device = require("../model/device");
+const Bucket = require("../model/bucket");
+const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
+const errors = require("restify-errors");
 
-const {mockBuckets} = require('../utils/socket');
-const {mockDevices} = require('../utils/mqtt');
+const { mockBuckets } = require("../utils/socket");
+const { mockDevices } = require("../utils/mqtt");
 
 /**
  * @description Get all devices in database
@@ -13,30 +13,32 @@ const {mockDevices} = require('../utils/mqtt');
  * @param {Response} res
  * @param {*} send
  */
-const find = async (req,res,send) => {
-  const {limit} = req.query
-  const offset = (req.query.offset -1) * limit || 0
-  try{
+const find = async (req, res, send) => {
+  const { limit } = req.query;
+  const offset = (req.query.offset - 1) * limit || 0;
+  try {
     const data = await Actor.find()
       .limit(parseInt(limit) || 0)
       .skip(parseInt(offset) || 0)
-      .populate('device_parent')
-      .exec()
+      .populate("device_parent")
+      .exec();
 
-    const total =await Actor.estimatedDocumentCount()
+    const total = await Actor.estimatedDocumentCount();
 
-    if (offset >= total && total != 0) return res.send(new errors.LengthRequiredError("out of rnge"))
+    if (offset >= total && total != 0)
+      return res.send(new errors.LengthRequiredError("out of rnge"));
 
-    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Actors not found"))
+    if (!data || data.length == 0)
+      return res.send(new errors.NotFoundError("Actors not found"));
 
     return res.send(200, {
       data: data,
-      metadata: {limit, offset, total }
-    })
-  } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+      metadata: { limit, offset, total },
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-}
+};
 
 /**
  * @description Get one Device using your PK value id
@@ -45,24 +47,25 @@ const find = async (req,res,send) => {
  * @requires params.id
  * @param {*} next
  */
-const findOne = async (req,res,next) => {
-  const {id} = req.params;
+const findOne = async (req, res, next) => {
+  const { id } = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
-  try{
-    const data = await Actor.findById(id).populate('device_parent');
+  try {
+    const data = await Actor.findById(id).populate("device_parent");
 
-    if (!data || data.length == 0) return res.send(new errors.NotFoundError("Sensor not found"))
+    if (!data || data.length == 0)
+      return res.send(new errors.NotFoundError("Sensor not found"));
 
     res.send(200, {
       res: true,
       data: data,
-    })
-  } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-}
+};
 
 /**
  * @description Create user
@@ -72,37 +75,60 @@ const findOne = async (req,res,next) => {
  * @requires body.name
  * @requires body.type
  */
-const create = async (req,res,next) => {
-  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+const create = async (req, res, next) => {
+  if (req.body == null || req.body == undefined)
+    return res.send(new errors.InvalidArgumentError("body is empty"));
 
-  const bodyNotFound = validaionBodyEmpty(req.body,['name', 'type', 'device_parent', 'port'])
+  const bodyNotFound = validaionBodyEmpty(req.body, [
+    "name",
+    "type",
+    "device_parent",
+    "port",
+  ]);
 
-  if(bodyNotFound.length > 0) return res.send(new errors.NotFoundError(`not found params : ${bodyNotFound.join(',')}`))
+  if (bodyNotFound.length > 0)
+    return res.send(
+      new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
+    );
 
-  let {name, type, device_parent, port} = req.body;
+  let { name, type, device_parent, port } = req.body;
 
-  const sendData = trimObjctt({name, type, device_parent, port, create_at: Date.now()});
-
+  const sendData = trimObjctt({
+    name,
+    type,
+    device_parent,
+    port,
+    create_at: Date.now(),
+  });
 
   try {
-    const device = await Device.findById(device_parent)
+    const device = await Device.findById(device_parent);
 
-    if (!device) return res.send(new errors.NotFoundError(`Device._id ${device_parent} not found`))
+    if (!device)
+      return res.send(
+        new errors.NotFoundError(`Device._id ${device_parent} not found`)
+      );
 
-    const data = await Actor.create(sendData)
+    const data = await Actor.create(sendData);
     await device.update({
       $push: {
-        Actors: data._id
-      }
-    })
-    return res.send(200, {data: data})
-  } catch(error) {
-    if(error.code == 11000 ) {
-      return res.send(new errors.ConflictError(`duplicated : ${JSON.stringify(error.keyValue)}`))
+        Actors: data._id,
+      },
+    });
+    return res.send(200, { data: data });
+  } catch (error) {
+    if (error.code == 11000) {
+      return res.send(
+        new errors.ConflictError(
+          `duplicated : ${JSON.stringify(error.keyValue)}`
+        )
+      );
     }
-    return res.send(new errors.InternalServerError(`An database error has occoured`))
+    return res.send(
+      new errors.InternalServerError(`An database error has occoured`)
+    );
   }
-}
+};
 
 /**
  * @description Put data update in refs by pk id
@@ -110,34 +136,41 @@ const create = async (req,res,next) => {
  * @param {Response} res
  * @param {*} send
  */
-const put = async (req,res,send) => {
-  if (req.body == null || req.body == undefined) return res.send(new errors.InvalidArgumentError("body is empty"))
+const put = async (req, res, send) => {
+  if (req.body == null || req.body == undefined)
+    return res.send(new errors.InvalidArgumentError("body is empty"));
 
-  const {device_parent, name, type, status, port, value} = req.body
-  const {id} = req.params;
+  const { device_parent, name, type, status, port, value } = req.body;
+  const { id } = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
   try {
-    const sensor = await Actor.findById(id)
+    const sensor = await Actor.findById(id);
 
-    if (!sensor) return res.send(new errors.NotFoundError(`Actor_id ${id} not found`))
+    if (!sensor)
+      return res.send(new errors.NotFoundError(`Actor_id ${id} not found`));
 
     if (device_parent) {
-      const device = await Device.findById(req.body.device_parent)
+      const device = await Device.findById(req.body.device_parent);
 
-      if (!device) return res.send(new errors.NotFoundError(`Device_id ${device_parent} not found`))
+      if (!device)
+        return res.send(
+          new errors.NotFoundError(`Device_id ${device_parent} not found`)
+        );
 
-      device.update({
-        $push: {
-          Actors: await Actor.findById(id)
+      device.update(
+        {
+          $push: {
+            Actors: await Actor.findById(id),
+          },
+        },
+        {
+          new: true,
+          upsert: true,
+          setDefaultsOnInsert: true,
         }
-      },
-      {
-        new: true,
-        upsert: true,
-        setDefaultsOnInsert: true,
-      })
+      );
     }
 
     let sendData = trimObjctt({
@@ -146,86 +179,87 @@ const put = async (req,res,send) => {
       type,
       status,
       port,
-      value
-    })
-
-
-
-    const data = await Actor.findByIdAndUpdate(id,sendData, {new: true, useFindAndModify: false })
-
-    const buckets = await Bucket.find({Actors: {"$in" : {_id: id}}})
-
-    // emiters para socketio
-    let recives = buckets.map(el => {
-      return mockBuckets(el, data, "Actors")
+      value,
     });
 
-    const devices = await Device.find({Actors: {"$in": {_id: id}}})
+    const data = await Actor.findByIdAndUpdate(id, sendData, {
+      new: true,
+      useFindAndModify: false,
+    });
+
+    const buckets = await Bucket.find({ Actors: { $in: { _id: id } } });
+
+    // emiters para socketio
+    let recives = buckets.map((el) => {
+      return mockBuckets(el, data, "Actors");
+    });
+
+    const devices = await Device.find({ Actors: { $in: { _id: id } } });
 
     // envio de dados usando mqtt client prara enviar ao tópico
-    let dispensor = devices.map(el => {
+    let dispensor = devices.map((el) => {
       return mockDevices(el, data);
-    })
+    });
 
     req.locals = {
       recives,
       dispensor,
-      data
-    }
+      data,
+    };
 
     send();
-
-  } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-}
+};
 
 const registerValue = async (req, res, next) => {
-  const {id} = req.params
-  const {value} = req.body;
+  const { id } = req.params;
+  const { value } = req.body;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
   if (!value) return res.send(new errors.InvalidContentError("Body not found"));
 
   try {
-    const actor = await Actor.findById(id).populate('device_parent');
+    const actor = await Actor.findById(id).populate("device_parent");
 
-    if (!actor || actor.length == 0) return res.send(new errors.NotFoundError("Actor not found"))
+    if (!actor || actor.length == 0)
+      return res.send(new errors.NotFoundError("Actor not found"));
 
-    const buckets = await Bucket.find({Sensors: {"$in" : {_id: id}}})
+    const buckets = await Bucket.find({ Sensors: { $in: { _id: id } } });
 
-    const data = await actor.update(id,sendData, {
+    const data = await actor.update(id, sendData, {
       new: true,
       upsert: true,
       setDefaultsOnInsert: true,
-    })
+    });
 
-    if(buckets.length > 0) {
-      buckets.forEach(el => {
+    if (buckets.length > 0) {
+      buckets.forEach((el) => {
         const dispatch = req.io.io.of(`/Bucket_${el._id}`);
         dispatch.emit("updated", {
           data: {
             value,
             entity: actor,
-            typoe: 'Actor',
-            Bucket: el
-          }
-        })
-      })
+            typoe: "Actor",
+            Bucket: el,
+          },
+        });
+      });
     }
 
     return res.send(200, {
-      data: data
-    })
-  } catch(error) {
-    return res.send(new errors.InternalServerError(`${error}`))
+      data: data,
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
   }
-}
+};
 
 module.exports = {
   findOne,
   find,
   create,
-  put
-}
+  put,
+};

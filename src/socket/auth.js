@@ -1,8 +1,7 @@
-const
-  jwt = require('jsonwebtoken'),
-  config = require('../config/env'),
-  Device = require('../model/device'),
-  User = require('../model/user');
+const jwt = require("jsonwebtoken"),
+  config = require("../config/env"),
+  Device = require("../model/device"),
+  User = require("../model/user");
 
 /**
  * @description Função que valida o token de um arduino via socketio
@@ -10,20 +9,20 @@ const
  * @param {WebSocketEventMap} socket
  * @param {WebSocket} io
  */
-const authUser = (data , socket, io) => {
+const authUser = (data, socket, io) => {
   const user = User.findOne(data);
   if (user) {
-    const private = socket.join(user.username)
+    const private = socket.join(user.username);
     private.emit("responseOk", {
       res: true,
       data: {
         user,
-        message: "ok"
-      }
-    })
+        message: "ok",
+      },
+    });
   }
-  return
-}
+  return;
+};
 
 /**
  * @description Autenticação de arduino no socket
@@ -31,20 +30,20 @@ const authUser = (data , socket, io) => {
  * @param {Object} data
  */
 const authArduino = async (socket, data) => {
-  const device = await Device.findOne(data)
+  const device = await Device.findOne(data);
   if (device) {
-    const private = socket.join(device.mac_addres)
+    const private = socket.join(device.mac_addres);
     private.emit("responseOk", {
-      data :{
+      data: {
         device,
-        message: "Ok"
-      }
-    })
+        message: "Ok",
+      },
+    });
   }
-  return
-}
+  return;
+};
 
 module.exports = {
   authUser,
-  authArduino
-}
+  authArduino,
+};
