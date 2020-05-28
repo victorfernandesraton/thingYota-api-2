@@ -77,6 +77,7 @@ const create = async (req, res, next) => {
           )
         );
       }
+      console.log(error);
       return res.send(
         new errors.InternalServerError(`An database error has occoured`)
       );

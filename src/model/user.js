@@ -33,17 +33,20 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  create_at: {
-    type: Date,
-    required: true,
-  },
   Buckets: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Bucket",
     },
   ],
-});
+},
+{
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "last_change",
+  },
+}
+);
 
 // Encriptador de senha
 userSchema.pre("save", async function (next) {

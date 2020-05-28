@@ -16,6 +16,7 @@ const find = async (req, res, next) => {
   try {
     const data = await Bucket.find()
       .populate("Sensors")
+      .populate("Actors")
       .limit(parseInt(limit) || 0)
       .skip(parseInt(offset) || 0)
       .exec();
