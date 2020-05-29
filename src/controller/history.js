@@ -11,10 +11,13 @@ const errors = require("restify-errors");
 const find = async (req, res, send) => {
   const { limit } = req.query;
   const offset = (req.query.offset - 1) * limit || 0;
+  let filter;
   try {
-    const data = await History.find()
+    if(req.body) filter = req.body
+    const data = await History.find(filter)
       .limit(parseInt(limit) || 0)
       .skip(parseInt(offset) || 0).populate('From').populate('To')
+      .sort({created_at: -1})
       .exec();
 
     const total = await History.estimatedDocumentCount();
