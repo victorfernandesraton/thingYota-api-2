@@ -208,11 +208,6 @@ const put = async (req, res, send) => {
       return mockBuckets(el, data, "Actors");
     });
 
-    req.locals = {
-      recives,
-      data,
-    };
-
     let historyData = {
       To: data._id,
       To_type: 'Sensor',
@@ -230,6 +225,11 @@ const put = async (req, res, send) => {
     }
 
     History.create({...historyData})
+
+    req.locals = {
+      recives,
+      data,
+    };
 
     send();
   } catch (error) {
