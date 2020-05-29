@@ -1,6 +1,8 @@
 const Sensor = require("../model/sensor");
 const Device = require("../model/device");
 const Bucket = require("../model/bucket");
+const History = require("../model/history");
+
 const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
 const errors = require("restify-errors");
 
@@ -116,11 +118,30 @@ const create = async (req, res, next) => {
     .then((device) => {
       sensor
         .save()
-        .then((data) =>
-          res.send(201, {
+        .then((data) => {
+          let historyData = {
+            To: data._id,
+            To_type: 'Sensor',
+            data: {
+              type: 'Created',
+              value: data
+            }
+          }
+
+          let From, From_type;
+          if(req.locals && req.locals.authObject) {
+            From = req.locals.authObject._id
+            From_type = req.locals.authObject.entity
+            historyData = {...historyData, From, From_type  }
+          }
+
+          History.create({...historyData})
+
+          return res.send(201, {
             res: true,
             data: data,
           })
+        }
         )
         .catch((error) => res.send(new errors.InternalServerError(`${error}`)));
     })
@@ -191,6 +212,24 @@ const put = async (req, res, send) => {
       recives,
       data,
     };
+
+    let historyData = {
+      To: data._id,
+      To_type: 'Sensor',
+      data: {
+        type: 'Updated',
+        value: data
+      }
+    }
+
+    let From, From_type;
+    if(req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id
+      From_type = req.locals.authObject.entity
+      historyData = {...historyData, From, From_type  }
+    }
+
+    History.create({...historyData})
 
     send();
   } catch (error) {

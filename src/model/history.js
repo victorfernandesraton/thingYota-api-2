@@ -1,29 +1,32 @@
 const mongoose = require("mongoose");
 
-const registerSchema = new mongoose.Schema(
+const HistoryScheme = new mongoose.Schema(
+  {
+    From_type: {
+      type: String
+    },
+    From: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: 'From_type'
+    },
+    To: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: 'To_type'
+    },
+    To_type: {
+      type: String
+    },
 
-    {
-        from:{
-            type: mongoose.Schema.Types.ObjectId,
-
-        },
-        to:{
-            type: mongoose.Schema.Types.ObjectId,
-        },
-    
-        data:{
-            type:mongoose.Schema.Types.ObjectId,
-
-        },
-        create_at: {
-            type: Date,
-            required: true,
-          },
-        last_upadate: {
-            type: Date,
-            required: true,
-        },  
-    }   
+    data: {
+      type: Object,
+    },
+  },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "last_change",
+    },
+  }
 );
 
-module.exports = mongoose.model("History", userSchema);
+module.exports = mongoose.model("History", HistoryScheme);

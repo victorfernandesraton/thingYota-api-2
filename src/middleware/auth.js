@@ -52,10 +52,13 @@ const authUser = async (req, res, send) => {
   switch (entity) {
     case "User":
       data = await User.findById(id);
+      break;
     case "Device":
       data = await Device.findById(id);
+      break;
     case "Guest":
       data = { entity };
+      break;
     default:
       data = {};
   }
@@ -65,6 +68,9 @@ const authUser = async (req, res, send) => {
       new errors.InvalidArgumentError(`Entity ${entity} id (${id}) not found`)
     );
   req.token = token;
+  req.locals = {
+    authObject: {...data._doc, entity}
+  };
   send();
 };
 

@@ -1,6 +1,7 @@
 const Actor = require("../model/actor");
 const Device = require("../model/device");
 const Bucket = require("../model/bucket");
+const History = require("../model/history");
 const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
 const errors = require("restify-errors");
 
@@ -115,6 +116,25 @@ const create = async (req, res, next) => {
         Actors: data._id,
       },
     });
+
+    let historyData = {
+      To: data._id,
+      To_type: 'Actor',
+      data: {
+        type: 'Created',
+        value: data
+      }
+    }
+
+    let From, From_type;
+    if(req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id
+      From_type = req.locals.authObject.entity
+      historyData = {...historyData, From, From_type  }
+    }
+
+    History.create({...historyData})
+
     return res.send(200, { data: data });
   } catch (error) {
     if (error.code == 11000) {
@@ -201,12 +221,30 @@ const put = async (req, res, send) => {
       return mockDevices(el, data);
     });
 
+
+    let historyData = {
+      To: data._id,
+      To_type: 'Actor',
+      data: {
+        type: 'Updated',
+        value: data
+      }
+    }
+
+    let From, From_type;
+    if(req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id
+      From_type = req.locals.authObject.entity
+      historyData = {...historyData, From, From_type  }
+    }
+
+    History.create({...historyData})
+
     req.locals = {
       recives,
       dispensor,
       data,
     };
-
     send();
   } catch (error) {
     return res.send(new errors.InternalServerError(`${error}`));
