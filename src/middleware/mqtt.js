@@ -1,10 +1,11 @@
 const errors = require("restify-errors");
+const mqttClient = require('../services/mqtt-service');
 
 const sendEmmiter = (req, res, next) => {
   const { dispensor } = req.locals;
   try {
     dispensor.forEach((el) => {
-      req.mqtt.client.publish(el.topic, JSON.stringify(el.payload));
+      mqttClient.publish(el.topic, JSON.stringify(el.payload));
     });
     next();
   } catch (error) {

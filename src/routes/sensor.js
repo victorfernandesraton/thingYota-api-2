@@ -6,7 +6,6 @@ const {
   findOne,
   create,
   put,
-  registerValue,
 } = require("../controller/sensor");
 
 const { authUser } = require("../middleware/auth");
@@ -20,7 +19,6 @@ router.get("", find);
 router.get("/:id", findOne);
 router.post("", create);
 router.put("/:id", put, emitScoket, responseOk);
-router.post("/:id/value", registerValue);
 
 router.use(authUser);
 

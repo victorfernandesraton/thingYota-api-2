@@ -22,11 +22,7 @@ const bucketSocket = io.of("/bucket");
 arduinoSocket.on("connection", (socket) => onConnectArduino(socket, io));
 userSocket.on("connection", (socket) => onConnectUser(socket, io));
 
-// mqtt
-const clientMqtt = mqtt.connect(`${env.mqtt.host}`);
-clientMqtt.on("connect", (data) => {
-  console.info(`connected sucessful in mqtt broker at ${env.mqtt.host}`);
-});
+
 // socket
 server.use((req, res, next) => {
   // socket
@@ -38,10 +34,6 @@ server.use((req, res, next) => {
     arduino,
     io: io,
   };
-  let mqtt = {
-    client: clientMqtt,
-  };
-  req.mqtt = mqtt;
   return next();
 });
 

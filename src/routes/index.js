@@ -10,7 +10,6 @@ const bucket = require("./bucket");
 const sensor = require("./sensor");
 const actor = require("./actor");
 
-const register = require("./register");
 const history = require("./history");
 
 router.add("/auth", auth);
@@ -22,7 +21,6 @@ router.add("/bucket", bucket);
 router.add("/sensor", sensor);
 router.add("/actor", actor);
 
-router.add('/history', history)
-router.add("/register", register);
+router.add("/history", history);
 
 module.exports = router;
