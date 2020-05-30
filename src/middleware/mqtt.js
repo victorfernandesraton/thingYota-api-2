@@ -5,6 +5,7 @@ const sendEmmiter = (req, res, next) => {
   const { dispensor } = req.locals;
   try {
     dispensor.forEach((el) => {
+      console.log(el.topic)
       mqttClient.publish(el.topic, JSON.stringify(el.payload));
     });
     next();
