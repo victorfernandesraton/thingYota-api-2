@@ -19,6 +19,7 @@ services:
     ports:
       - "27017:27017"
   mosquitto:
+    container_name: mqtt-broker
     image: eclipse-mosquitto
     restart: always
     ports:
