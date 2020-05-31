@@ -12,6 +12,7 @@ const emitMqtt = require("../middleware/mqtt").sendEmmiter;
 const emitScoket = require("../middleware/socket").sendEmmiter;
 
 // endpoints
+// teste
 router.get("", find);
 router.get("/:id", findOne);
 router.post("", create);
