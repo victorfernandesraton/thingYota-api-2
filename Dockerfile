@@ -4,11 +4,11 @@ RUN mkdir -p /usr/src/app/bin
 RUN mkdir -p /usr/src/app/src
 RUN mkdir -p /usr/src/app/env
 
-COPY ./bin /usr/src/app/bin
-COPY ./src /usr/src/app/src
-COPY ./env /usr/src/app/env
+COPY ./api/bin /usr/src/app/bin
+COPY ./api/src /usr/src/app/src
+COPY ./api/env /usr/src/app/env
 
-COPY ./package.json /usr/src/app
+COPY ./api/package.json /usr/src/app
 
 WORKDIR /usr/src/app
 RUN npm install -g nodemon
