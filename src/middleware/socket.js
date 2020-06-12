@@ -5,8 +5,7 @@ const sendEmmiter = (req, res, next) => {
   try {
     if (recives.length > 0) {
       recives.forEach((el) => {
-        const dispatch = req.io.io.of(el.url);
-
+        const dispatch = req.io.of(el.url);
         dispatch.emit(el.event, {
           data: el.payload,
         });

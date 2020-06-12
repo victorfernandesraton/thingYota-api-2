@@ -1,39 +1,15 @@
-const env = require("./config/env");
 const server = require("./config/server");
-const socketIo = require("socket.io");
 const router = require("./routes");
+const socketIo = require('socket.io');
 const logger = require("morgan");
-const mqtt = require("mqtt");
-
-const { onConnectArduino, onConnectUser } = require("./socket/onConnect");
-
+const mqtt = require('./services/mqtt-service');
+const mqttHandler = require('./controller/mqtt');
 const io = socketIo.listen(server.server);
-
-const arduino = socketIo.listen(server.server, {
-  path: "/arduino",
-});
-
-const notification = io.of("/notification");
-const arduinoSocket = io.of("/arduino");
-const userSocket = io.of("/user");
-const bucketSocket = io.of("/bucket");
-
-// setando handler para socket
-arduinoSocket.on("connection", (socket) => onConnectArduino(socket, io));
-userSocket.on("connection", (socket) => onConnectUser(socket, io));
-
 
 // socket
 server.use((req, res, next) => {
   // socket
-  req.io = {
-    arduinoSocket,
-    userSocket,
-    notification,
-    bucketSocket,
-    arduino,
-    io: io,
-  };
+  req.io = io;
   return next();
 });
 
@@ -48,8 +24,43 @@ server.get("/helth", (req, res, next) => {
 
 // hello
 server.get("/", (req, res, next) => {
+  res.header('Content-Type', 'text/html')
   return res.end("<h1>This is a REST API</h1>");
 });
+
+
+mqtt.on("connect", (data) => {
+  console.info(`connected sucessful in mqtt broker at ${url}`);
+  console.log(data)
+  mqtt.subscribe("server", (err) => {
+
+    if (err) {
+      console.error(err);
+      mqtt.end();
+    }
+  });
+  mqtt.subscribe("server2", (err) => {
+
+    if (err) {
+      console.error(err);
+      mqtt.end();
+    }
+  });
+});
+
+mqtt.on("message", async (topic, data, packet) => {
+  // message is Buffer
+  console.info(Date());
+  let payload = data.toString();
+  console.log(`[${topic}]`, payload, packet);
+  try {
+    const payload = JSON.parse(data.toString());
+    mqttHandler(payload);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 
 server.on("error", (error) => {
   console.info(error);
