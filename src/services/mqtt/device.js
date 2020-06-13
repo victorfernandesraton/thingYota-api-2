@@ -1,3 +1,5 @@
+const constants = require('./constants');
+
 const Devive = require('../../model/device');
 
 const updateDevice = async (payload, socket) => {
@@ -5,8 +7,6 @@ const updateDevice = async (payload, socket) => {
     const data = await Devive.findOneAndUpdate({mac_addres: payload.mac_addres}, payload, {
       upsert: true
     });
-    console.log("Data has accepted");
-    // socket.emit('teste', 'teste');
     return data;
   } catch (error) {
     console.log(error);
@@ -17,7 +17,7 @@ const updateDevice = async (payload, socket) => {
 const createDevice = async (payload, socket) => {
   try {
     const data = await Devive.create(payload);
-    // socket.emit('teste', 'teste');
+    socket.emit('teste', 'teste');
     return data;
   } catch (error) {
     console.log(error);
@@ -27,10 +27,9 @@ const createDevice = async (payload, socket) => {
 
 module.exports= (payload, socket) => {
   switch (payload.event) {
-    case 'create':
-      createDevice(payload , socket);
+    case constants.Device.CREATE:
       break;
-    case 'updated':
+    case constants.Device.UPDATE:
       updateDevice(payload, socket);
       break;
     default:
