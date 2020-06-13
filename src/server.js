@@ -2,11 +2,14 @@ const server = require("./config/server");
 const router = require("./routes");
 const socketIo = require('socket.io');
 const logger = require("morgan");
-const mqtt = require('./services/mqtt-service');
+const mqtt = require('./helpers/mqtt-service');
 const mqttHandler = require('./controller/mqtt');
+const common = require("./utils/common");
 const io = socketIo.listen(server.server);
 
-// socket
+
+io.on('teste', data => console.log(data))
+
 server.use((req, res, next) => {
   // socket
   req.io = io;
@@ -29,18 +32,9 @@ server.get("/", (req, res, next) => {
 });
 
 
-mqtt.on("connect", (data) => {
-  console.info(`connected sucessful in mqtt broker at ${url}`);
-  console.log(data)
-  mqtt.subscribe("server", (err) => {
-
-    if (err) {
-      console.error(err);
-      mqtt.end();
-    }
-  });
-  mqtt.subscribe("server2", (err) => {
-
+mqtt.on("connect", (data,err) => {
+  console.info(`connected sucessful in mqtt broker `);
+  mqtt.subscribe("/server", (err) => {
     if (err) {
       console.error(err);
       mqtt.end();
@@ -55,7 +49,7 @@ mqtt.on("message", async (topic, data, packet) => {
   console.log(`[${topic}]`, payload, packet);
   try {
     const payload = JSON.parse(data.toString());
-    mqttHandler(payload);
+    mqttHandler(payload, io);
   } catch (error) {
     console.error(error);
   }
