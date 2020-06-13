@@ -1,0 +1,13 @@
+{
+  "name": "teste",
+  "type": "teste",
+  "mac_addres": "mac-1-2",
+  "Sensor": {
+    "port": "10",
+    "type": "wather-sensor",
+    "name": "sensor low"
+  },
+  "to": "Sensor",
+  "from": "device",
+  "event": "create"
+}

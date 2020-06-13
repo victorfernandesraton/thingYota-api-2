@@ -1,16 +1,5 @@
 const Devive = require('../../model/device');
 
-const assemblyDevice = (payload) => {
-  try {
-    console.log(payload)
-    const device = JSON.parse(payload);
-    return device;
-  } catch(error) {
-    console.log(error);
-    return null
-  }
-}
-
 const updateDevice = async (payload, socket) => {
   try {
     const data = await Devive.findOneAndUpdate({mac_addres: payload.mac_addres}, payload, {

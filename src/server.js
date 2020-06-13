@@ -7,9 +7,7 @@ const mqttHandler = require('./controller/mqtt');
 const common = require("./utils/common");
 const io = socketIo.listen(server.server);
 
-
 io.on('teste', data => console.log(data))
-
 server.use((req, res, next) => {
   // socket
   req.io = io;
