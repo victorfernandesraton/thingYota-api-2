@@ -1,4 +1,5 @@
 const Actor = require('../../model/actor');
+const Device = require('../../model/device');
 
 const updateActor = async (payload, socket) => {
   try {
@@ -16,8 +17,20 @@ const updateActor = async (payload, socket) => {
 
 const createActor = async (payload, socket) => {
   try {
-    const data = await Actor.create(payload);
-    // socket.emit('teste', 'teste');
+    const device = await Device.findOne({mac_addres: payload.mac_addres});
+
+    if (!device) {
+      return null;
+    }
+
+    const data = await Actor.create({...payload.Actor, device_parent: device._id});
+
+    device.update({
+      $push: {
+        Actors: data._id,
+      },
+    });
+    socket.emit('teste', 'teste');
     return data;
   } catch (error) {
     console.log(error);
@@ -26,7 +39,6 @@ const createActor = async (payload, socket) => {
 }
 
 module.exports= (payload, socket) => {
-  console.log(payload)
   switch (payload.event) {
     case 'create':
       createActor(payload , socket);

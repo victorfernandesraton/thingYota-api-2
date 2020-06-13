@@ -44,7 +44,7 @@ mqtt.on("message", async (topic, data, packet) => {
   // message is Buffer
   console.info(Date());
   let payload = data.toString();
-  console.log(`[${topic}]`, payload, packet);
+  console.log(`[${topic}]`, payload.toString());
   try {
     const payload = JSON.parse(data.toString());
     mqttHandler(payload, io);

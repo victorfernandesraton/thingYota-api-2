@@ -40,7 +40,6 @@ const createSensor = async (payload, socket) => {
 }
 
 module.exports= (payload, socket) => {
-  console.log(payload)
   switch (payload.event) {
     case 'create':
       createSensor(payload , socket);

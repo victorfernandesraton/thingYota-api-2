@@ -26,7 +26,6 @@ const createDevice = async (payload, socket) => {
 }
 
 module.exports= (payload, socket) => {
-  console.log(payload)
   switch (payload.event) {
     case 'create':
       createDevice(payload , socket);
