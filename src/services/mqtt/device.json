@@ -1,0 +1,8 @@
+{
+  "name": "teste",
+  "type": "teste",
+  "mac_addres": "mac-1-2",
+  "to": "Device",
+  "from": "device",
+  "event": "create"
+}
