@@ -28,9 +28,6 @@ const find = async (req, res, next) => {
     if (offset >= total && total != 0)
       return res.send(new errors.LengthRequiredError("out of rnge"));
 
-    if (!data || data.length == 0)
-      return res.send(new errors.NotFoundError("Sensor not found"));
-
     return res.send(200, {
       data: data,
       metadata: { limit, offset, total },

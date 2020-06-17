@@ -60,7 +60,7 @@ server.on("error", (error) => {
 
 server.on("listening", (data) => {
   console.info(
-    `Server is run in ${server.address().address}${server.address().port}`
+    `Server ${server.name} is run in ${server.address().family}${server.address().address}${server.address().port}`
   );
 });
 module.exports = server;
