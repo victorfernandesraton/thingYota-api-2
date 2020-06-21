@@ -18,11 +18,16 @@ const find = async (req, res, next) => {
   const { limit } = req.query;
   const offset = (req.query.offset - 1) * limit || 0;
   try {
-    const data = await Sensor.find()
+    let data = await Sensor.find()
       .limit(parseInt(limit) || 0)
       .skip(parseInt(offset) || 0)
-      .exec();
-
+      .exec()
+    if (req.params.populate) {
+      data = await Sensor.find()
+      .limit(parseInt(limit) || 0)
+      .skip(parseInt(offset) || 0)
+      .populate("device_parent")
+    }
     const total = await Sensor.estimatedDocumentCount();
 
     if (offset >= total && total != 0)
