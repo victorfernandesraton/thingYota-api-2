@@ -1,7 +1,7 @@
 version: "3"
 services:
   api:
-    container_name: thingYta-api
+    container_name: thingYta-api-standalone
     restart: always
     build:
       context: .
@@ -14,14 +14,14 @@ services:
       - mongo
       - mosquitto
   mongo:
-    container_name: thingYota-mongodb
+    container_name: thingYota-mongodb-standalone
     image: mongo
     volumes:
       - ./data:/data/db
     ports:
       - "27017:27017"
   mosquitto:
-    container_name: mqtt-broker
+    container_name: thingYota-mqtt-broker-standalone
     image: eclipse-mosquitto
     restart: always
     ports:
