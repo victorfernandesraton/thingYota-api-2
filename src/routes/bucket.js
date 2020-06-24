@@ -16,6 +16,7 @@ router.get("/:id", findOne);
 router.post("", create);
 router.put("/:id", put);
 router.post("/:id/relationship", createRelationShip);
+
 router.use(authUser);
 
 module.exports = router;

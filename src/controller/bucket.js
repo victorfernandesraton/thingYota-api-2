@@ -1,6 +1,7 @@
 const Bucket = require("../model/bucket");
 const Sensor = require("../model/sensor");
 const Actor = require("../model/actor");
+const History = require("../model/history");
 const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
 const errors = require("restify-errors");
 
@@ -81,17 +82,39 @@ const create = async (req, res, next) => {
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
 
-  const { name, type } = req.body;
-
+  const { name, type, volume } = req.body;
+  console.log(volume)
   const sendData = trimObjctt({
     name,
     type,
+    volume
   });
   try {
     const data = await Bucket.create(sendData);
+
+    let historyData = {
+      To: data._id,
+      To_type: 'Bucket',
+      data: {
+        type: 'crreate',
+        value: data
+      }
+    }
+
+    let From, From_type;
+    if(req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id
+      From_type = req.locals.authObject.entity
+      historyData = {...historyData, From, From_type  }
+    }
+
+    History.create({...historyData})
+
     return res.send(201, {
       data: data,
     });
+
+
   } catch (error) {
     if (error.code == 11000) {
       return res.send(
