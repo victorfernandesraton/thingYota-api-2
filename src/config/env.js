@@ -20,5 +20,6 @@ module.exports = {
     host: process.env.MQTT_HOST,
     url: process.env.MQTT_URL,
     port: process.env.MQTT_PORT,
+    server_broker : process.env.MQTT_SEVER_BROKER
   },
 };

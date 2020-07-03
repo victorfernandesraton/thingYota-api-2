@@ -4,9 +4,8 @@ const socketIo = require('socket.io');
 const logger = require("morgan");
 const mqtt = require('./helpers/mqtt-service');
 const mqttHandler = require('./controller/mqtt');
-const common = require("./utils/common");
-const socket = require("./utils/socket");
 const io = socketIo.listen(server.server);
+const env = require('./config/env');
 
 server.use((req, res, next) => {
   // socket
@@ -32,7 +31,7 @@ server.get("/", (req, res, next) => {
 
 mqtt.on("connect", (data,err) => {
   console.info(`connected sucessful in mqtt broker `);
-  mqtt.subscribe("/server", (err) => {
+  mqtt.subscribe(env.mqtt.server_broker, (err) => {
     if (err) {
       console.error(err);
       mqtt.end();
