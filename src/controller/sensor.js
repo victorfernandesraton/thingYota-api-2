@@ -18,15 +18,17 @@ const find = async (req, res, next) => {
   const { limit } = req.query;
   const offset = (req.query.offset - 1) * limit || 0;
   try {
-    let data = await Sensor.find()
-      .limit(parseInt(limit) || 0)
-      .skip(parseInt(offset) || 0)
-      .exec()
+    let data;
     if (req.params.populate) {
       data = await Sensor.find()
-      .limit(parseInt(limit) || 0)
-      .skip(parseInt(offset) || 0)
-      .populate("device_parent")
+        .limit(parseInt(limit) || 0)
+        .skip(parseInt(offset) || 0)
+        .populate("device_parent");
+    } else {
+      data = await Sensor.find()
+        .limit(parseInt(limit) || 0)
+        .skip(parseInt(offset) || 0)
+        .exec();
     }
     const total = await Sensor.estimatedDocumentCount();
 
@@ -123,28 +125,27 @@ const create = async (req, res, next) => {
         .then((data) => {
           let historyData = {
             To: data._id,
-            To_type: 'Sensor',
+            To_type: "Sensor",
             data: {
-              type: 'Created',
-              value: data
-            }
-          }
+              type: "Created",
+              value: data,
+            },
+          };
 
           let From, From_type;
-          if(req.locals && req.locals.authObject) {
-            From = req.locals.authObject._id
-            From_type = req.locals.authObject.entity
-            historyData = {...historyData, From, From_type  }
+          if (req.locals && req.locals.authObject) {
+            From = req.locals.authObject._id;
+            From_type = req.locals.authObject.entity;
+            historyData = { ...historyData, From, From_type };
           }
 
-          History.create({...historyData})
+          History.create({ ...historyData });
 
           return res.send(201, {
             res: true,
             data: data,
-          })
-        }
-        )
+          });
+        })
         .catch((error) => res.send(new errors.InternalServerError(`${error}`)));
     })
     .catch((error) => res.send(new errors.InternalServerError(`${error}`)));
@@ -212,21 +213,21 @@ const put = async (req, res, send) => {
 
     let historyData = {
       To: data._id,
-      To_type: 'Sensor',
+      To_type: "Sensor",
       data: {
-        type: 'Updated',
-        value: data
-      }
-    }
+        type: "Updated",
+        value: data,
+      },
+    };
 
     let From, From_type;
-    if(req.locals && req.locals.authObject) {
-      From = req.locals.authObject._id
-      From_type = req.locals.authObject.entity
-      historyData = {...historyData, From, From_type  }
+    if (req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id;
+      From_type = req.locals.authObject.entity;
+      historyData = { ...historyData, From, From_type };
     }
 
-    History.create({...historyData})
+    History.create({ ...historyData });
 
     req.locals = {
       recives,

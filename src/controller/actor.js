@@ -18,11 +18,19 @@ const find = async (req, res, send) => {
   const { limit } = req.query;
   const offset = (req.query.offset - 1) * limit || 0;
   try {
-    const data = await Actor.find()
-      .limit(parseInt(limit) || 0)
-      .skip(parseInt(offset) || 0)
-      .populate("device_parent")
-      .exec();
+    let data;
+    if (req.params.populate) {
+      data = await Actor.find()
+        .limit(parseInt(limit) || 0)
+        .skip(parseInt(offset) || 0)
+        .populate("device_parent")
+        .exec();
+    } else {
+      data = await Actor.find()
+        .limit(parseInt(limit) || 0)
+        .skip(parseInt(offset) || 0)
+        .exec();
+    }
 
     const total = await Actor.estimatedDocumentCount();
 
@@ -116,21 +124,21 @@ const create = async (req, res, next) => {
 
     let historyData = {
       To: data._id,
-      To_type: 'Actor',
+      To_type: "Actor",
       data: {
-        type: 'Created',
-        value: data
-      }
-    }
+        type: "Created",
+        value: data,
+      },
+    };
 
     let From, From_type;
-    if(req.locals && req.locals.authObject) {
-      From = req.locals.authObject._id
-      From_type = req.locals.authObject.entity
-      historyData = {...historyData, From, From_type  }
+    if (req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id;
+      From_type = req.locals.authObject.entity;
+      historyData = { ...historyData, From, From_type };
     }
 
-    History.create({...historyData})
+    History.create({ ...historyData });
 
     return res.send(200, { data: data });
   } catch (error) {
@@ -218,24 +226,23 @@ const put = async (req, res, send) => {
       return mockDevices(el, data);
     });
 
-
     let historyData = {
       To: data._id,
-      To_type: 'Actor',
+      To_type: "Actor",
       data: {
-        type: 'Updated',
-        value: data
-      }
-    }
+        type: "Updated",
+        value: data,
+      },
+    };
 
     let From, From_type;
-    if(req.locals && req.locals.authObject) {
-      From = req.locals.authObject._id
-      From_type = req.locals.authObject.entity
-      historyData = {...historyData, From, From_type  }
+    if (req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id;
+      From_type = req.locals.authObject.entity;
+      historyData = { ...historyData, From, From_type };
     }
 
-    History.create({...historyData})
+    History.create({ ...historyData });
 
     req.locals = {
       recives,
