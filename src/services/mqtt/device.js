@@ -28,7 +28,6 @@ const createDevice = async (payload, socket) => {
 module.exports= (payload, socket) => {
   switch (payload.event) {
     case constants.Device.CREATE:
-      break;
     case constants.Device.UPDATE:
       updateDevice(payload, socket);
       break;

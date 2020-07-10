@@ -18,23 +18,25 @@ const updateSensor = async (payload, socket) => {
       Sensors: { $in: { _id: sensor._id } },
     });
 
-    if (!device || !sensor || buckets.length < 1) {
+    if (!device || !sensor) {
       return null;
     }
 
-    const recives = buckets.map((el) => {
-      return emit(mockBuckets(el, payload.Sensor, "Sensors"), socket);
-    });
-
-    const data = await Sensor.findByIdAndUpdate(
-      { _id: sensor._id },
-      { value: payload.Sensor.value },
-      {
-        upsert: true,
-        useFindAndModify: false,
-        new: true,
+    if (sensor) {
+      const data = await sensor.update(
+        { value: payload.Sensor.value },
+        {
+          upsert: true,
+          useFindAndModify: false,
+          new: true,
+        }
+      );
+      if (buckets.length > 1) {
+        buckets.forEach((el) =>
+          emit(mockBuckets(el, payload.Sensor, "Sensors"), socket)
+        );
       }
-    );
+    }
 
     console.info(
       `${payload.to}(${sensor._id}) has moddified to ${payload.from}(${device._id})`
@@ -53,19 +55,32 @@ const createSensor = async (payload, socket) => {
       return null;
     }
 
-    const sensor = await Sensor.create({
-      ...payload.Sensor,
+    let sensor;
+    const findSensor = await Sensor.findOne({
       device_parent: device._id,
+      port: payload.Sensor.port,
     });
 
-    device.update({
-      $push: {
-        Sensors: sensor._id,
-      },
-    });
+    if (findSensor) {
+      sensor = await Sensor.findOneAndUpdate(
+        { _id: findSensor._id },
+        { ...payload.Sensor },
+        { new: true, upsert: true, setDefaultsOnInsert: true }
+      );
+    } else {
+      sensor = await Sensor.create({
+        ...payload.Sensor,
+        device_parent: device._id,
+      });
+      device.update({
+        $push: {
+          Sensors: sensor._id,
+        },
+      });
+    }
 
     console.info(
-      `${payload.to}(${sensor._id}) has moddified to ${payload.from}(${device._id})`
+      `${payload.to}(${sensor._id}) has created to ${payload.from}(${device._id})`
     );
 
     return sensor;

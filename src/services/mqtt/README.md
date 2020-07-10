@@ -27,7 +27,7 @@ This is a handler to recive from arduino or another device info about a new sens
     "type": "wather-sensor",
     "name": "sensor low"
   },
-  "to": "sensor",
+  "to": "Sesnor",
   "from": "Device",
   "event": "SENSOR_CREATE"
 }
@@ -57,7 +57,7 @@ This is a handler to recive from arduino or another device info about a new acto
  "mac_addres": "9a:da:76:f9:f0:3e",
   "Actor": {
     "port": "10",
-    "type": "wather-sensor",
+    "type": "engine",
     "name": "actor low"
   },
   "to": "Actor",
@@ -71,7 +71,7 @@ This is a handler to recive from arduino or another device info about a new acto
  "mac_addres": "9a:da:76:f9:f0:3e",
   "Actor": {
     "port": "10",
-    "type": "wather-sensor",
+    "type": "engine",
     "name": "actor low",
     "value": {"data": false, "entity": "boolean", "unity": "engage"}
   },
