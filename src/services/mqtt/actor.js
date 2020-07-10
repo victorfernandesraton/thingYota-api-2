@@ -44,13 +44,20 @@ const createActor = async (payload, socket) => {
       return null;
     }
 
-    const actor = await Actor.create({...payload.Actor, device_parent: device._id});
+    const findactor = await Actor.findOne({device_parent: device._id , port: payload.Actor.port})
 
-    device.update({
-      $push: {
-        Actors: actor._id,
-      },
-    });
+    let actor;
+    if (findactor) {
+      actor = findactor.update({...payload.Actor})
+    } else {
+      actor = await Actor.create({...payload.Actor, device_parent: device._id});
+      device.update({
+        $push: {
+          Actors: actor._id,
+        },
+      });
+    }
+
 
     console.info(`${payload.to}(${actor._id}) has moddified to ${payload.from}(${device._id})`);
 
@@ -66,7 +73,7 @@ module.exports= (payload, socket) => {
     case constants.Actor.CREATE:
       createActor(payload , socket);
       break;
-    case constants.Actor.CREATE:
+    case constants.Actor.UPDATE:
       updateActor(payload, socket);
       break;
     default:

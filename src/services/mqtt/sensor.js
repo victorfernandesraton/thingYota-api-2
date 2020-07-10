@@ -53,16 +53,22 @@ const createSensor = async (payload, socket) => {
       return null;
     }
 
-    const sensor = await Sensor.create({
-      ...payload.Sensor,
-      device_parent: device._id,
-    });
+    let sensor;
+    const findSensor = await Sensor.findOne({device_parent: device._id, port: payload.Sensor.port})
 
-    device.update({
-      $push: {
-        Sensors: sensor._id,
-      },
-    });
+    if (findSensor) {
+      sensor = findSensor.update({...payload.Sensor})
+    } else {
+      sensor = await Sensor.create({
+        ...payload.Sensor,
+        device_parent: device._id,
+      });
+      device.update({
+        $push: {
+          Sensors: sensor._id,
+        },
+      });
+    }
 
     console.info(
       `${payload.to}(${sensor._id}) has moddified to ${payload.from}(${device._id})`
