@@ -19,8 +19,10 @@ const updateActor = async (payload, socket) => {
       return null;
     }
 
+    let data;
     if (actor) {
-      const data = await actor.update(
+      data = await Actor.findOneAndUpdate(
+        { _id: actor._id },
         { value: payload.Actor.value },
         {
           upsert: true,
@@ -39,6 +41,7 @@ const updateActor = async (payload, socket) => {
     console.info(
       `${payload.to}(${actor._id}) has moddified to ${payload.from}(${device._id})`
     );
+    return data;
   } catch (error) {
     console.log(error);
     return null;
@@ -91,12 +94,10 @@ const createActor = async (payload, socket) => {
 module.exports = (payload, socket) => {
   switch (payload.event) {
     case constants.Actor.CREATE:
-      createActor(payload, socket);
-      break;
+      return createActor(payload, socket);
     case constants.Actor.UPDATE:
-      updateActor(payload, socket);
-      break;
+      return updateActor(payload, socket);
     default:
-      break;
+      return null;
   }
 };

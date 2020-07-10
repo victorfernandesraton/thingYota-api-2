@@ -41,6 +41,7 @@ const updateSensor = async (payload, socket) => {
     console.info(
       `${payload.to}(${sensor._id}) has moddified to ${payload.from}(${device._id})`
     );
+    return sensor;
   } catch (error) {
     console.log(error);
     return null;

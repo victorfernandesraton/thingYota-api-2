@@ -1,4 +1,3 @@
-
 const History = require("../model/history");
 const errors = require("restify-errors");
 
@@ -13,11 +12,13 @@ const find = async (req, res, send) => {
   const offset = (req.query.offset - 1) * limit || 0;
   let filter;
   try {
-    if(req.body) filter = req.body
+    if (req.body) filter = req.body;
     const data = await History.find(filter)
       .limit(parseInt(limit) || 0)
-      .skip(parseInt(offset) || 0).populate('From').populate('To')
-      .sort({created_at: -1})
+      .skip(parseInt(offset) || 0)
+      .populate("From")
+      .populate("To")
+      .sort({ created_at: -1 })
       .exec();
 
     const total = await History.estimatedDocumentCount();
@@ -61,8 +62,27 @@ const findOne = async (req, res, next) => {
   }
 };
 
+const mqttCreate = async (payload) => {
+  try {
+    const data = await History.create({
+      From_type: payload.from.type,
+      From: payload.from._id,
+      To_type: payload.to.type,
+      To: payload.to._id,
+      data: payload.data,
+    });
+    console.info(
+      `${payload.from.type}(${payload.from._id}) has referenced for ${payload.to.type} (${payload.to._id}) in history`
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
 
 module.exports = {
   findOne,
   find,
+  mqttCreate,
 };
