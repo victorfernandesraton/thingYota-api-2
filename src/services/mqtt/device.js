@@ -17,7 +17,6 @@ const updateDevice = async (payload, socket) => {
 const createDevice = async (payload, socket) => {
   try {
     const data = await Devive.create(payload);
-    socket.emit('teste', 'teste');
     return data;
   } catch (error) {
     console.log(error);
@@ -28,10 +27,10 @@ const createDevice = async (payload, socket) => {
 module.exports= (payload, socket) => {
   switch (payload.event) {
     case constants.Device.CREATE:
+      return createDevice(payload, socket)
     case constants.Device.UPDATE:
-      updateDevice(payload, socket);
-      break;
+      return updateDevice(payload, socket);
     default:
-      break;
+      return null;
   }
 }
