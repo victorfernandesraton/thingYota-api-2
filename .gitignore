@@ -114,6 +114,8 @@ dist
 # data
 /data
 /package-lock.json
+
+# env
 env/docker.env
 env/dev.env
 env/prod.env
