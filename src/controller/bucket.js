@@ -64,7 +64,7 @@ const findOne = async (req, res, next) => {
 };
 
 /**
- * @description Create user
+ * @description Create bucket
  * @param {{body: {name: String, type: String}}} req
  * @param {Response} res
  * @param {next} next

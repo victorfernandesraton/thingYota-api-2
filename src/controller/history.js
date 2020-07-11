@@ -2,7 +2,7 @@ const History = require("../model/history");
 const errors = require("restify-errors");
 
 /**
- * @description Get all devices in database
+ * @description Get all histories in database
  * @param {Request} req
  * @param {Response} res
  * @param {*} send
@@ -36,7 +36,7 @@ const find = async (req, res, send) => {
 };
 
 /**
- * @description Get one Device using your PK value id
+ * @description Get one History using your PK value id
  * @param {{params: {id: string}}} req
  * @param {Response} res
  * @requires params.id
@@ -62,6 +62,10 @@ const findOne = async (req, res, next) => {
   }
 };
 
+/**
+ * @description handler to create history from mqtt handlers
+ * @param {{From_type: String, From: String, To_Type: String, To: String, data: any}} payload
+ */
 const mqttCreate = async (payload) => {
   try {
     const data = await History.create({

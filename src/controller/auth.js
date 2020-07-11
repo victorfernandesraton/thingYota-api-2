@@ -7,7 +7,7 @@ const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
 const errors = require("restify-errors");
 
 /**
- *
+ * @description Handler to verified troken acess
  * @param {Request} req
  * @param {Response} res
  * @param {Send} send
