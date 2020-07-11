@@ -73,12 +73,16 @@ const createActor = async (payload, socket) => {
         ...payload.Actor,
         device_parent: device._id,
       });
-      device.update({
+    }
+
+    if (!device.Actors.find(item => item == actor.id)){
+      await device.update({
         $push: {
           Actors: actor._id,
         },
       });
     }
+
 
     console.info(
       `${payload.to}(${actor._id}) has created to ${payload.from}(${device._id})`
