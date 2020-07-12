@@ -73,7 +73,10 @@ const createSensor = async (payload, socket) => {
         ...payload.Sensor,
         device_parent: device._id,
       });
-      device.update({
+    }
+
+    if (!device.Sensors.find(item => item == sensor.id)) {
+      await device.update({
         $push: {
           Sensors: sensor._id,
         },

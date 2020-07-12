@@ -9,17 +9,17 @@ const errors = require("restify-errors");
 const { mockBuckets } = require("../utils/socket");
 
 /**
- * @description Get all devices in database
+ * @description Get all sensors in database
  * @param {Request} req
  * @param {Response} res
  * @param {*} next
  */
 const find = async (req, res, next) => {
-  const { limit } = req.query;
+  const { limit, populate } = req.query;
   const offset = (req.query.offset - 1) * limit || 0;
   try {
     let data;
-    if (req.params.populate) {
+    if (populate) {
       data = await Sensor.find()
         .limit(parseInt(limit) || 0)
         .skip(parseInt(offset) || 0)
@@ -45,7 +45,7 @@ const find = async (req, res, next) => {
 };
 
 /**
- * @description Get one Device using your PK value id
+ * @description Get one Sensor using your PK value id
  * @param {{params: {id: string}}} req
  * @param {Response} res
  * @requires params.id
@@ -72,8 +72,8 @@ const findOne = async (req, res, next) => {
 };
 
 /**
- * @description Create user
- * @param {{body: {name: String, type: String}}} req
+ * @description Create Sensor
+ * @param {{body: {name: String, type: String, devoce_parent: String, port: String}}} req
  * @param {Response} res
  * @param {next} next
  * @requires body.name
@@ -240,6 +240,12 @@ const put = async (req, res, send) => {
   }
 };
 
+/**
+ * @description Handler to update only sensor value
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 const registerValue = async (req, res, next) => {
   const { id } = req.params;
   const { value } = req.body;

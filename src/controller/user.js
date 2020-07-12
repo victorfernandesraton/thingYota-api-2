@@ -102,6 +102,12 @@ const findOne = async (req, res, next) => {
   }
 };
 
+/**
+ * @description Put data update in refs by pk id
+ * @param {{params: {id: String}, body:{name?: String, type?: String, send: Boolean}}} req
+ * @param {Response} res
+ * @param {*} send
+ */
 const put = async (req, res, send) => {
   if (req.body == null || req.body == undefined)
     return res.send(new errors.InvalidArgumentError("body is empty"));
@@ -134,6 +140,12 @@ const put = async (req, res, send) => {
   }
 };
 
+/**
+ * @description Create relationship using user
+ * @param {{body: {to: String, type: String}, params: {id: String}}} req
+ * @param {Response} res
+ * @param {Next} send
+ */
 const createRelationShip = async (req, res, send) => {
   if (req.body == null || req.body == undefined)
     return res.send(new errors.InvalidArgumentError("body is empty"));
@@ -199,6 +211,12 @@ const createRelationShip = async (req, res, send) => {
   }
 };
 
+/**
+ * @description Delete relationship using user
+ * @param {{body: {to: String, type: String}, params: {id: String}}} req
+ * @param {Response} res
+ * @param {Next} send
+ */
 const deleteRelationShip = async (req, res, send) => {
   if (req.body == null || req.body == undefined)
     return res.send(new errors.InvalidArgumentError("body is empty"));

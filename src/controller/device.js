@@ -1,6 +1,7 @@
 const Device = require("../model/device");
 const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
 const errors = require("restify-errors");
+const { populate } = require("../model/device");
 
 /**
  * @description Get all Devices in database
@@ -9,13 +10,23 @@ const errors = require("restify-errors");
  * @param {*} next
  */
 const find = async (req, res, next) => {
-  const { limit } = req.query;
-  const offset = (req.query.offset - 1) * limit || 0;
+  const { limit, populate } = req.query;
+  const offset = (parseInt(req.query.offset)) * limit || 0;
   try {
-    const data = await Device.find()
-      .limit(parseInt(limit) || 0)
-      .skip(parseInt(offset) || 0)
-      .exec();
+    let data;
+    if (populate) {
+      data = await Device.find()
+        .limit(parseInt(limit) || 0)
+        .skip(parseInt(offset) || 0)
+        .populate("Sensors")
+        .populate("Actors")
+        .exec();
+    } else {
+      data = await Device.find()
+        .limit(parseInt(limit) || 0)
+        .skip(parseInt(offset) || 0)
+        .exec();
+    }
 
     const total = await Device.estimatedDocumentCount();
 
@@ -39,12 +50,21 @@ const find = async (req, res, next) => {
  * @param {*} next
  */
 const findOne = async (req, res, next) => {
+  const { populate } = req.query;
   const { id } = req.params;
 
   if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
 
   try {
-    const data = await Device.findById(id);
+    let data;
+    if (populate) {
+      data = await Device.findById(id)
+        .populate("Sensors")
+        .populate("Actrors")
+        .exec();
+    } else {
+      data = await Device.findById(id);
+    }
 
     if (!data || data.length == 0)
       return res.send(new errors.NotFoundError(`Device._id ${id} not found`));

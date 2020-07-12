@@ -74,8 +74,8 @@ const findOne = async (req, res, next) => {
 };
 
 /**
- * @description Create user
- * @param {{body: {name: String, type: String}}} req
+ * @description Create actor
+ * @param {{body: {name: String, type: String, device_parent: String, port: String}}} req
  * @param {Response} res
  * @param {next} next
  * @requires body.name
@@ -159,7 +159,7 @@ const create = async (req, res, next) => {
  * @description Put data update in refs by pk id
  * @param {{params: {id: String}, body:{name?: String, type?: String, send: Boolean}}} req
  * @param {Response} res
- * @param {*} send
+ * @param {send} send
  */
 const put = async (req, res, send) => {
   if (req.body == null || req.body == undefined)
@@ -250,50 +250,6 @@ const put = async (req, res, send) => {
       data,
     };
     send();
-  } catch (error) {
-    return res.send(new errors.InternalServerError(`${error}`));
-  }
-};
-
-const registerValue = async (req, res, next) => {
-  const { id } = req.params;
-  const { value } = req.body;
-
-  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
-
-  if (!value) return res.send(new errors.InvalidContentError("Body not found"));
-
-  try {
-    const actor = await Actor.findById(id).populate("device_parent");
-
-    if (!actor || actor.length == 0)
-      return res.send(new errors.NotFoundError("Actor not found"));
-
-    const buckets = await Bucket.find({ Sensors: { $in: { _id: id } } });
-
-    const data = await actor.update(id, sendData, {
-      new: true,
-      upsert: true,
-      setDefaultsOnInsert: true,
-    });
-
-    if (buckets.length > 0) {
-      buckets.forEach((el) => {
-        const dispatch = req.io.io.of(`/Bucket_${el._id}`);
-        dispatch.emit("updated", {
-          data: {
-            value,
-            entity: actor,
-            typoe: "Actor",
-            Bucket: el,
-          },
-        });
-      });
-    }
-
-    return res.send(200, {
-      data: data,
-    });
   } catch (error) {
     return res.send(new errors.InternalServerError(`${error}`));
   }

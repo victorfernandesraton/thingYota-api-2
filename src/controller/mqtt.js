@@ -1,6 +1,6 @@
-const deviceHandler = require("../services/mqtt/device");
-const semsorHandler = require("../services/mqtt/sensor");
-const actorHandler = require("../services/mqtt/actor");
+const deviceHandler = require("../helpers/mqtt/device");
+const semsorHandler = require("../helpers/mqtt/sensor");
+const actorHandler = require("../helpers/mqtt/actor");
 const { mqttCreate } = require("../controller/history");
 
 const Device = require('../model/device');
