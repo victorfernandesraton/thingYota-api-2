@@ -13,7 +13,7 @@ const errors = require("restify-errors");
  */
 const find = async (req, res, next) => {
   const { limit } = req.query;
-  const offset = (parseInt(req.query.offset)) * limit || 0;
+  const offset = parseInt(req.query.offset) * limit || 0;
   try {
     const data = await Bucket.find()
       .populate("Sensors")
@@ -83,38 +83,36 @@ const create = async (req, res, next) => {
     );
 
   const { name, type, volume } = req.body;
-  console.log(volume)
   const sendData = trimObjctt({
     name,
     type,
-    volume
+    volume,
   });
   try {
     const data = await Bucket.create(sendData);
 
     let historyData = {
       To: data._id,
-      To_type: 'Bucket',
+      To_type: "Bucket",
       data: {
-        type: 'crreate',
-        value: data
-      }
-    }
+        type: "crreate",
+        value: data,
+        event: "BUCKET_CREATE",
+      },
+    };
 
     let From, From_type;
-    if(req.locals && req.locals.authObject) {
-      From = req.locals.authObject._id
-      From_type = req.locals.authObject.entity
-      historyData = {...historyData, From, From_type  }
+    if (req.locals && req.locals.authObject) {
+      From = req.locals.authObject._id;
+      (From_type = req.locals.authObject.entity),
+        (historyData = { ...historyData, From, From_type });
     }
 
-    History.create({...historyData})
+    History.create({ ...historyData });
 
     return res.send(201, {
       data: data,
     });
-
-
   } catch (error) {
     if (error.code == 11000) {
       return res.send(
