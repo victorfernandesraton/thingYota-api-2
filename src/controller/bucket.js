@@ -13,7 +13,7 @@ const errors = require("restify-errors");
  */
 const find = async (req, res, next) => {
   const { limit } = req.query;
-  const offset = (req.query.offset - 1) * limit || 0;
+  const offset = (parseInt(req.query.offset)) * limit || 0;
   try {
     const data = await Bucket.find()
       .populate("Sensors")
