@@ -9,7 +9,7 @@ const errors = require("restify-errors");
  */
 const find = async (req, res, send) => {
   const { limit } = req.query;
-  const offset = (req.query.offset - 1) * limit || 0;
+  const offset = (parseInt(req.query.offset)) * limit || 0;
   let filter;
   try {
     if (req.body) filter = req.body;
@@ -23,6 +23,7 @@ const find = async (req, res, send) => {
 
     const total = await History.estimatedDocumentCount();
 
+    console.log(offset)
     if (offset >= total && total != 0)
       return res.send(new errors.LengthRequiredError("out of rnge"));
 
