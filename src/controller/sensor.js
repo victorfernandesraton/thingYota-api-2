@@ -15,11 +15,11 @@ const { mockBuckets } = require("../utils/socket");
  * @param {*} next
  */
 const find = async (req, res, next) => {
-  const { limit } = req.query;
+  const { limit, populate } = req.query;
   const offset = (req.query.offset - 1) * limit || 0;
   try {
     let data;
-    if (req.params.populate) {
+    if (populate) {
       data = await Sensor.find()
         .limit(parseInt(limit) || 0)
         .skip(parseInt(offset) || 0)
