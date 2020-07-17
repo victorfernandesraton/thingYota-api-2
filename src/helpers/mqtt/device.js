@@ -4,9 +4,14 @@ const Devive = require('../../model/device');
 
 const updateDevice = async (payload, socket) => {
   try {
-    const data = await Devive.findOneAndUpdate({mac_addres: payload.mac_addres}, payload, {
+    const {mac_addres, name, type="ESP"} = payload;
+    const data = await Devive.findOneAndUpdate({mac_addres}, {
+      name,
+      type
+    }, {
       upsert: true
     });
+    console.info(`${payload.from}(${data._id}) has updated`);
     return data;
   } catch (error) {
     console.log(error);
@@ -16,7 +21,21 @@ const updateDevice = async (payload, socket) => {
 
 const createDevice = async (payload, socket) => {
   try {
-    const data = await Devive.create(payload);
+    const {name, mac_addres, type="ESP"} = payload;
+    const device = await Devive.find({
+      mac_addres
+    })
+
+    if (device && device.length > 0) {
+      return updateDevice(payload, socket);
+    }
+
+    const data = await Devive.create({
+      name,
+      mac_addres,
+      type
+    });
+    console.info(`${payload.from}(${data._id}) has created`);
     return data;
   } catch (error) {
     console.log(error);
