@@ -14,9 +14,6 @@ const updateSensor = async (payload, socket) => {
       device_parent: device._id,
       port: payload.Sensor.port,
     });
-    const buckets = await Bucket.find({
-      Sensors: { $in: { _id: sensor._id } },
-    });
 
     if (!device || !sensor) {
       return null;
@@ -30,8 +27,17 @@ const updateSensor = async (payload, socket) => {
           useFindAndModify: false,
           new: true,
         }
-      );
-      if (buckets.length > 1) {
+      ).exec();
+
+      const buckets = await Bucket.find({
+        Sensors: {
+          $in: {
+            _id: sensor._id
+          }
+        },
+      }).populate("Sensors").populate("Actors");
+
+      if (buckets.length > 0) {
         buckets.forEach((el) =>
           emit(mockBuckets(el, payload.Sensor, "Sensors"), socket)
         );

@@ -1,4 +1,5 @@
 const constants = require("./constants");
+
 const Actor = require("../../model/actor");
 const Device = require("../../model/device");
 const Bucket = require("../../model/bucket");
@@ -13,7 +14,6 @@ const updateActor = async (payload, socket) => {
       device_parent: device._id,
       port: payload.Actor.port,
     });
-    const buckets = await Bucket.find({ Actors: { $in: { _id: actor._id } } });
 
     if (!device || !actor) {
       return null;
@@ -30,6 +30,14 @@ const updateActor = async (payload, socket) => {
           new: true,
         }
       );
+
+      const buckets = await Bucket.find({
+        Actors: {
+          $in: {
+            _id: actor._id
+          }
+        }
+      }).populate("Sensors").populate("Actors");
 
       if (buckets.length > 0) {
         buckets.forEach((el) => {
@@ -75,14 +83,13 @@ const createActor = async (payload, socket) => {
       });
     }
 
-    if (!device.Actors.find(item => item == actor.id)){
+    if (!device.Actors.find((item) => item == actor.id)) {
       await device.update({
         $push: {
           Actors: actor._id,
         },
       });
     }
-
 
     console.info(
       `${payload.to}(${actor._id}) has created to ${payload.from}(${device._id})`
