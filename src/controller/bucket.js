@@ -103,8 +103,9 @@ const create = async (req, res, next) => {
 
     let From, From_type;
     if (req.locals && req.locals.authObject) {
+      console.log(req.locals.authObject);
       From = req.locals.authObject._id;
-      (From_type = req.locals.authObject.entity),
+      From_type = req.locals.authObject.entity,
         (historyData = { ...historyData, From, From_type });
     }
 
