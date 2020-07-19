@@ -85,8 +85,32 @@ const mqttCreate = async (payload) => {
   }
 };
 
+/**
+ * @description handler to delete one history using id to reference
+ * @param {{params: {id: String}}} req
+ * @param {Response} res
+ * @param {Send} next
+ */
+const delOne = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+
+  try {
+    const data = await History.findById(id).populate("device_parent");
+    await data.deleteOne()
+    return res.send(200,{
+      data,
+      res: true
+    });
+  } catch (error) {
+    return res.send(new errors.InternalServerError(`${error}`));
+  }
+}
+
 module.exports = {
   findOne,
   find,
   mqttCreate,
+  delOne
 };
