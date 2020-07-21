@@ -20,6 +20,20 @@ const updateActor = async (payload, socket) => {
     }
 
     let data;
+
+    if (payload.Actor.value && payload.Actor.value.entity) {
+      if (payload.Actor.value.entity == 'boolean') {
+        switch (payload.Actor.value.data) {
+          case 1:
+            payload.Actor.value.data = true;
+            break;
+          case 0:
+          default:
+            payload.Actor.value.data = false;
+            break;
+        }
+      }
+    }
     if (actor) {
       data = await Actor.findOneAndUpdate(
         { _id: actor._id },
@@ -37,7 +51,7 @@ const updateActor = async (payload, socket) => {
             _id: actor._id
           }
         }
-      }).populate("Sensors").populate("Actors");
+      }).populate("Actors").populate("Actors");
 
       if (buckets.length > 0) {
         buckets.forEach((el) => {
@@ -70,6 +84,16 @@ const createActor = async (payload, socket) => {
     });
 
     let actor;
+
+    if (payload.Actor.value && payload.Actor.value.data) {
+      if (payload.Actor.value.entity == 'boolean') {
+        if (payload.Actor.value.data == 0) {
+          payload.Actor.value.data = false;
+        } else {
+          payload.Actor.value.data = true;
+        }
+      }
+    }
     if (findactor) {
       actor = await Actor.findOneAndUpdate(
         { _id: findactor._id },

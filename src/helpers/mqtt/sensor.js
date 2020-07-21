@@ -19,6 +19,20 @@ const updateSensor = async (payload, socket) => {
       return null;
     }
 
+    if (payload.Sensor.value && payload.Sensor.value.entity) {
+      if (payload.Sensor.value.entity == 'boolean') {
+        switch (payload.Sensor.value.data) {
+          case 1:
+            payload.Sensor.value.data = true;
+            break;
+          case 0:
+          default:
+            payload.Sensor.value.data = false;
+            break;
+        }
+      }
+    }
+
     if (sensor) {
       const data = await sensor.update(
         { value: payload.Sensor.value },
