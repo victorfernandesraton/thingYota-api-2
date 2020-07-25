@@ -122,3 +122,4 @@ env/dev.env
 env/prod.env
 dev.env
 docker.env
+.env
