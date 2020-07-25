@@ -10,12 +10,12 @@ switch (process.env.NODE_ENV) {
     break;
   case "production":
   default:
-    envPath = "prod.env";
+    envPath = '.env';
     break;
 }
 
 require("dotenv").config({
-  path: path.resolve(__dirname, "../env", envPath),
+  path: envPath,
 });
 
 const mongoose = require("mongoose");

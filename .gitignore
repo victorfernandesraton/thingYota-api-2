@@ -114,9 +114,12 @@ dist
 # data
 /data
 /package-lock.json
+yarn.lock
 
 # env
 env/docker.env
 env/dev.env
 env/prod.env
-yarn.lock
+dev.env
+docker.env
+.env
