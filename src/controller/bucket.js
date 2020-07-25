@@ -82,20 +82,40 @@ const create = async (req, res, next) => {
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
 
-  const { name, type, volume } = req.body;
-  const sendData = trimObjctt({
+  const { name, type, volume, Sensors, Actors } = req.body;
+  let sendData = {
     name,
     type,
     volume,
-  });
+    Actors: [],
+    Sensors: [],
+  };
   try {
-    const data = await Bucket.create(sendData);
+    if (Sensors && Sensors.length) {
+      for (const sensor of Sensors) {
+        if ((await Sensor.find({ _id: sensor })).length) {
+          sendData.Sensors = [...sendData.Sensors, sensor];
+        }
+      }
+    }
+
+    if (Actors && Actors.length) {
+      for (const actor of Actors) {
+        if (await Actor.find({ _id: actor })) {
+          sendData.Actors = [...sendData.Actors, actor];
+        }
+      }
+    }
+
+    const data = await (await Bucket.create(trimObjctt(sendData)))
+      .populate("Sensors")
+      .populate("Actors").execPopulate();
 
     let historyData = {
       To: data._id,
       To_type: "Bucket",
       data: {
-        type: "crreate",
+        type: "create",
         value: data,
         event: "BUCKET_CREATE",
       },
@@ -103,9 +123,8 @@ const create = async (req, res, next) => {
 
     let From, From_type;
     if (req.locals && req.locals.authObject) {
-      console.log(req.locals.authObject);
       From = req.locals.authObject._id;
-      From_type = req.locals.authObject.entity,
+      (From_type = req.locals.authObject.entity),
         (historyData = { ...historyData, From, From_type });
     }
 
@@ -123,7 +142,7 @@ const create = async (req, res, next) => {
       );
     }
     return res.send(
-      new errors.InternalServerError(`An database error has occoured`)
+      new errors.InternalServerError(`An database error has occoured, ${error}`)
     );
   }
 };
