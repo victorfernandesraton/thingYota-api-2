@@ -5,12 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev-watch": "NODE_ENV=development  nodemon bin/server",
-    "dev": "NODE_ENV=development  node bin/server",
-    "dev-docker": "NODE_ENV=development-docker node bin/server",
-    "dev-watch-docker": "NODE_ENV=development-docker nodemon bin/server",
-    "start": "NODE_ENV=production node bin/server",
-    "start-watch": "NODE_ENV=production nodemon bin/server"
+    "dev": "NODE_ENV=development  ./node_modules/nodemon/bin/nodemon.js ./bin/server",
+    "dev-docker": "NODE_ENV=development-docker ./node_modules/nodemon/bin/nodemon.js bin/server",
+    "start": "NODE_ENV=production node bin/server"
   },
   "author": "victorfeernandesraton",
   "license": "MIT",
@@ -33,6 +30,7 @@
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5"
   }
 }
