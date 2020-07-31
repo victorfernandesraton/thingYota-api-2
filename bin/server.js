@@ -35,9 +35,12 @@ mongoose
   .then((data) => {
     console.info("Database as connected");
     console.info(url);
+    server.listen(env.sever.port, (data) => {
+      console.info(`Press CTRL+C to kill`);
+    });
   })
-  .catch((error) => console.error(error));
+  .catch((error) => {
+    console.error(error);
+    process.exit(1)
+  });
 
-server.listen(env.sever.port, (data) => {
-  console.info(`Press CTRL+C to kill`);
-});
