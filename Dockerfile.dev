@@ -1,13 +1,6 @@
 FROM node:12
 RUN mkdir -p /usr/src/app
-RUN mkdir -p /usr/src/app/bin
-RUN mkdir -p /usr/src/app/src
-
-COPY ./bin /usr/src/app/bin
-COPY ./src /usr/src/app/src
-
-COPY ./docker.env /usr/src/app
-COPY ./package.json /usr/src/app
+COPY . /usr/src/app
 
 WORKDIR /usr/src/app
 RUN npm install --save

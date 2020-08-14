@@ -4,7 +4,7 @@
   "description": "Server REST api for monitoring water system",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node ./node_modules/jest/bin/jest.js",
     "dev": "NODE_ENV=development  ./node_modules/nodemon/bin/nodemon.js ./bin/server",
     "dev-docker": "NODE_ENV=development-docker ./node_modules/nodemon/bin/nodemon.js bin/server",
     "start": "NODE_ENV=production node bin/server"
@@ -16,8 +16,8 @@
     "url": "https://github.com/victorfernandesraton/thingYota-api2"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
+    "jest": "^26.4.0",
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.2.1",
     "mongoose": "^5.9.22",
