@@ -14,14 +14,11 @@ const validaionBodyEmpty = (object, requires) =>
  * @returns
  */
 const trimObjctt = (obj) => {
-  Object.keys(obj).forEach(
-    (key) =>
-      (obj[key] === null ||
-        obj[key] === undefined ||
-        obj[key] === {} ||
-        obj[key] === "") &&
+  for (let key in obj) {
+  if (obj[key] == null || obj[key] =={} || (!obj[key] && typeof obj[key] != 'number')) {
       delete obj[key]
-  );
+    }
+  }
   return obj;
 };
 

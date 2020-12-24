@@ -54,7 +54,7 @@ mqtt.on("message", async (topic, data, packet) => {
 
 
 server.on("error", (error) => {
-  console.info(error);
+  console.error(error);
 });
 
 server.on("listening", (data) => {
