@@ -18,10 +18,11 @@ const authUser = async (req, res, send) => {
 
   const bodyNotFound = validaionBodyEmpty(req.body, ["username", "password"]);
 
-  if (bodyNotFound.length > 0)
-    return res.send(
+  if (bodyNotFound.length > 0) {
+    res.send(
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
+  }
 
   let { username, email, password } = req.body;
 
@@ -32,8 +33,9 @@ const authUser = async (req, res, send) => {
 
   const user = await User.findOne(query);
 
-  if (!user || user.length == 0)
-    return res.send(new errors.NotFoundError("User not found"));
+  if (!user || user.length == 0) {
+    res.send(new errors.NotFoundError("User not found"));
+  }
 
   const token = await jwt.sign(
     {
@@ -44,7 +46,7 @@ const authUser = async (req, res, send) => {
     },
     config.secret.user
   );
-  return res.send(200, {
+  res.send(200, {
     res: true,
     data: {
       token,
@@ -62,13 +64,14 @@ const authUser = async (req, res, send) => {
  */
 const authDevice = async (req, res, send) => {
   if (req.body == null || req.body == undefined) {
-    return res.send(new errors.InvalidArgumentError("body is empty"));
+    res.send(new errors.InvalidArgumentError("body is empty"));
   }
   const bodyNotFound = validaionBodyEmpty(req.body, ["mac_addres"]);
-  if (bodyNotFound.length > 0)
-    return res.send(
+  if (bodyNotFound.length > 0) {
+    res.send(
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
+  }
 
   const { mac_addres } = req.body;
 
@@ -78,8 +81,9 @@ const authDevice = async (req, res, send) => {
 
   const device = await Device.findOne(query);
 
-  if (!device || device.length == 0)
-    return res.send(new errors.NotFoundError("Device not found"));
+  if (!device || device.length == 0) {
+    res.send(new errors.NotFoundError("Device not found"));
+  }
 
   const token = await jwt.sign(
     {
@@ -90,7 +94,7 @@ const authDevice = async (req, res, send) => {
     },
     config.secret.user
   );
-  return res.send(200, {
+ res.send(200, {
     res: true,
     data: {
       token,
@@ -112,7 +116,7 @@ const authGuest = async (req, res, send) => {
     },
     config.secret.guest
   );
-  return res.send(200, {
+  res.send(200, {
     data: {
       token,
     },
