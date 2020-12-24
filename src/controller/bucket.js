@@ -24,15 +24,16 @@ const find = async (req, res, next) => {
 
     const total = await Bucket.estimatedDocumentCount();
 
-    if (offset >= total && total != 0)
-      return res.send(new errors.LengthRequiredError("out of rnge"));
+    if (offset >= total && total != 0) {
+      res.send(new errors.LengthRequiredError("out of rnge"));
+    }
 
-    return res.send(200, {
+    res.send(200, {
       data: data,
       metadata: { limit, offset, total },
     });
   } catch (error) {
-    return res.send(new errors.InternalServerError(error));
+    res.send(new errors.InternalServerError(error));
   }
 };
 
@@ -52,14 +53,15 @@ const findOne = async (req, res, next) => {
       .populate("Actors")
       .exec();
 
-    if (!data || data.length == 0)
-      return res.send(new errors.NotFoundError(`Bucket._id ${id} not found`));
+    if (!data || data.length == 0) {
+      res.send(new errors.NotFoundError(`Bucket._id ${id} not found`));
+    }
 
     res.send(200, {
       data: data,
     });
   } catch (error) {
-    return res.send(new errors.InternalServerError(error));
+    res.send(new errors.InternalServerError(error));
   }
 };
 
@@ -72,13 +74,14 @@ const findOne = async (req, res, next) => {
  * @requires body.type
  */
 const create = async (req, res, next) => {
-  if (req.body == null || req.body == undefined)
-    return res.send(new errors.InvalidArgumentError("body is empty"));
+  if (req.body == null || req.body == undefined) {
+    res.send(new errors.InvalidArgumentError("body is empty"));
+  }
 
   const bodyNotFound = validaionBodyEmpty(req.body, ["name", "type"]);
 
   if (bodyNotFound.length > 0)
-    return res.send(
+    res.send(
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
 
@@ -130,18 +133,18 @@ const create = async (req, res, next) => {
 
     History.create({ ...historyData });
 
-    return res.send(201, {
+    res.send(201, {
       data: data,
     });
   } catch (error) {
     if (error.code == 11000) {
-      return res.send(
+      res.send(
         new errors.ConflictError(
           `duplicated : ${JSON.stringify(error.keyValue)}`
         )
       );
     }
-    return res.send(
+    res.send(
       new errors.InternalServerError(`An database error has occoured, ${error}`)
     );
   }
@@ -154,40 +157,48 @@ const create = async (req, res, next) => {
  * @param {*} send
  */
 const put = async (req, res, send) => {
-  if (req.body == null || req.body == undefined)
-    return res.send(new errors.InvalidArgumentError("body is empty"));
+  if (req.body == null || req.body == undefined) {
+    res.send(new errors.InvalidArgumentError("body is empty"));
+  }
 
   const { id } = req.params;
   const { name, type, status, volume } = req.body;
 
-  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+  if (!id) {
+    res.send(new errors.InvalidArgumentError("id not found"));
+  }
 
   const sendParans = trimObjctt({ name, type, status, volume });
 
   try {
     const data = await Bucket.findByIdAndUpdate(id, sendParans, { new: true });
-    if (!data)
-      return res.send(new errors.NotFoundError(`Bucket_id ${id} not found`));
-    return res.send(200, {
+    if (!data) {
+      res.send(new errors.NotFoundError(`Bucket_id ${id} not found`));
+    }
+
+    res.send(200, {
       data: data,
     });
+
   } catch (error) {
-    return res.send(new errors.InternalServerError(error));
+    res.send(new errors.InternalServerError(error));
   }
 };
 
 const createRelationShip = async (req, res, send) => {
-  if (req.body == null || req.body == undefined)
-    return res.send(new errors.InvalidArgumentError("body is empty"));
+  if (req.body == null || req.body == undefined) {
+    res.send(new errors.InvalidArgumentError("body is empty"));
+  }
 
   const { id } = req.params;
 
-  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+  if (!id) {
+    res.send(new errors.InvalidArgumentError("id not found"));
+  }
 
   const bodyNotFound = validaionBodyEmpty(req.body, ["to", "type"]);
 
-  if (bodyNotFound.length > 0)
-    return res.send(
+  if (bodyNotFound.length > 0) res.send(
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
 
@@ -195,8 +206,9 @@ const createRelationShip = async (req, res, send) => {
 
   const bucket = await Bucket.findById(req.params.id);
 
-  if (!bucket || bucket.length == 0)
-    return res.send(new errors.NotFoundError(`Bucket._id ${id} not found`));
+  if (!bucket || bucket.length == 0) {
+    res.send(new errors.NotFoundError(`Bucket._id ${id} not found`));
+  }
 
   let dataTo, data;
 
@@ -206,10 +218,11 @@ const createRelationShip = async (req, res, send) => {
       case "sensor":
         dataTo = await Sensor.findById(to.id);
 
-        if (!dataTo)
-          return res.send(
+        if (!dataTo) {
+          res.send(
             new errors.NotFoundError(`Sensor._id ${to.id} not found`)
           );
+        }
 
         data = await Bucket.findByIdAndUpdate(id, {
           $push: {
@@ -221,10 +234,11 @@ const createRelationShip = async (req, res, send) => {
       case "actor":
         dataTo = await Actor.findById(to.id);
 
-        if (!dataTo)
-          return res.send(
+        if (!dataTo) {
+          res.send(
             new errors.NotFoundError(`Sensor._id ${to.id} not found`)
           );
+        }
 
         data = await Bucket.findByIdAndUpdate(id, {
           $push: {
@@ -233,16 +247,16 @@ const createRelationShip = async (req, res, send) => {
         });
         break;
       default:
-        return res.send(
+        res.send(
           new errors.InvalidContentError(`type ${type} is not valid.`)
         );
     }
 
-    return res.send(200, {
+    res.send(200, {
       data: data,
     });
   } catch (error) {
-    return res.send(new errors.InternalServerError(error));
+    res.send(new errors.InternalServerError(error));
   }
 };
 

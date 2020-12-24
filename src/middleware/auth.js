@@ -15,11 +15,11 @@ const authGuest = async (req, res, send) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token || token == null)
-    return res.send(new errors.InvalidHeaderError("Token not found"));
+     res.send(new errors.InvalidHeaderError("Token not found"));
 
   jwt.verify(token, config.secret.guest, (err, decoded) => {
     if (err)
-      return res.send(403, {
+       res.send(403, {
         error: { message: "token is not valid" },
       });
     req.token = token;
@@ -38,15 +38,15 @@ const authUser = async (req, res, send) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token || token == null)
-    return res.send(new errors.InvalidHeaderError("Token not found"));
+     res.send(new errors.InvalidHeaderError("Token not found"));
 
   jwt.verify(token, config.secret.user, (err, decoded) => {
-    if (err) return res.send(new errors.InvalidHeaderError("Invalid Token"));
+    if (err)  res.send(new errors.InvalidHeaderError("Invalid Token"));
   });
 
   const { entity, id } = jwt.decode(token);
   if (!entity)
-    return res.send(new errors.InvalidArgumentError("Entity info not found "));
+     res.send(new errors.InvalidArgumentError("Entity info not found "));
   let data = {};
 
   switch (entity) {
@@ -64,7 +64,7 @@ const authUser = async (req, res, send) => {
   }
 
   if (!data)
-    return res.send(
+     res.send(
       new errors.InvalidArgumentError(`Entity ${entity} id (${id}) not found`)
     );
   req.token = token;

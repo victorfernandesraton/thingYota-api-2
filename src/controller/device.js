@@ -31,14 +31,14 @@ const find = async (req, res, next) => {
     const total = await Device.estimatedDocumentCount();
 
     if (offset >= total && total != 0)
-      return res.send(new errors.LengthRequiredError("out of rnge"));
+       res.send(new errors.LengthRequiredError("out of rnge"));
 
-    return res.send(200, {
+     res.send(200, {
       data: data,
       metadata: { limit, offset, total },
     });
   } catch (error) {
-    return res.send(new errors.InternalServerError(`${error}`));
+     res.send(new errors.InternalServerError(`${error}`));
   }
 };
 
@@ -53,7 +53,7 @@ const findOne = async (req, res, next) => {
   const { populate } = req.query;
   const { id } = req.params;
 
-  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+  if (!id)  res.send(new errors.InvalidArgumentError("id not found"));
 
   try {
     let data;
@@ -67,13 +67,13 @@ const findOne = async (req, res, next) => {
     }
 
     if (!data || data.length == 0)
-      return res.send(new errors.NotFoundError(`Device._id ${id} not found`));
+       res.send(new errors.NotFoundError(`Device._id ${id} not found`));
 
-    return res.send(200, {
+     res.send(200, {
       data: data,
     });
   } catch (error) {
-    return res.send(new errors.InternalServerError(`${error}`));
+     res.send(new errors.InternalServerError(`${error}`));
   }
 };
 
@@ -88,7 +88,7 @@ const findOne = async (req, res, next) => {
  */
 const create = async (req, res, next) => {
   if (req.body == null || req.body == undefined)
-    return res.send(new errors.InvalidArgumentError("body is empty"));
+     res.send(new errors.InvalidArgumentError("body is empty"));
 
   const bodyNotFound = validaionBodyEmpty(req.body, [
     "name",
@@ -97,7 +97,7 @@ const create = async (req, res, next) => {
   ]);
 
   if (bodyNotFound.length > 0)
-    return res.send(
+     res.send(
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
 
@@ -110,18 +110,18 @@ const create = async (req, res, next) => {
       mac_addres,
     });
 
-    return res.send(200, {
+     res.send(200, {
       data: data,
     });
   } catch (error) {
     if (error.code == 11000) {
-      return res.send(
+       res.send(
         new errors.ConflictError(
           `duplicated : ${JSON.stringify(error.keyValue)}`
         )
       );
     }
-    return res.send(
+     res.send(
       new errors.InternalServerError(`An database error has occoured`)
     );
   }
@@ -135,9 +135,9 @@ const create = async (req, res, next) => {
  */
 const put = async (req, res, send) => {
   if (req.body == null || req.body == undefined)
-    return res.send(new errors.InvalidArgumentError("body is empty"));
+     res.send(new errors.InvalidArgumentError("body is empty"));
 
-  if (!id) return res.send(new errors.InvalidArgumentError("id not found"));
+  if (!id)  res.send(new errors.InvalidArgumentError("id not found"));
 
   const { id } = req.params;
   const { name, type, mac_addres, status } = req.body;
@@ -156,9 +156,9 @@ const put = async (req, res, send) => {
       setDefaultsOnInsert: true,
     });
     if (!data)
-      return res.send(new errors.NotFoundError(`Device ${id} not found`));
+       res.send(new errors.NotFoundError(`Device ${id} not found`));
   } catch (error) {
-    return res.send(new errors.InternalServerError(`${error}`));
+     res.send(new errors.InternalServerError(`${error}`));
   }
 };
 
