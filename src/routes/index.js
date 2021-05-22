@@ -1,7 +1,7 @@
 const router = new (require("restify-router").Router)();
 
 const auth = require("./auth");
-const singup = require("./singup.");
+const singup = require("./singup");
 
 const user = require("./user");
 const device = require("./device");

@@ -1,11 +1,10 @@
 const server = require("./config/server");
 const router = require("./routes");
-const socketIo = require('socket.io');
+const io = require("socket.io")(server);
 const logger = require("morgan");
-const mqtt = require('./services/mqtt-service');
-const mqttHandler = require('./controller/mqtt');
-const io = socketIo.listen(server.server);
-const env = require('./config/env');
+const mqtt = require("./services/mqtt-service");
+const mqttHandler = require("./controller/mqtt");
+const env = require("./config/env");
 
 server.use((req, res, next) => {
   // socket
@@ -24,12 +23,11 @@ server.get("/helth", (req, res, next) => {
 
 // hello
 server.get("/", (req, res, next) => {
-  res.header('Content-Type', 'text/html')
+  res.header("Content-Type", "text/html");
   return res.end("<h1>This is a REST API</h1>");
 });
 
-
-mqtt.on("connect", (data,err) => {
+mqtt.on("connect", (data, err) => {
   console.info(`connected sucessful in mqtt broker `);
   mqtt.subscribe(env.mqtt.server_broker, (err) => {
     if (err) {
@@ -52,14 +50,15 @@ mqtt.on("message", async (topic, data, packet) => {
   }
 });
 
-
 server.on("error", (error) => {
   console.error(error);
 });
 
 server.on("listening", (data) => {
   console.info(
-    `Server ${server.name} is run in ${server.address().family}${server.address().address}${server.address().port}`
+    `Server ${server.name} is run in ${server.address().family}${
+      server.address().address
+    }${server.address().port}`
   );
 });
 module.exports = server;
