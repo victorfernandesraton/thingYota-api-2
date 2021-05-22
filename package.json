@@ -1,12 +1,12 @@
 {
   "name": "thingyota-api-2",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Server REST api for monitoring water system",
   "main": "server.js",
   "scripts": {
     "test": "jest",
     "dev": "NODE_ENV=development  ./node_modules/nodemon/bin/nodemon.js ./bin/server",
-    "dev-docker": "NODE_ENV=development-docker ./node_modules/nodemon/bin/nodemon.js bin/server",
+    "dev-docker": "NODE_ENV=development-docker nodemon bin/server",
     "start": "NODE_ENV=production node bin/server"
   },
   "author": "victorfeernandesraton",
@@ -16,21 +16,21 @@
     "url": "https://github.com/victorfernandesraton/thingYota-api2"
   },
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "jsonwebtoken": "^8.5.1",
-    "md5": "^2.2.1",
-    "mongoose": "^5.11.8",
-    "morgan": "^1.10.0",
-    "mqtt": "^4.2.6",
-    "restify": "^8.5.1",
-    "restify-cors-middleware": "^1.1.1",
-    "restify-errors": "^8.0.2",
-    "restify-router": "^0.5.1",
-    "socket.io": "^2.3.0"
+    "dotenv": "^10.0.0",
+    "jsonwebtoken": "8.5.1",
+    "md5": "^2.3.0",
+    "mongoose": "^5.12.10",
+    "morgan": "1.10.0",
+    "mqtt": "4.2.6",
+    "restify": "8.5.1",
+    "restify-cors-middleware": "1.1.1",
+    "restify-errors": "8.0.2",
+    "restify-router": "^0.6.2",
+    "socket.io": "^4.1.2"
   },
   "devDependencies": {
-    "jest": "^26.6.3",
-    "nodemon": "^2.0.6",
-    "prettier": "^2.2.1"
+    "jest": "26.6.3",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.3.0"
   }
 }

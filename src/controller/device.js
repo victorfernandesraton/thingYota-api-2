@@ -1,7 +1,6 @@
 const Device = require("../model/device");
 const { validaionBodyEmpty, trimObjctt } = require("../utils/common");
 const errors = require("restify-errors");
-const { populate } = require("../model/device");
 
 /**
  * @description Get all Devices in database
@@ -11,7 +10,7 @@ const { populate } = require("../model/device");
  */
 const find = async (req, res, next) => {
   const { limit, populate } = req.query;
-  const offset = (parseInt(req.query.offset)) * limit || 0;
+  const offset = parseInt(req.query.offset) * limit || 0;
   try {
     let data;
     if (populate) {
@@ -31,14 +30,14 @@ const find = async (req, res, next) => {
     const total = await Device.estimatedDocumentCount();
 
     if (offset >= total && total != 0)
-       res.send(new errors.LengthRequiredError("out of rnge"));
+      res.send(new errors.LengthRequiredError("out of rnge"));
 
-     res.send(200, {
+    res.send(200, {
       data: data,
       metadata: { limit, offset, total },
     });
   } catch (error) {
-     res.send(new errors.InternalServerError(`${error}`));
+    res.send(new errors.InternalServerError(`${error}`));
   }
 };
 
@@ -53,7 +52,7 @@ const findOne = async (req, res, next) => {
   const { populate } = req.query;
   const { id } = req.params;
 
-  if (!id)  res.send(new errors.InvalidArgumentError("id not found"));
+  if (!id) res.send(new errors.InvalidArgumentError("id not found"));
 
   try {
     let data;
@@ -67,13 +66,13 @@ const findOne = async (req, res, next) => {
     }
 
     if (!data || data.length == 0)
-       res.send(new errors.NotFoundError(`Device._id ${id} not found`));
+      res.send(new errors.NotFoundError(`Device._id ${id} not found`));
 
-     res.send(200, {
+    res.send(200, {
       data: data,
     });
   } catch (error) {
-     res.send(new errors.InternalServerError(`${error}`));
+    res.send(new errors.InternalServerError(`${error}`));
   }
 };
 
@@ -88,7 +87,7 @@ const findOne = async (req, res, next) => {
  */
 const create = async (req, res, next) => {
   if (req.body == null || req.body == undefined)
-     res.send(new errors.InvalidArgumentError("body is empty"));
+    res.send(new errors.InvalidArgumentError("body is empty"));
 
   const bodyNotFound = validaionBodyEmpty(req.body, [
     "name",
@@ -97,7 +96,7 @@ const create = async (req, res, next) => {
   ]);
 
   if (bodyNotFound.length > 0)
-     res.send(
+    res.send(
       new errors.NotFoundError(`not found params : ${bodyNotFound.join(",")}`)
     );
 
@@ -110,20 +109,18 @@ const create = async (req, res, next) => {
       mac_addres,
     });
 
-     res.send(200, {
+    res.send(200, {
       data: data,
     });
   } catch (error) {
     if (error.code == 11000) {
-       res.send(
+      res.send(
         new errors.ConflictError(
           `duplicated : ${JSON.stringify(error.keyValue)}`
         )
       );
     }
-     res.send(
-      new errors.InternalServerError(`An database error has occoured`)
-    );
+    res.send(new errors.InternalServerError(`An database error has occoured`));
   }
 };
 
@@ -135,9 +132,9 @@ const create = async (req, res, next) => {
  */
 const put = async (req, res, send) => {
   if (req.body == null || req.body == undefined)
-     res.send(new errors.InvalidArgumentError("body is empty"));
+    res.send(new errors.InvalidArgumentError("body is empty"));
 
-  if (!id)  res.send(new errors.InvalidArgumentError("id not found"));
+  if (!id) res.send(new errors.InvalidArgumentError("id not found"));
 
   const { id } = req.params;
   const { name, type, mac_addres, status } = req.body;
@@ -155,10 +152,9 @@ const put = async (req, res, send) => {
       upsert: true,
       setDefaultsOnInsert: true,
     });
-    if (!data)
-       res.send(new errors.NotFoundError(`Device ${id} not found`));
+    if (!data) res.send(new errors.NotFoundError(`Device ${id} not found`));
   } catch (error) {
-     res.send(new errors.InternalServerError(`${error}`));
+    res.send(new errors.InternalServerError(`${error}`));
   }
 };
 

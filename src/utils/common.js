@@ -15,8 +15,30 @@ const validaionBodyEmpty = (object, requires) =>
  */
 const trimObjctt = (obj) => {
   for (let key in obj) {
-  if (obj[key] == null || obj[key] =={} || (!obj[key] && typeof obj[key] != 'number')) {
-      delete obj[key]
+    switch (obj[key]) {
+      case null:
+      case NaN:
+      case undefined:
+      case "":
+      case {}:
+        delete obj[key];
+        break;
+    }
+    // verify is NaN
+    if (obj[key] !== obj[key]) {
+      delete obj[key];
+    }
+    if (typeof obj[key] === "object") {
+      if (!Object.keys(obj[key]).length) {
+        delete obj[key];
+      }
+    }
+
+    if (Array.isArray(obj[key])) {
+      console.log(obj[key].length);
+      if (!obj[key].length) {
+        delete obj[key];
+      }
     }
   }
   return obj;
