@@ -1,4 +1,4 @@
-const Device = require("../device");
+const Device = require("../entities/device");
 
 describe("Device", () => {
   test("should be a valid device", () => {
