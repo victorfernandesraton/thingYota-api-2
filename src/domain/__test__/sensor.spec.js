@@ -16,4 +16,6 @@ describe("Sensor", () => {
     expect(sensor.validation()).toHaveLength(0);
     expect(sensor.isValid()).toBeTruthy();
   });
+
+  //   test('shoud be not valid because not have ')
 });
