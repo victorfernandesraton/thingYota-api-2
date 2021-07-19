@@ -1,7 +1,7 @@
 const Device = require("../device");
 
 describe("Device", () => {
-  it("should be a valid device", () => {
+  test("should be a valid device", () => {
     const device = new Device({
       name: "Arduino T",
       actors: [],
@@ -12,7 +12,7 @@ describe("Device", () => {
     expect(device.validation()).toHaveLength(0);
     expect(device.isValid()).toBeTruthy();
   });
-  it("should be not a valid device because have invalid mac adress", () => {
+  test("should be not a valid device because have invalid mac adress", () => {
     const device = new Device({
       name: "Arduino T",
       actors: [],
@@ -25,7 +25,7 @@ describe("Device", () => {
       new Error(`macAdresss 01-23-45-67-89-a not valid`)
     );
   });
-  it("should be not a valid device because have invalid name", () => {
+  test("should be not a valid device because have invalid name", () => {
     const device = new Device({
       name: "",
       actors: [],
