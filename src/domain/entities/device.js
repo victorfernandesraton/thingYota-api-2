@@ -1,6 +1,5 @@
-const MAC_ADDRESS_REGEX =
-  /^([0-9a-f]{2}([:-]|$)){6}$|([0-9a-f]{4}([.]|$)){3}$/i;
-
+const macAdresssValidation = require("../validation/macAddress");
+const requiredString = require("../validation/requiredString");
 class Device {
   constructor({ name, macAddress, sensors, actors }) {
     this.name = name;
@@ -13,15 +12,10 @@ class Device {
     return this.validation()?.length === 0;
   }
   validation() {
-    let errors = [];
-    if (!MAC_ADDRESS_REGEX.test(this.macAddress)) {
-      errors.push(new Error(`macAdresss ${this.macAddress} not valid`));
-    }
-
-    if (!this.name || this.name === "") {
-      errors.push(new Error(`name is required`));
-    }
-    return errors;
+    return [
+      macAdresssValidation(this.macAddress),
+      ...requiredString(this, ["name"]),
+    ].filter((item) => item != null);
   }
 }
 
